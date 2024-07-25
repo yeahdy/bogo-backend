@@ -1,0 +1,3 @@
+[submodule "board-submodule"]
+	path = board-submodule
+	url = https://github.com/LuckyVicky-2team/board-submodule.git
