@@ -1,3 +1,9 @@
 spring:
+  profiles:
+    active: local
   application:
     name: boardgo
+
+  #jpa
+  jpa:
+    format_sql: true
