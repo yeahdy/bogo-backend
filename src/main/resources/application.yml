@@ -7,3 +7,4 @@ spring:
   #jpa
   jpa:
     format_sql: true
+    show-sql: true
