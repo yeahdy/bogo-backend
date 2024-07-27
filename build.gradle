@@ -89,7 +89,7 @@ tasks.register('copySubmodule', Copy) {
 }
 
 tasks.register('addSubmodule', Copy) {
-	from 'script/pre-commit.sh'
+	from 'script/pre-commit'
 	into '.git/hooks'
 	fileMode 0775
 }

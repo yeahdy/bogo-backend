@@ -6,5 +6,7 @@ spring:
 
   #jpa
   jpa:
+    hibernate:
+      ddl-auto: none
     format_sql: true
     show-sql: true
