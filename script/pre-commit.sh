@@ -10,9 +10,8 @@ LOG_FILE="$MAIN_REPO_PATH/pre-commit-log.txt"
   TARGET_FILES=$(git diff --staged --name-only | grep 'application')
   echo "MAIN_REPO_PATH :: $MAIN_REPO_PATH"
   echo "SUBMODULE_PATH :: $SUBMODULE_PATH"
-  echo "TARGET_FILES :: $TARGET_FILES"
 
-  echo "PRE-COMMIT START"
+  echo "-----PRE-COMMIT START-----"
   for file in $TARGET_FILES; do
     if [[ "$file" == *application* ]]; then
       echo "read $file for"
@@ -31,5 +30,5 @@ LOG_FILE="$MAIN_REPO_PATH/pre-commit-log.txt"
   git push origin main
 
   cd "$MAIN_REPO_PATH"
-  echo "PRE-COMMIT END"
+  echo "-----PRE-COMMIT END-----"
 } 2>&1 | tee -a "$LOG_FILE"
