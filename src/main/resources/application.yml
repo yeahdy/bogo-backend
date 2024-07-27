@@ -10,3 +10,6 @@ spring:
       ddl-auto: none
     format_sql: true
     show-sql: true
+
+greeting:
+  message: This is pre-commit test. I hope this function to work!
