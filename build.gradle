@@ -88,6 +88,12 @@ tasks.register('copySubmodule', Copy) {
 	into './src/main/resources'
 }
 
+tasks.register('addSubmodule', Copy) {
+	from 'script/pre-commit.sh'
+	into '.git/hooks'
+	fileMode 0775
+}
+
 //Querydsl Q Class 생성 위치
 def generated = 'src/main/generated'
 
