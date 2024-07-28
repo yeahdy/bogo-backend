@@ -21,7 +21,6 @@ done
 
 # commit & push in submodule repository
 git commit -m "Feat: update application files"
-git push origin main
 
 cd "$MAIN_REPO_PATH"
 echo "-----------PRE-COMMIT END-----------"
