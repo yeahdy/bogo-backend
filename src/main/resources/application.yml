@@ -12,4 +12,4 @@ spring:
     show-sql: true
 
 greeting:
-  message: This is pre-commit test. I hope this function to work
+  message: I hope this function to work!!
