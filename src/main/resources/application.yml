@@ -12,4 +12,4 @@ spring:
     show-sql: true
 
 greeting:
-  message: I hope this function to work!!
+  message: SUCCESS!!Please...
