@@ -1,0 +1,65 @@
+name: DEV-CI
+
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+    branches: [ "dev" ]
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Pull Request URL 가져오기
+        id: pr-url
+        run: |
+          echo "PR_URL=$(jq -r .pull_request.url "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
+
+      - name: Pull Request URL 출력해보기
+        run: |
+          echo "The PR URL is $PR_URL"
+
+      - name: 서브모듈 추가
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.GIT_TOKEN }}
+
+      - name: JDK 21 세팅
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+
+      - name: Gradle 캐시 설정
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: gradlew 실행 권한 설정
+        run: chmod +x gradlew
+
+      - name: 테스트 진행
+        run: ./gradlew test
+
+      - name: 🍀 테스트 결과 Report
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: 'build/test-results/test/TEST-*.xml'
+
+      - name: 🍀 테스트 실패시 슬랙 알림
+        if: failure()
+        uses: tsickert/discord-webhook@v5.3.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          content: "테스트 실패: ${{ github.repository }} \nPR 주소 : $PR_URL"
