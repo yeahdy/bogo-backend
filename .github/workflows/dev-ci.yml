@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-          token: ${{ secrets.PAT_SECRETE }}
+          token: ${{ secrets.GIT_TOKEN }}
 
       - name: JDK 21 세팅
         uses: actions/setup-java@v4
