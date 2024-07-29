@@ -88,6 +88,11 @@ tasks.register('copySubmodule', Copy) {
 	into './src/main/resources'
 }
 
+tasks.register('addSubmodule', Exec) {
+	workingDir './script'
+	commandLine 'sh', './commit-submodule.sh'
+}
+
 //Querydsl Q Class 생성 위치
 def generated = 'src/main/generated'
 
