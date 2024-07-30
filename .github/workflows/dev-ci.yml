@@ -57,7 +57,7 @@ jobs:
         with:
           report_paths: 'build/test-results/test/TEST-*.xml'
 
-      - name: 🍀 테스트 실패시 슬랙 알림
+      - name: 🍀 테스트 실패시 디스코드 알림
         if: failure()
         uses: tsickert/discord-webhook@v5.3.0
         with:
