@@ -1,89 +1,89 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.2.8'
-    id 'io.spring.dependency-management' version '1.1.6'
-    id 'org.asciidoctor.jvm.convert' version '3.3.2'
-    id 'jacoco'
-    id 'com.diffplug.spotless' version '6.21.0'
+	id 'java'
+	id 'org.springframework.boot' version '3.2.8'
+	id 'io.spring.dependency-management' version '1.1.6'
+	id 'org.asciidoctor.jvm.convert' version '3.3.2'
+	id 'jacoco'
+	id 'com.diffplug.spotless' version '6.21.0'
 }
 
 group = 'com'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
 jacoco {
-    toolVersion = "0.8.11"
-    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+	toolVersion = "0.8.11"
+	reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 
 configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 ext {
-    set('snippetsDir', file("build/generated-snippets"))
+	set('snippetsDir', file("build/generated-snippets"))
 }
 
 bootJar {
-    archiveFileName = 'application.jar'
+	archiveFileName = 'application.jar'
 }
 
 jar {
-    enabled = false
+	enabled = false
 }
 
 dependencies {
-    // Web And Devtools
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	// Web And Devtools
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-    // Security
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+	// Security
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    // Lombok
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 
-    // DB
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// DB
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    // QueryDSL
-    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
-    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
-    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+	// QueryDSL
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 
-    // MapStruct
-    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+	// MapStruct
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
-    // Test
-    testImplementation 'com.tngtech.archunit:archunit:1.3.0'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	// Test
+	testImplementation 'com.tngtech.archunit:archunit:1.3.0'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
-    outputs.dir snippetsDir
-    useJUnitPlatform()
-    finalizedBy jacocoTestReport // report is always generated after tests run
+	outputs.dir snippetsDir
+	useJUnitPlatform()
+	finalizedBy jacocoTestReport // report is always generated after tests run
 }
 
 
@@ -92,14 +92,14 @@ tasks.processResources.outputs.upToDateWhen { false }
 processResources.dependsOn('copySubmodule')
 
 tasks.register('copySubmodule', Copy) {
-    from './board-submodule'
-    include '*.yaml'
-    into './src/main/resources'
+	from './board-submodule'
+	include '*.yaml'
+	into './src/main/resources'
 }
 
 tasks.register('addSubmodule', Exec) {
-    workingDir './script'
-    commandLine 'sh', './commit-submodule.sh'
+	workingDir './script'
+	commandLine 'sh', './commit-submodule.sh'
 }
 
 //Querydsl Q Class 생성 위치
@@ -107,73 +107,80 @@ def generated = 'src/main/generated'
 
 //Querydsl Q Class 생성 위치 지정
 tasks.withType(JavaCompile).configureEach {
-    options.getGeneratedSourceOutputDirectory().set(file(generated))
+	options.getGeneratedSourceOutputDirectory().set(file(generated))
 }
 
 //java source set 에 Querydsl Q Class 위치 추가
 sourceSets {
-    main.java.srcDirs += [generated]
+	main.java.srcDirs += [generated]
 }
 
 //gradle clean 시, Q Class 디렉토리까지 삭제하도록 설정
 clean {
-    delete file(generated)
+	delete file(generated)
 }
 
 tasks.named('asciidoctor') {
-    inputs.dir snippetsDir
-    dependsOn test
+	inputs.dir snippetsDir
+	dependsOn test
 }
 
 jacocoTestReport {
-    reports {
-        xml.required = false
-        csv.required = false
-        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
-    }
+	reports {
+		xml.required = false
+		csv.required = false
+		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+	}
 }
 
 
 // 테스트 커버리지 검증에 따른 jacoco 테스트 성공/실패 여부
 tasks.jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            enabled = true
-            element = "CLASS"   //class 별로 검사
+	violationRules {
+		rule {
+			enabled = true
+			element = "CLASS"   //class 별로 검사
 
-            // 테스트 코드 커버 비율 설정 (50% 이상일 경우에만 jacoco의 테스트 성공)
-            limit {
-                counter = "LINE"
-                value = "COVEREDRATIO"
-                minimum = BigDecimal.valueOf(0.7)
-            }
+			// 테스트 코드 커버 비율 설정 (50% 이상일 경우에만 jacoco의 테스트 성공)
+			limit {
+				counter = "LINE"
+				value = "COVEREDRATIO"
+				minimum = BigDecimal.valueOf(0.7)
+			}
 
-            //class 당 코드 전체 라인이 최대 100 줄까지 가능
-            limit {
-                counter = "LINE"
-                value = "TOTALCOUNT"
-                maximum = BigDecimal.valueOf(200)
-            }
+			//class 당 코드 전체 라인이 최대 100 줄까지 가능
+			limit {
+				counter = "LINE"
+				value = "TOTALCOUNT"
+				maximum = BigDecimal.valueOf(200)
+			}
 
-            excludes = List.of(
-                    ".controller.",
-                    ".dto.",
-                    ".exception.",
-                    "com.boardgo.BoardgoApplication"
-            )
-        }
-    }
+			excludes = List.of(
+					".controller.",
+					".dto.",
+					".exception.",
+					"com.boardgo.BoardgoApplication"
+			)
+		}
+	}
 }
 
 spotless {
-    java {
-        removeUnusedImports()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
+	format 'misc', {
+		target '*.gradle', '.gitignore'
+
+		trimTrailingWhitespace()
+		indentWithTabs()
+	}
+	java {
+		removeUnusedImports()
+		trimTrailingWhitespace()
+		indentWithTabs()
+		endWithNewline()
+	}
 }
 
-tasks.register('copyPreCommit',Copy) {
-    from 'script/pre-commit'
-    into '.git/hooks'
+tasks.register('copyPreCommit', Copy) {
+	from 'script/pre-commit'
+	into '.git/hooks'
 }

@@ -3,15 +3,10 @@ package com.boardgo;
 public class User {
 
 	private String name;
-	private int
-	age;
+	private int age;
 
-	public void     hiMethod(){
+	public void hiMethod() {
 		String
-			i = ""
-			;
-
-
+			i = "";
 	}
-
 }
