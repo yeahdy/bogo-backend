@@ -5,8 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class BoardgoApplication {
-
-public static void main(String[] args) {
-	SpringApplication.run(BoardgoApplication.class, args);
-}
+  public static void main(String[] args) {
+    SpringApplication.run(BoardgoApplication.class, args);
+  }
 }
