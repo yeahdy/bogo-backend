@@ -10,11 +10,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @Table(name = "user_pr_tag")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserPrTagEntity extends BaseEntity {
 	@Id
 	@Column(name = "user_pr_tag_id")
