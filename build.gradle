@@ -173,7 +173,7 @@ spotless {
 		indentWithTabs()
 	}
 	java {
-		googleJavaFormat()
+		googleJavaFormat().aosp()
 		removeUnusedImports()
 		trimTrailingWhitespace()
 		endWithNewline()
