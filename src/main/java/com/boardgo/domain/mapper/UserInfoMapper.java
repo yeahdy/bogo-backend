@@ -6,7 +6,7 @@ import org.mapstruct.factory.Mappers;
 import com.boardgo.domain.user.controller.dto.SignupRequest;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface UserInfoMapper {
 	UserInfoMapper INSTANCE = Mappers.getMapper(UserInfoMapper.class);
 

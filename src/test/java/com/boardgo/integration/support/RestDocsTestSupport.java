@@ -1,41 +1,38 @@
 package com.boardgo.integration.support;
 
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.boardgo.common.exception.advice.CommonControllerAdvice;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.specification.RequestSpecification;
 import jakarta.transaction.Transactional;
 
 @ExtendWith(RestDocumentationExtension.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
 @AutoConfigureMockMvc
 @WithMockUser
 public abstract class RestDocsTestSupport {
 
-	protected MockMvc mockMvc;
-	protected ObjectMapper objectMapper = new ObjectMapper();
+	protected RequestSpecification spec;
+
+	@LocalServerPort
+	protected int port;
 
 	@BeforeEach
-	void setUp(ApplicationContext context, RestDocumentationContextProvider provider) {
-		this.mockMvc = MockMvcBuilders.standaloneSetup(initializeController())
-			.setControllerAdvice(CommonControllerAdvice.class)
-			.apply(documentationConfiguration(provider))
+	public void setUp(RestDocumentationContextProvider restDocumentation) {
+		this.spec = new RequestSpecBuilder()
+			.addFilter(documentationConfiguration(restDocumentation))
 			.build();
 	}
 
-	protected abstract Object initializeController();
 }
 

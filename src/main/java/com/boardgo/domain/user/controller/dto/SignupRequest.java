@@ -1,13 +1,17 @@
 package com.boardgo.domain.user.controller.dto;
 
+import java.util.List;
+
+import com.boardgo.common.validator.annotation.ListInStringNotEmpty;
+
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 public record SignupRequest(
 	@Email(message = "email") String email,
-	@NotEmpty(message = "nickname") String nickName,
-	@Min(value = 8, message = "password") @Max(value = 50, message = "password") String password
+	@NotEmpty(message = "nickName") String nickName,
+	@Size(min = 8, max = 50, message = "message") String password,
+	@ListInStringNotEmpty(message = "prTags") List<String> prTags
 ) {
 }

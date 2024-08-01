@@ -17,13 +17,28 @@ public class UserInfoEntityTest {
 		//given
 		String encodedPassword = "12345678";
 		FakePasswordEncoder fakePasswordEncoder = new FakePasswordEncoder();
-		SignupRequest signupRequest = new SignupRequest("aa@aa.aa", "nickname", "password");
+		SignupRequest signupRequest = new SignupRequest("aa@aa.aa", "nickname", "password", null);
 		UserInfoMapper instance = UserInfoMapper.INSTANCE;
 
 		//when
 		UserInfoEntity userInfo = instance.from(signupRequest);
 		userInfo.encodePassword(fakePasswordEncoder);
+
 		//then
 		assertThat(userInfo.getPassword()).isEqualTo(encodedPassword);
+	}
+
+	@Test
+	@DisplayName("signupRequest는 userInfoEntity로 매핑할 수 있다")
+	void signupRequest는_userInfoEntity로_매핑할_수_있다() {
+		//given
+		SignupRequest signupRequest = new SignupRequest("aa@aa.aa", "nickname", "password", null);
+		UserInfoMapper instance = UserInfoMapper.INSTANCE;
+		//when
+		UserInfoEntity userInfo = instance.from(signupRequest);
+		//then
+		assertThat(signupRequest.email()).isEqualTo(userInfo.getEmail());
+		assertThat(signupRequest.nickName()).isEqualTo(userInfo.getNickName());
+		assertThat(signupRequest.password()).isEqualTo(userInfo.getPassword());
 	}
 }
