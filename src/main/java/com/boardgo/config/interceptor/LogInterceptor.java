@@ -1,12 +1,17 @@
 package com.boardgo.config.interceptor;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.time.Instant;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
-import com.boardgo.config.log.ExcludedLog;
+import com.boardgo.config.log.LoggingDto;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,38 +20,79 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class LogInterceptor implements HandlerInterceptor {
-	final String TEMPLATE = "http method %s, api:[%s], userID:[%s], parameter: %s";
 
-	/*
-	TODO
-		1. 어떤 정보를 로그에 추가할 것인지
-		2. 인터셉터에서 발생하는 예외는 어떻게 처리할 것인지?
-	- 로그백 파일로 남기기 (추후에 비즈니스 요구사항에 로그를 활용 해야 한다면 DB 저장)
-	 */
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 		throws Exception {
-		if (ExcludedLog.isLoggingExclude(request)) {
+		if (isLoggingExclude(request)) {
 			return true;
 		}
 
 		String method = request.getMethod();
-		String url = request.getRequestURI();
+		LoggingDto loggingDto = new LoggingDto(Instant.now(), method, request.getRequestURI());
 		String paramsStr = "";
 
-		//TODO: 로그 내부 로직 작성
 		switch (method) {
 			case "POST":
-				//FIXME: preHandle exception 처리
+			case "PATCH":
+			case "PUT":
 				paramsStr = StreamUtils.copyToString(
 					request.getInputStream(), Charset.forName(request.getCharacterEncoding())
 				);
 				break;
 			case "GET":
 				paramsStr = request.getQueryString();
+				break;
+			case "DELETE":
+				var pathVariableMap = request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+				paramsStr = new StringBuilder(pathVariableMap.toString())
+					.append("?")
+					.append(request.getQueryString())
+					.toString();
 		}
-		// OutputLogger.logInfo(String.format(TEMPLATE, method, url, getUserName(request), paramsStr));
+
+		loggingDto.preLoggingMessage(paramsStr);
 		return true;
+	}
+
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+		ModelAndView modelAndView) throws IOException {
+		ContentCachingResponseWrapper cachingResponseWrapper = (ContentCachingResponseWrapper)response;
+
+		new LoggingDto(Instant.now(), request.getMethod(), request.getRequestURI())
+			.postLoggingMessage(response.getStatus(), new String(cachingResponseWrapper.getContentAsByteArray()));
+		cachingResponseWrapper.copyBodyToResponse();
+	}
+
+	private boolean isLoggingExclude(HttpServletRequest request) {
+		if (isFileUploadRequest(request)) {
+			return true;
+		}
+		if (isSecurityContext(request)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 파일 포함 유무 확인
+	 */
+	private boolean isFileUploadRequest(HttpServletRequest request) {
+		return request.getMethod().equalsIgnoreCase("POST")
+			&& request.getContentType().startsWith("multipart/form-data");
+	}
+
+	/**
+	 * SecurityContext 보안(권한,인증) 정보 포함 유무 확인
+	 */
+	private boolean isSecurityContext(HttpServletRequest request) {
+		return request.getClass().getName().contains("SecurityContextHolderAwareRequestWrapper");
+	}
+
+	//TODO 회원 ID 가져오기 구현 필요
+	private String getUserName(HttpServletRequest request) {
+		return "MY NAME IS DUMMY";
 	}
 
 }
