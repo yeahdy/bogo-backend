@@ -40,7 +40,7 @@ public class CommonControllerAdvice {
 
 		return ResponseEntity.badRequest().body(ErrorResponse.builder()
 			.errorCode(400)
-			.messages(fieldErrorResponses.toString())
+			.messages(FieldErrorResponse.listToString(fieldErrorResponses))
 			.build());
 	}
 
