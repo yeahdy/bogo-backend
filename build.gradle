@@ -141,7 +141,7 @@ tasks.jacocoTestCoverageVerification {
 			enabled = true
 			element = "CLASS"   //class 별로 검사
 
-			// 테스트 코드 커버 비율 설정 (50% 이상일 경우에만 jacoco의 테스트 성공)
+			// 테스트 코드 커버 비율 설정 (70% 이상일 경우에만 jacoco의 테스트 성공)
 			limit {
 				counter = "LINE"
 				value = "COVEREDRATIO"
