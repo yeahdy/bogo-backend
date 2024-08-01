@@ -1,9 +1,12 @@
 package com.boardgo.config;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.boardgo.config.filter.FilterSupporter;
 import com.boardgo.config.interceptor.LogInterceptor;
 
 import lombok.RequiredArgsConstructor;
@@ -23,5 +26,12 @@ public class WebConfig implements WebMvcConfigurer {
 		registry.addInterceptor(interceptor)
 			.order(1)
 			.excludePathPatterns(INTERCEPTOR_WHITE_LIST);
+	}
+
+	@Bean
+	public FilterRegistrationBean<FilterSupporter> addFilterSupporter() {
+		FilterRegistrationBean<FilterSupporter> registrationBean = new FilterRegistrationBean<>();
+		registrationBean.setFilter(new FilterSupporter());
+		return registrationBean;
 	}
 }
