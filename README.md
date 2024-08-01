@@ -1,3 +1,1 @@
-# backend
-럭키비키 2팀 백엔드 레포지토리입니다.
-지금은 PR 알림 테스트 중입니다.
+# 보고!(BoardGo)🎲 서비스 Backend Repository
