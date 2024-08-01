@@ -1,23 +1,24 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.2.8'
-    id 'io.spring.dependency-management' version '1.1.6'
-    id 'org.asciidoctor.jvm.convert' version '3.3.2'
-    id 'jacoco'
+	id 'java'
+	id 'org.springframework.boot' version '3.2.8'
+	id 'io.spring.dependency-management' version '1.1.6'
+	id 'org.asciidoctor.jvm.convert' version '3.3.2'
+	id 'jacoco'
+	id 'com.diffplug.spotless' version '6.21.0'
 }
 
 group = 'com'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
 jacoco {
-    toolVersion = "0.8.11"
-    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+	toolVersion = "0.8.11"
+	reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 
 configurations {
@@ -28,16 +29,16 @@ configurations {
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 ext {
-    set('snippetsDir', file("build/generated-snippets"))
+	set('snippetsDir', file("build/generated-snippets"))
 }
 
 
 jar {
-    enabled = false
+	enabled = false
 }
 
 dependencies {
@@ -122,14 +123,14 @@ tasks.processResources.outputs.upToDateWhen { false }
 processResources.dependsOn('copySubmodule')
 
 tasks.register('copySubmodule', Copy) {
-    from './board-submodule'
-    include '*.yaml'
-    into './src/main/resources'
+	from './board-submodule'
+	include '*.yaml'
+	into './src/main/resources'
 }
 
 tasks.register('addSubmodule', Exec) {
-    workingDir './script'
-    commandLine 'sh', './commit-submodule.sh'
+	workingDir './script'
+	commandLine 'sh', './commit-submodule.sh'
 }
 
 //Querydsl Q Class 생성 위치
@@ -137,59 +138,80 @@ def generated = 'src/main/generated'
 
 //Querydsl Q Class 생성 위치 지정
 tasks.withType(JavaCompile).configureEach {
-    options.getGeneratedSourceOutputDirectory().set(file(generated))
+	options.getGeneratedSourceOutputDirectory().set(file(generated))
 }
 
 //java source set 에 Querydsl Q Class 위치 추가
 sourceSets {
-    main.java.srcDirs += [generated]
+	main.java.srcDirs += [generated]
 }
 
 //gradle clean 시, Q Class 디렉토리까지 삭제하도록 설정
 clean {
-    delete file(generated)
+	delete file(generated)
 }
 
 tasks.named('asciidoctor') {
-    inputs.dir snippetsDir
-    dependsOn test
+	inputs.dir snippetsDir
+	dependsOn test
 }
 
 jacocoTestReport {
-    reports {
-        xml.required = false
-        csv.required = false
-        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
-    }
+	reports {
+		xml.required = false
+		csv.required = false
+		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+	}
 }
 
 // 테스트 커버리지 검증에 따른 jacoco 테스트 성공/실패 여부
 tasks.jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            enabled = true
-            element = "CLASS"   //class 별로 검사
+	violationRules {
+		rule {
+			enabled = true
+			element = "CLASS"   //class 별로 검사
 
-            // 테스트 코드 커버 비율 설정 (50% 이상일 경우에만 jacoco의 테스트 성공)
-            limit {
-                counter = "LINE"
-                value = "COVEREDRATIO"
-                minimum = BigDecimal.valueOf(0.7)
-            }
+			// 테스트 코드 커버 비율 설정 (70% 이상일 경우에만 jacoco의 테스트 성공)
+			limit {
+				counter = "LINE"
+				value = "COVEREDRATIO"
+				minimum = BigDecimal.valueOf(0.7)
+			}
 
-            //class 당 코드 전체 라인이 최대 100 줄까지 가능
-            limit {
-                counter = "LINE"
-                value = "TOTALCOUNT"
-                maximum = BigDecimal.valueOf(200)
-            }
+			//class 당 코드 전체 라인이 최대 100 줄까지 가능
+			limit {
+				counter = "LINE"
+				value = "TOTALCOUNT"
+				maximum = BigDecimal.valueOf(200)
+			}
 
-            excludes = List.of(
-                    ".controller.",
-                    ".dto.",
-                    ".exception.",
-                    "com.boardgo.BoardgoApplication"
-            )
-        }
-    }
+			excludes = List.of(
+					".controller.",
+					".dto.",
+					".exception.",
+					"com.boardgo.BoardgoApplication"
+			)
+		}
+	}
+}
+
+spotless {
+	format 'misc', {
+		target '*.gradle', '.gitignore'
+
+		trimTrailingWhitespace()
+		indentWithTabs()
+	}
+	java {
+		googleJavaFormat().aosp()
+		removeUnusedImports()
+		trimTrailingWhitespace()
+		endWithNewline()
+
+	}
+}
+
+tasks.register('copyPreCommit', Copy) {
+	from 'script/pre-commit'
+	into '.git/hooks'
 }
