@@ -17,7 +17,8 @@ jobs:
       - name: Pull Request URL 가져오기
         id: pr-url
         run: |
-          echo "PR_URL=$(jq -r .pull_request.html_url "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
+          PR_URL=$(jq -r .pull_request.html_url "$GITHUB_EVENT_PATH")
+          echo "PR_URL=${PR_URL}" >> $GITHUB_ENV
 
       - name: Pull Request URL 출력해보기
         run: |
