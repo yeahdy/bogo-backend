@@ -10,5 +10,5 @@ import com.boardgo.domain.user.entity.UserInfoEntity;
 public interface UserInfoMapper {
 	UserInfoMapper INSTANCE = Mappers.getMapper(UserInfoMapper.class);
 
-	UserInfoEntity from(SignupRequest signupRequest);
+	UserInfoEntity toUserInfoEntity(SignupRequest signupRequest);
 }

@@ -25,7 +25,7 @@ public class UserCommandServiceV1 implements UserUseCase {
 
 	@Override
 	public Long signup(SignupRequest signupRequest) {
-		UserInfoEntity userInfo = userInfoMapper.from(signupRequest);
+		UserInfoEntity userInfo = userInfoMapper.toUserInfoEntity(signupRequest);
 		userInfo.encodePassword(passwordEncoder);
 		UserInfoEntity savedUser = userRepository.save(userInfo);
 		userPrTagRepository.bulkInsertPrTags(signupRequest.prTags(), savedUser.getId());

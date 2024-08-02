@@ -21,7 +21,7 @@ public class UserInfoEntityTest {
 		UserInfoMapper instance = UserInfoMapper.INSTANCE;
 
 		//when
-		UserInfoEntity userInfo = instance.from(signupRequest);
+		UserInfoEntity userInfo = instance.toUserInfoEntity(signupRequest);
 		userInfo.encodePassword(fakePasswordEncoder);
 
 		//then
@@ -35,7 +35,7 @@ public class UserInfoEntityTest {
 		SignupRequest signupRequest = new SignupRequest("aa@aa.aa", "nickname", "password", null);
 		UserInfoMapper instance = UserInfoMapper.INSTANCE;
 		//when
-		UserInfoEntity userInfo = instance.from(signupRequest);
+		UserInfoEntity userInfo = instance.toUserInfoEntity(signupRequest);
 		//then
 		assertThat(signupRequest.email()).isEqualTo(userInfo.getEmail());
 		assertThat(signupRequest.nickName()).isEqualTo(userInfo.getNickName());
