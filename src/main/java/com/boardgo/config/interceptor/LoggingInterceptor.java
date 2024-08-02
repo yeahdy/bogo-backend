@@ -2,7 +2,6 @@ package com.boardgo.config.interceptor;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.time.Instant;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
@@ -11,7 +10,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
-import com.boardgo.config.log.LoggingDto;
+import com.boardgo.config.log.LoggingMessage;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class LogInterceptor implements HandlerInterceptor {
+public class LoggingInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -29,7 +28,7 @@ public class LogInterceptor implements HandlerInterceptor {
 		}
 
 		String method = request.getMethod();
-		LoggingDto loggingDto = new LoggingDto(Instant.now(), method, request.getRequestURI());
+		LoggingMessage loggingMessage = new LoggingMessage(method, request.getRequestURI());
 		String paramsStr = "";
 
 		switch (method) {
@@ -51,7 +50,7 @@ public class LogInterceptor implements HandlerInterceptor {
 					.toString();
 		}
 
-		loggingDto.preLoggingMessage(paramsStr);
+		loggingMessage.preLoggingMessage(paramsStr);
 		return true;
 	}
 
@@ -60,7 +59,7 @@ public class LogInterceptor implements HandlerInterceptor {
 		ModelAndView modelAndView) throws IOException {
 		ContentCachingResponseWrapper cachingResponseWrapper = (ContentCachingResponseWrapper)response;
 
-		new LoggingDto(Instant.now(), request.getMethod(), request.getRequestURI())
+		new LoggingMessage(request.getMethod(), request.getRequestURI())
 			.postLoggingMessage(response.getStatus(), new String(cachingResponseWrapper.getContentAsByteArray()));
 		cachingResponseWrapper.copyBodyToResponse();
 	}
