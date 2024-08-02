@@ -16,7 +16,6 @@ public class ListInStringNotEmptyValidator implements ConstraintValidator<ListIn
 
 	@Override
 	public boolean isValid(List<String> value, ConstraintValidatorContext constraintValidatorContext) {
-		System.out.println(value);
 		if (value == null) {
 			return true; // List 자체가 null인 경우 유효성 검사를 통과
 		}
