@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.boardgo.config.filter.FilterSupporter;
+import com.boardgo.config.filter.LoggingFilter;
 import com.boardgo.config.interceptor.LogInterceptor;
 
 import lombok.RequiredArgsConstructor;
@@ -29,9 +29,9 @@ public class WebConfig implements WebMvcConfigurer {
 	}
 
 	@Bean
-	public FilterRegistrationBean<FilterSupporter> addFilterSupporter() {
-		FilterRegistrationBean<FilterSupporter> registrationBean = new FilterRegistrationBean<>();
-		registrationBean.setFilter(new FilterSupporter());
+	public FilterRegistrationBean<LoggingFilter> addFilterSupporter() {
+		FilterRegistrationBean<LoggingFilter> registrationBean = new FilterRegistrationBean<>();
+		registrationBean.setFilter(new LoggingFilter());
 		return registrationBean;
 	}
 }
