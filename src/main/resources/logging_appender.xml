@@ -1,6 +1,6 @@
 <included>
     <property name="LOG_PATH" value=".logs"/>
-    <property name="PATTERN" value="%-4relative [%thread] %-5level %logger{30} - %msg%n"/>
+    <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{30} - %msg%n"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/LogFile.log</file>

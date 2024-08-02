@@ -7,7 +7,7 @@
         <appender-ref ref="CONSOLE"/>
     </root>
 
-    <logger name="LoggingInterceptor" additivity="false" level="INFO">
+    <logger name="com.boardgo.config.log.OutputLog" additivity="false" level="INFO">
         <appender-ref ref="FILE"/>
     </logger>
 </configuration>
