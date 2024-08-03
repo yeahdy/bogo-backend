@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
-    <include resource="console_appender.xml"/>
-    <include resource="logging_appender.xml"/>
+    <include resource="console-appender.xml"/>
+    <include resource="info-logging-appender.xml"/>
+    <include resource="error-logging-appender.xml"/>
 
-    <root level="INFO">
+    <root level="info">
         <appender-ref ref="CONSOLE"/>
     </root>
-
-    <logger name="com.boardgo.config.log.OutputLog" additivity="false" level="INFO">
-        <appender-ref ref="FILE"/>
+    <logger name="com.boardgo.config.log.OutputLog" additivity="false" level="info">
+        <appender-ref ref="INFO-FILE"/>
+    </logger>
+    <logger name="com.boardgo.config.log.OutputLog" additivity="false" level="error">
+        <appender-ref ref="ERROR-FILE"/>
     </logger>
 </configuration>
