@@ -5,6 +5,5 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface UserPrTagMapper {
-	UserPrTagMapper userPrTagMapper = Mappers.getMapper(UserPrTagMapper.class);
-	
+    UserPrTagMapper userPrTagMapper = Mappers.getMapper(UserPrTagMapper.class);
 }
