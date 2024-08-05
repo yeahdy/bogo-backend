@@ -8,19 +8,21 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsMvcConfig implements WebMvcConfigurer {
 
-	@Value("${spring.cors.origins}")
-	private String corsOrigins;
-	@Value("${spring.cors.methods}")
-	private String corsMethods;
-	@Value("${spring.cors.headers}")
-	private String corsHeaders;
+    @Value("${spring.cors.origins}")
+    private String corsOrigins;
 
-	@Override
-	public void addCorsMappings(CorsRegistry registry) {
+    @Value("${spring.cors.methods}")
+    private String corsMethods;
 
-		registry.addMapping("/**")
-			.allowedOriginPatterns(corsOrigins)
-			.allowedHeaders(corsHeaders)
-			.allowedMethods(corsMethods);
-	}
+    @Value("${spring.cors.headers}")
+    private String corsHeaders;
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+
+        registry.addMapping("/**")
+                .allowedOriginPatterns(corsOrigins)
+                .allowedHeaders(corsHeaders)
+                .allowedMethods(corsMethods);
+    }
 }
