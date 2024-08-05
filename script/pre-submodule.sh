@@ -17,7 +17,7 @@ fi
 
 git pull origin dev
 
-git submodule update
+git submodule update --remote
 
 ./gradlew copySubmodule
 

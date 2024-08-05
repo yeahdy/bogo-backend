@@ -14,6 +14,12 @@ jobs:
   build-with-gradle:
     runs-on: ubuntu-22.04
     steps:
+      - name: Pull Request URL 가져오기
+        id: pr-url
+        run: |
+          PR_URL=$(jq -r .pull_request.html_url "$GITHUB_EVENT_PATH")
+          echo "PR_URL=${PR_URL}" >> $GITHUB_ENV
+
       - name: 서브모듈 추가
         uses: actions/checkout@v4
         with:
@@ -52,3 +58,10 @@ jobs:
         run: aws deploy push --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} --ignore-hidden-files --s3-location s3://$AWS_S3_BUCKET/$GITHUB_SHA.zip --source .
       - name: EC2에 배포
         run: aws deploy create-deployment --application-name ${{ env.AWS_CODE_DEPLOY_APPLICATION }} --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name ${{ env.AWS_CODE_DEPLOY_GROUP }} --s3-location bucket=$AWS_S3_BUCKET,key=$GITHUB_SHA.zip,bundleType=zip
+
+      - name: 🍀 테스트 실패시 디스코드 알림
+        if: failure()
+        uses: tsickert/discord-webhook@v5.3.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          content: "테스트 실패: ${{ github.repository }} \nPR 주소 : ${{ env.PR_URL }}"

@@ -13,3 +13,9 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
 
+  jwt:
+    secret: test
+  cors:
+    origins: "*"
+    methods: "*"
+    headers: "*"
