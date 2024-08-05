@@ -1,5 +1,6 @@
 package com.boardgo.integration.support;
 
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import io.restassured.builder.RequestSpecBuilder;
@@ -29,7 +30,13 @@ public abstract class RestDocsTestSupport {
     public void setUp(RestDocumentationContextProvider restDocumentation) {
         this.spec =
                 new RequestSpecBuilder()
-                        .addFilter(documentationConfiguration(restDocumentation))
+                        .addFilter(
+                                documentationConfiguration(restDocumentation)
+                                        .operationPreprocessors()
+                                        .withRequestDefaults(
+                                                modifyUris().host("54.180.60.122").port(8080),
+                                                prettyPrint())
+                                        .withResponseDefaults(prettyPrint()))
                         .build();
     }
 }

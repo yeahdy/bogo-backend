@@ -1,12 +1,12 @@
 package com.boardgo.integration.user.controller;
 
+import static com.boardgo.common.constant.HeaderConstant.*;
 import static io.restassured.RestAssured.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
-import com.boardgo.common.constant.HeaderConstant;
 import com.boardgo.domain.user.controller.dto.SignupRequest;
 import com.boardgo.integration.support.RestDocsTestSupport;
 import java.util.List;
@@ -23,11 +23,12 @@ public class SignupDocsTest extends RestDocsTestSupport {
         // given
         SignupRequest signupRequest =
                 new SignupRequest("aa@aa.aa", "nickname", "password", List.of("prTag1", "prTag2"));
+
         given(this.spec)
                 .log()
                 .all()
                 .port(port)
-                .header(HeaderConstant.API_VERSION_HEADER, "1")
+                .header(API_VERSION_HEADER, "1")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(signupRequest)
                 .filter(

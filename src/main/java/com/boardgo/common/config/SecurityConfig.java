@@ -81,9 +81,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize ->
                                 authorize
-                                        .requestMatchers("/signup", "/login")
+                                        .requestMatchers("/signup", "/login", "/docs/*")
                                         .permitAll()
-                                        // TODO: 나중에 permitAll 없애기
                                         .anyRequest()
                                         .authenticated())
                 .build();

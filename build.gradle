@@ -102,15 +102,13 @@ asciidoctor {
     dependsOn test
 }
 
-asciidoctor.doFirst {
-    delete file("src/main/resources/static/docs")
-}
 
 bootJar {
     archiveFileName = 'application.jar'
     dependsOn asciidoctor
-    from("${asciidoctor.outputDir}/html5") {
-        into 'static/docs'
+    copy {
+        from asciidoctor.outputDir
+        into 'src/main/resources/static/docs'
     }
 }
 
@@ -162,6 +160,12 @@ clean {
 tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     dependsOn test
+
+    copy {
+        from asciidoctor.outputDir
+        into 'src/main/resources/static/docs'
+    }
+
 }
 
 jacocoTestReport {
@@ -204,20 +208,17 @@ tasks.jacocoTestCoverageVerification {
     }
 }
 
-tasks.whenTaskAdded {
+tasks.configureEach {
     if (name.contains("spotless")) {
         mustRunAfter(tasks.compileJava)
         mustRunAfter(tasks.processResources)
+        mustRunAfter(tasks.processTestResources)
+        mustRunAfter(tasks.jacocoTestReport)
+        mustRunAfter(tasks.asciidoctor)
     }
 }
 
 spotless {
-    format 'misc', {
-        target '.gitignore'
-
-        trimTrailingWhitespace()
-        indentWithTabs()
-    }
     java {
         target project.fileTree(project.rootDir) {
             include '**/*.java'

@@ -1,0 +1,16 @@
+= BoardGo RestDocs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs // 문서에 표기되는 코드들의 하이라이팅을 highlightjs를 사용
+:toc: left // toc (Table Of Contents)를 문서의 좌측에 두기
+:toclevels: 2
+:sectlinks:
+
+== 회원가입
+=== 요청
+include::{snippets}/회원가입/http-request.adoc[]
+include::{snippets}/회원가입/httpie-request.adoc[]
+include::{snippets}/회원가입/request-fields.adoc[]
+=== 응답
+include::{snippets}/회원가입/http-response.adoc[]
+include::{snippets}/회원가입/response-body.adoc[]

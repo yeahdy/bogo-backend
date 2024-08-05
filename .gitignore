@@ -39,3 +39,7 @@ out/
 ### Application Yaml ###
 /src/main/generated
 /src/main/resources
+
+
+### Log ###
+.log/
