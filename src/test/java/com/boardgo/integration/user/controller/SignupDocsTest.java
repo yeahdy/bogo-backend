@@ -1,11 +1,15 @@
 package com.boardgo.integration.user.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
-import static io.restassured.RestAssured.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.payload.JsonFieldType.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
+import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
+import static io.restassured.RestAssured.given;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
+import static org.springframework.restdocs.payload.JsonFieldType.STRING;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.boardgo.domain.user.controller.dto.SignupRequest;
 import com.boardgo.integration.support.RestDocsTestSupport;
@@ -47,7 +51,8 @@ public class SignupDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("prTags")
                                                 .type(ARRAY)
                                                 .description("회원가입 시 입력한 태그들 (각 요소는 빈 문자열일 수 없습니다)")
-                                                .optional())))
+                                                .optional(),
+                                        fieldWithPath("providerType").ignored())))
                 .when()
                 .post("/signup")
                 .then()
