@@ -8,9 +8,33 @@
 
 == 회원가입
 === 요청
-include::{snippets}/회원가입/http-request.adoc[]
-include::{snippets}/회원가입/httpie-request.adoc[]
-include::{snippets}/회원가입/request-fields.adoc[]
+include::{snippets}/signup/http-request.adoc[]
+include::{snippets}/signup/httpie-request.adoc[]
+Body
+include::{snippets}/signup/request-fields.adoc[]
+
 === 응답
-include::{snippets}/회원가입/http-response.adoc[]
-include::{snippets}/회원가입/response-body.adoc[]
+include::{snippets}/signup/http-response.adoc[]
+include::{snippets}/signup/response-body.adoc[]
+
+== 이메일 중복체크
+=== 요청
+include::{snippets}/checkEmail/http-request.adoc[]
+include::{snippets}/checkEmail/httpie-request.adoc[]
+
+QueryParameter
+include::{snippets}/checkEmail/query-parameters.adoc[]
+
+=== 응답
+include::{snippets}/checkEmail/http-response.adoc[]
+
+== 닉네임 중복체크
+=== 요청
+include::{snippets}/checkNickName/http-request.adoc[]
+include::{snippets}/checkNickName/httpie-request.adoc[]
+
+QueryParameter
+include::{snippets}/checkNickName/query-parameters.adoc[]
+
+=== 응답
+include::{snippets}/checkNickName/http-response.adoc[]

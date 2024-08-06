@@ -7,7 +7,7 @@ import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.UserPrTagEntity;
 import com.boardgo.domain.user.repository.UserPrTagRepository;
 import com.boardgo.domain.user.repository.UserRepository;
-import com.boardgo.domain.user.service.UserUseCase;
+import com.boardgo.domain.user.service.UserCommandUseCase;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserCommandServiceV1Test extends IntegrationTestSupport {
 
-    @Autowired private UserUseCase userUseCase;
+    @Autowired private UserCommandUseCase userCommandUseCase;
     @Autowired private UserRepository userRepository;
     @Autowired private UserPrTagRepository userPrTagRepository;
 
@@ -27,7 +27,7 @@ public class UserCommandServiceV1Test extends IntegrationTestSupport {
         SignupRequest signupRequest =
                 new SignupRequest("aa@aa.aa", "nickname", "password", List.of("prTag1", "prTag2"));
         // when
-        Long signupUserId = userUseCase.signup(signupRequest);
+        Long signupUserId = userCommandUseCase.signup(signupRequest);
         // then
         List<UserPrTagEntity> userPrTagEntities =
                 userPrTagRepository.findByUserInfoId(signupUserId);
@@ -45,7 +45,7 @@ public class UserCommandServiceV1Test extends IntegrationTestSupport {
         // given
         SignupRequest signupRequest = new SignupRequest("aa@aa.aa", "nickname", "password", null);
         // when
-        Long signupUserId = userUseCase.signup(signupRequest);
+        Long signupUserId = userCommandUseCase.signup(signupRequest);
         // then
         UserInfoEntity userInfoEntity = userRepository.findById(signupUserId).get();
 

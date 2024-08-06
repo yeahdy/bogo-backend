@@ -33,7 +33,7 @@ repositories {
 }
 
 ext {
-    set('snippetsDir', file("build/generated-snippets"))
+    set('snippetsDir', file('build/generated-snippets'))
 }
 
 
@@ -74,6 +74,7 @@ dependencies {
 
     // MapStruct
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    implementation "org.projectlombok:lombok-mapstruct-binding:0.2.0"
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
     // Docs
@@ -91,6 +92,13 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    doFirst {
+        println snippetsDir
+        def snippetsDirFile = file(snippetsDir)
+        if (!snippetsDirFile.exists()) {
+            snippetsDirFile.mkdirs()
+        }
+    }
     outputs.dir snippetsDir
     finalizedBy jacocoTestReport // report is always generated after tests run
 }
@@ -100,6 +108,13 @@ asciidoctor {
     inputs.dir snippetsDir
     configurations 'asciidoctorExt'
     dependsOn test
+
+    doFirst {
+        def snippetsDirFile = file(snippetsDir)
+        if (!snippetsDirFile.exists()) {
+            snippetsDirFile.mkdirs()
+        }
+    }
 }
 
 
@@ -155,6 +170,7 @@ sourceSets {
 //gradle clean 시, Q Class 디렉토리까지 삭제하도록 설정
 clean {
     delete file(generated)
+    delete file("out")
 }
 
 tasks.named('asciidoctor') {

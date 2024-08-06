@@ -3,7 +3,7 @@ package com.boardgo.domain.user.controller;
 import static com.boardgo.common.constant.HeaderConstant.*;
 
 import com.boardgo.domain.user.controller.dto.SignupRequest;
-import com.boardgo.domain.user.service.UserUseCase;
+import com.boardgo.domain.user.service.UserCommandUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SignupControllerV1 {
 
-    private final UserUseCase userUseCase;
+    private final UserCommandUseCase userCommandUseCase;
 
     @PostMapping(value = "/signup", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> signup(@Valid @RequestBody SignupRequest signupRequest) {
-        userUseCase.signup(signupRequest);
+        userCommandUseCase.signup(signupRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

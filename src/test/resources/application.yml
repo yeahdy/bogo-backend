@@ -19,3 +19,6 @@ spring:
     origins: "*"
     methods: "*"
     headers: "*"
+logging:
+  level:
+    root: info

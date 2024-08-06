@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserCommandServiceV1 implements UserUseCase {
+public class UserCommandCommandServiceV1 implements UserCommandUseCase {
     private final UserRepository userRepository;
     private final UserPrTagRepository userPrTagRepository;
     private final UserInfoMapper userInfoMapper;
