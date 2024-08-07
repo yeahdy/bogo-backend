@@ -177,11 +177,27 @@ tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     dependsOn test
 
+    doFirst {
+        delete file('src/main/resources/static/docs')
+    }
+
     copy {
         from asciidoctor.outputDir
         into 'src/main/resources/static/docs'
     }
 
+}
+
+tasks.register('createDocument', Copy) {
+    dependsOn asciidoctor
+
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static")
+}
+
+// build 전 createDocument(REST Docs 문서화) 실행!
+build {
+    dependsOn createDocument
 }
 
 jacocoTestReport {
@@ -231,6 +247,7 @@ tasks.configureEach {
         mustRunAfter(tasks.processTestResources)
         mustRunAfter(tasks.jacocoTestReport)
         mustRunAfter(tasks.asciidoctor)
+        mustRunAfter(tasks.createDocument)
     }
 }
 

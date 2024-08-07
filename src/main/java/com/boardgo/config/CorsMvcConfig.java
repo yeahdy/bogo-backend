@@ -1,4 +1,4 @@
-package com.boardgo.common.config;
+package com.boardgo.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +23,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOriginPatterns(corsOrigins)
                 .allowedHeaders(corsHeaders)
-                .allowedMethods(corsMethods);
+                .allowedMethods(corsMethods)
+                .allowCredentials(true);
     }
 }

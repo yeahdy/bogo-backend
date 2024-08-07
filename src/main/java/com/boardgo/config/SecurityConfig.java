@@ -1,4 +1,4 @@
-package com.boardgo.common.config;
+package com.boardgo.config;
 
 import static com.boardgo.common.constant.HeaderConstant.*;
 
@@ -84,7 +84,7 @@ public class SecurityConfig {
                                         .requestMatchers(
                                                 "/signup",
                                                 "/login",
-                                                "/docs/*",
+                                                "/docs/**",
                                                 "/check-email",
                                                 "/check-nickname")
                                         .permitAll()
