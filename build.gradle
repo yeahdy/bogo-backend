@@ -180,19 +180,13 @@ tasks.named('asciidoctor') {
     doFirst {
         delete file('src/main/resources/static/docs')
     }
-
-    copy {
-        from asciidoctor.outputDir
-        into 'src/main/resources/static/docs'
-    }
-
 }
 
 tasks.register('createDocument', Copy) {
     dependsOn asciidoctor
 
     from file("build/docs/asciidoc")
-    into file("src/main/resources/static")
+    into file("src/main/resources/static/docs")
 }
 
 // build 전 createDocument(REST Docs 문서화) 실행!
