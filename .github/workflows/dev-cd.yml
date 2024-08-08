@@ -45,11 +45,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-  
 
-      - name: 프로젝트 테스트 및 문서화
-        run: ./gradlew clean createDocument
-
       - name: 프로젝트 빌드
-        run: ./gradlew -Dspring.profiles.active=dev build -x test
+        run: ./gradlew clean -Dspring.profiles.active=dev build
         
       - name: AWS credential 설정
         uses: aws-actions/configure-aws-credentials@v4
