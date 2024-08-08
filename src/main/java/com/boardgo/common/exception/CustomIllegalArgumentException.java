@@ -10,4 +10,9 @@ public class CustomIllegalArgumentException extends IllegalArgumentException {
         super(message);
         this.errorCode = errorCode;
     }
+
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
 }

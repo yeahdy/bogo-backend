@@ -1,7 +1,7 @@
 package com.boardgo.domain.user.controller.dto;
 
 import com.boardgo.common.validator.annotation.ListInStringNotEmpty;
-import com.boardgo.domain.oauth2.entity.ProviderType;
+import com.boardgo.domain.user.entity.ProviderType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;

@@ -1,7 +1,8 @@
 package com.boardgo.integration.support;
 
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
@@ -14,12 +15,14 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @WithMockUser
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+@ActiveProfiles("test")
 public abstract class RestDocsTestSupport {
 
     protected RequestSpecification spec;

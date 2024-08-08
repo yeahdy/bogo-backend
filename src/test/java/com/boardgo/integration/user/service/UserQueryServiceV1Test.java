@@ -1,9 +1,9 @@
 package com.boardgo.integration.user.service;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
-import com.boardgo.domain.oauth2.entity.ProviderType;
 import com.boardgo.domain.user.controller.dto.EmailRequest;
 import com.boardgo.domain.user.controller.dto.NickNameRequest;
+import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.UserQueryUseCase;

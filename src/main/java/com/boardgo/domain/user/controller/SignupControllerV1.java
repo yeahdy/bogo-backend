@@ -1,6 +1,6 @@
 package com.boardgo.domain.user.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
 
 import com.boardgo.domain.user.controller.dto.SignupRequest;
 import com.boardgo.domain.user.service.UserCommandUseCase;
@@ -8,8 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,10 +24,10 @@ public class SignupControllerV1 {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping(value = "/test/login", headers = API_VERSION_HEADER1)
-    public ResponseEntity<String> testLogin() {
-
-        String id = SecurityContextHolder.getContext().getAuthentication().getName();
-        return ResponseEntity.ok("Success!!\n id : " + id);
+    @PostMapping(value = "/social/signup", headers = API_VERSION_HEADER1)
+    public ResponseEntity<Void> socialSignup() {
+        // TODO. 소셜회원가입 닉네임, PR 태그 설정
+        //       userUseCase.socialSignup();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

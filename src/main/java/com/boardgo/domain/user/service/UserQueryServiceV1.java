@@ -1,11 +1,11 @@
 package com.boardgo.domain.user.service;
 
-import static com.boardgo.common.exception.advice.dto.ErrorCode.*;
+import static com.boardgo.common.exception.advice.dto.ErrorCode.DUPLICATE_DATA;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
-import com.boardgo.domain.oauth2.entity.ProviderType;
 import com.boardgo.domain.user.controller.dto.EmailRequest;
 import com.boardgo.domain.user.controller.dto.NickNameRequest;
+import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

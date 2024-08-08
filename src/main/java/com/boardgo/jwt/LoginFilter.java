@@ -1,8 +1,10 @@
 package com.boardgo.jwt;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
-import static com.boardgo.common.constant.TimeConstant.*;
+import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static com.boardgo.common.constant.HeaderConstant.BEARER;
+import static com.boardgo.common.constant.TimeConstant.ACCESS_TOKEN_DURATION;
 
+import com.boardgo.domain.user.entity.RoleType;
 import com.boardgo.domain.user.service.dto.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -55,7 +57,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
 
-        String role = auth.getAuthority();
+        RoleType role = RoleType.toRoleType(auth.getAuthority());
 
         String token = jwtUtil.createJwt(id, role, ACCESS_TOKEN_DURATION);
 

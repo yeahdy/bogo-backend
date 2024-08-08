@@ -1,7 +1,6 @@
 package com.boardgo.domain.user.entity;
 
 import com.boardgo.common.domain.BaseEntity;
-import com.boardgo.domain.oauth2.entity.ProviderType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -30,10 +29,10 @@ public class UserInfoEntity extends BaseEntity {
     @Column(length = 100, nullable = false)
     private String email;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100)
     private String password;
 
-    @Column(length = 50, nullable = false, unique = true)
+    @Column(length = 50, unique = true)
     private String nickName;
 
     @Column(name = "provider_type", length = 20, nullable = false)
@@ -61,5 +60,9 @@ public class UserInfoEntity extends BaseEntity {
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
     }
 }

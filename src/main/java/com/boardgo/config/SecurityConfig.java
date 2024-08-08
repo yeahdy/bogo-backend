@@ -1,11 +1,14 @@
 package com.boardgo.config;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
 
 import com.boardgo.jwt.JWTFilter;
 import com.boardgo.jwt.JWTUtil;
 import com.boardgo.jwt.LoginFilter;
+import com.boardgo.oauth2.handler.OAuth2SuccessHandler;
+import com.boardgo.oauth2.service.CustomOAuth2UserService;
 import java.util.Collections;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +27,10 @@ import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
 
@@ -37,12 +42,6 @@ public class SecurityConfig {
 
     @Value("${spring.cors.headers}")
     private String corsHeaders;
-
-    public SecurityConfig(
-            AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
-        this.authenticationConfiguration = authenticationConfiguration;
-        this.jwtUtil = jwtUtil;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -70,6 +69,10 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
+                .headers(
+                        headersConfigurer -> {
+                            headersConfigurer.frameOptions(frame -> frame.sameOrigin());
+                        })
                 .sessionManagement(
                         sessionManagerConfigurer ->
                                 sessionManagerConfigurer.sessionCreationPolicy(
@@ -83,14 +86,35 @@ public class SecurityConfig {
                         authorize ->
                                 authorize
                                         .requestMatchers(
+                                                "/h2-console/**",
                                                 "/signup",
                                                 "/login",
                                                 "/docs/**",
                                                 "/check-email",
-                                                "/check-nickname")
+                                                "/check-nickname",
+                                                "/login/oauth2/**",
+                                                "/token")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())
+                .oauth2Login(
+                        (oauth2) -> {
+                            oauth2.authorizationEndpoint(
+                                            authorizationEndpointConfig -> {
+                                                authorizationEndpointConfig.baseUri(
+                                                        "/oauth2/authorization");
+                                            })
+                                    .redirectionEndpoint(
+                                            redirectionEndpointConfig ->
+                                                    redirectionEndpointConfig.baseUri(
+                                                            "/login/oauth2/code/*"))
+                                    .userInfoEndpoint(
+                                            userInfoEndpointConfig -> {
+                                                userInfoEndpointConfig.userService(
+                                                        customOAuth2UserService);
+                                            })
+                                    .successHandler(oAuth2SuccessHandler);
+                        })
                 .build();
     }
 

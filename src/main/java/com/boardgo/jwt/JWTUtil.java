@@ -1,5 +1,6 @@
 package com.boardgo.jwt;
 
+import com.boardgo.domain.user.entity.RoleType;
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -49,7 +50,7 @@ public class JWTUtil {
                 .before(new Date());
     }
 
-    public String createJwt(Long id, String role, Long expiredSecond) {
+    public String createJwt(Long id, RoleType role, Long expiredSecond) {
 
         Date issuedAt = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
         Date expiration =
