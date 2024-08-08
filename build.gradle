@@ -122,8 +122,15 @@ bootJar {
     archiveFileName = 'application.jar'
     dependsOn asciidoctor
     from("${asciidoctor.outputDir}/html5") {
-        into "static/docs"
+        into "build/resources/main/static/docs"
     }
+}
+
+tasks.register('createDocument', Copy) {
+    dependsOn asciidoctor
+
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
 }
 
 compileJava {
@@ -179,13 +186,6 @@ tasks.named('asciidoctor') {
     doFirst {
         delete file('src/main/resources/static/docs')
     }
-}
-
-tasks.register('createDocument', Copy) {
-    dependsOn asciidoctor
-
-    from file("build/docs/asciidoc")
-    into file("src/main/resources/static/docs")
 }
 
 // build 전 createDocument(REST Docs 문서화) 실행!

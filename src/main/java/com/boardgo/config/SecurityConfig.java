@@ -139,7 +139,6 @@ public class SecurityConfig {
                                 "/static/**",
                                 "/css/**",
                                 "/js/**",
-                                "/img/**",
-                                "/src/docs/**");
+                                "/img/**");
     }
 }
