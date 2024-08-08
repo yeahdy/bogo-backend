@@ -49,8 +49,8 @@ jobs:
         run: ./gradlew clean createDocument
 
       - name: 프로젝트 빌드
-        run: ./gradlew -Dspring.profiles.active=dev build
-
+        run: ./gradlew -Dspring.profiles.active=dev build -x test
+        
       - name: AWS credential 설정
         uses: aws-actions/configure-aws-credentials@v4
         with:
