@@ -16,18 +16,21 @@ public class WebConfig implements WebMvcConfigurer {
     private final LoggingInterceptor interceptor;
 
     private static final String[] INTERCEPTOR_WHITE_LIST = {
-        "/css/**", "/js/**", "/images/**", "/fonts/**", "/*.html"
+        "/css/**", "/js/**", "/images/**", "/fonts/**", "/*.html", "/error", "/favicon.ico"
     };
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(interceptor).order(1).excludePathPatterns(INTERCEPTOR_WHITE_LIST);
+        registry.addInterceptor(interceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(INTERCEPTOR_WHITE_LIST);
     }
 
     @Bean
     public FilterRegistrationBean<LoggingFilter> addFilterSupporter() {
         FilterRegistrationBean<LoggingFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new LoggingFilter());
+        registrationBean.addUrlPatterns("/*");
         return registrationBean;
     }
 }

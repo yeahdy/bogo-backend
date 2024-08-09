@@ -1,11 +1,13 @@
 package com.boardgo.config.interceptor;
 
 import com.boardgo.config.log.LoggingMessage;
+import com.boardgo.domain.user.service.dto.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -51,7 +53,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
                                 .toString();
         }
 
-        loggingMessage.preLoggingMessage(paramsStr);
+        loggingMessage.preLoggingMessage(paramsStr, getUserId());
         return true;
     }
 
@@ -63,12 +65,13 @@ public class LoggingInterceptor implements HandlerInterceptor {
             ModelAndView modelAndView)
             throws IOException {
         ContentCachingResponseWrapper cachingResponseWrapper =
-                (ContentCachingResponseWrapper) response;
+                getContentCachingResponseWrapper(response);
 
         new LoggingMessage(request.getMethod(), request.getRequestURI())
                 .postLoggingMessage(
                         response.getStatus(),
-                        new String(cachingResponseWrapper.getContentAsByteArray()));
+                        new String(cachingResponseWrapper.getContentAsByteArray()),
+                        getUserId());
         cachingResponseWrapper.copyBodyToResponse();
     }
 
@@ -93,8 +96,23 @@ public class LoggingInterceptor implements HandlerInterceptor {
         return request.getClass().getName().contains("SecurityContextHolderAwareRequestWrapper");
     }
 
-    // TODO 회원 ID 가져오기 구현 필요
-    private String getUserName(HttpServletRequest request) {
-        return "MY NAME IS DUMMY";
+    /** SecurityContext 에서 회원 확인 */
+    private Long getUserId() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof CustomUserDetails) {
+            CustomUserDetails user = (CustomUserDetails) principal;
+            return user.getId();
+        }
+        return null;
+    }
+
+    /** ResponseBody 캐싱래퍼 */
+    private ContentCachingResponseWrapper getContentCachingResponseWrapper(
+            HttpServletResponse response) {
+        if (response instanceof ContentCachingResponseWrapper) {
+            return (ContentCachingResponseWrapper) response;
+        } else {
+            return new ContentCachingResponseWrapper(response);
+        }
     }
 }

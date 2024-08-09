@@ -26,7 +26,7 @@ public class CommonRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public ServletInputStream getInputStream() {
-        ByteArrayInputStream newInputStream =
+        final ByteArrayInputStream newInputStream =
                 new ByteArrayInputStream(this.REQUEST_DATA.getBytes());
         return new ServletInputStream() {
 

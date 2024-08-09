@@ -12,15 +12,14 @@ public class LoggingMessage {
         this.url = url;
     }
 
-    public void preLoggingMessage(String paramsStr) {
+    public void preLoggingMessage(String paramsStr, Long userId) {
         final String PRE_TEMPLATE = "PRE --- http method %s, uri:[%s], parameter: %s, userId:[%s]";
-        OutputLog.logInfo(String.format(PRE_TEMPLATE, method, url, paramsStr, "I'M DUMMY!"));
+        OutputLog.logInfo(String.format(PRE_TEMPLATE, method, url, paramsStr, userId));
     }
 
-    public void postLoggingMessage(int status, String response) {
+    public void postLoggingMessage(int status, String response, Long userId) {
         final String POST_TEMPLATE =
                 "POST --- http method %s, uri:[%s], status: %d ,response: %s, userId:[%s]";
-        OutputLog.logInfo(
-                String.format(POST_TEMPLATE, method, url, status, response, "I'M DUMMY!"));
+        OutputLog.logInfo(String.format(POST_TEMPLATE, method, url, status, response, userId));
     }
 }
