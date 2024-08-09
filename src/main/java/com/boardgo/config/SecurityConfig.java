@@ -86,6 +86,8 @@ public class SecurityConfig {
                         authorize ->
                                 authorize
                                         .requestMatchers(
+                                                "/",
+                                                "/**",
                                                 "/h2-console/**",
                                                 "/signup",
                                                 "/login",
