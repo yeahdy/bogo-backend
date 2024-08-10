@@ -12,11 +12,12 @@ public interface MeetingMapper {
     MeetingMapper INSTANCE = Mappers.getMapper(MeetingMapper.class);
 
     default MeetingEntity toMeetingEntity(
-            MeetingCreateRequest meetingCreateRequest, String imageUri) {
+            MeetingCreateRequest meetingCreateRequest, Long userId, String imageUri) {
 
         return MeetingEntity.builder()
                 .state(MeetingState.PROGRESS)
                 .hit(0L)
+                .userId(userId)
                 .title(meetingCreateRequest.title())
                 .city(meetingCreateRequest.city())
                 .type(MeetingType.valueOf(meetingCreateRequest.type().toUpperCase()))

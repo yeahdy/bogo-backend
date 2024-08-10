@@ -48,7 +48,7 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
                         List.of(1L, 2L),
                         List.of(1L, 2L));
         MeetingEntity meetingEntity =
-                meetingMapper.toMeetingEntity(meetingCreateRequest, "thumbnail");
+                meetingMapper.toMeetingEntity(meetingCreateRequest, 1L, "thumbnail");
         List<Long> boardGameIdList = List.of(1L, 2L);
         List<Long> genreIdList = List.of(3L, 4L);
         // when
@@ -65,6 +65,7 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
         assertThat(meeting.getThumbnail()).isEqualTo(meetingEntity.getThumbnail());
         assertThat(meeting.getHit()).isEqualTo(0L);
         assertThat(meeting.getState()).isEqualTo(MeetingState.PROGRESS);
+        assertThat(meeting.getUserId()).isEqualTo(1L);
 
         List<MeetingGameMatchEntity> gameMatchEntityList =
                 meetingGameMatchRepository.findByMeetingId(meetingId);

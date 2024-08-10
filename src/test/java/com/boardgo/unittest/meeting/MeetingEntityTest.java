@@ -34,7 +34,7 @@ public class MeetingEntityTest {
                         List.of(1L, 2L));
         // when
         MeetingEntity meetingEntity =
-                meetingMapper.toMeetingEntity(meetingCreateRequest, "imageUrl");
+                meetingMapper.toMeetingEntity(meetingCreateRequest, 1L, "imageUrl");
         // then
         assertThat(meetingEntity.getCity()).isEqualTo(meetingCreateRequest.city());
         assertThat(meetingEntity.getContent()).isEqualTo(meetingCreateRequest.content());
@@ -46,6 +46,7 @@ public class MeetingEntityTest {
         assertThat(meetingEntity.getLongitude()).isEqualTo(meetingCreateRequest.longitude());
         assertThat(meetingEntity.getLatitude()).isEqualTo(meetingCreateRequest.latitude());
         assertThat(meetingEntity.getHit()).isEqualTo(0L);
+        assertThat(meetingEntity.getUserId()).isEqualTo(1L);
         assertThat(meetingEntity.getState()).isEqualTo(MeetingState.PROGRESS);
     }
 }

@@ -10,6 +10,7 @@ import com.boardgo.domain.mapper.MeetingMapper;
 import com.boardgo.domain.meeting.controller.dto.MeetingCreateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +27,10 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
     @Override
     public Long create(MeetingCreateRequest meetingCreateRequest, MultipartFile imageFile) {
         String imageUri = registerImage(meetingCreateRequest, imageFile);
-        MeetingEntity meetingEntity = meetingMapper.toMeetingEntity(meetingCreateRequest, imageUri);
+        Long userId =
+                Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+        MeetingEntity meetingEntity =
+                meetingMapper.toMeetingEntity(meetingCreateRequest, userId, imageUri);
         return meetingCreateFactory.create(
                 meetingEntity,
                 meetingCreateRequest.boardGameIdList(),

@@ -30,6 +30,8 @@ public class MeetingEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column private Long userId;
+
     @Column(length = 64, nullable = false)
     private String title;
 
@@ -69,6 +71,7 @@ public class MeetingEntity extends BaseEntity {
     @Builder
     private MeetingEntity(
             Long id,
+            Long userId,
             String title,
             String content,
             MeetingType type,
@@ -82,6 +85,7 @@ public class MeetingEntity extends BaseEntity {
             Long hit,
             MeetingState state) {
         this.id = id;
+        this.userId = userId;
         this.title = title;
         this.content = content;
         this.type = type;
