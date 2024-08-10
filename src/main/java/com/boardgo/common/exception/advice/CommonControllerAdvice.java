@@ -1,11 +1,13 @@
 package com.boardgo.common.exception.advice;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.common.exception.advice.dto.ErrorCode;
 import com.boardgo.common.exception.advice.dto.ErrorResponse;
 import com.boardgo.common.exception.advice.dto.FieldErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
@@ -63,6 +65,18 @@ public class CommonControllerAdvice {
     public ResponseEntity<ErrorResponse> CustomIllegalArgumentException(
             CustomIllegalArgumentException exception) {
         return ResponseEntity.badRequest()
+                .body(
+                        ErrorResponse.builder()
+                                .errorCode(exception.getErrorCode())
+                                .messages(exception.getMessage())
+                                .build());
+    }
+
+    /*************** NotFound */
+    @ExceptionHandler(CustomNoSuchElementException.class)
+    public ResponseEntity<ErrorResponse> customNoSuchElementException(
+            CustomNoSuchElementException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND.value())
                 .body(
                         ErrorResponse.builder()
                                 .errorCode(exception.getErrorCode())

@@ -1,6 +1,6 @@
 package com.boardgo.convention;
 
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
@@ -62,6 +62,8 @@ public class NamingConventionTest {
                 .haveSimpleNameContaining("Service")
                 .orShould()
                 .haveSimpleNameContaining("UseCase")
+                .orShould()
+                .haveSimpleNameContaining("Factory")
                 .check(javaClasses);
     }
 

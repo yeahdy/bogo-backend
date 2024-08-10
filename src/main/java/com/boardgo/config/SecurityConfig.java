@@ -16,7 +16,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -86,9 +85,9 @@ public class SecurityConfig {
                         authorize ->
                                 authorize
                                         .requestMatchers(
-                                                "/",
-                                                "/**",
                                                 "/h2-console/**",
+                                                "/resources/**",
+                                                "/error",
                                                 "/signup",
                                                 "/login",
                                                 "/docs/**",
@@ -129,19 +128,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web ->
-                web.ignoring()
-                        .requestMatchers(
-                                "/lib/**",
-                                "/resources/**",
-                                "/static/**",
-                                "/css/**",
-                                "/js/**",
-                                "/img/**",
-                                "/docs/**");
     }
 }

@@ -38,3 +38,19 @@ include::{snippets}/checkNickName/query-parameters.adoc[]
 
 === 응답
 include::{snippets}/checkNickName/http-response.adoc[]
+
+== 미팅 생성하기
+=== 요청
+include::{snippets}/meeting-create/http-request.adoc[]
+include::{snippets}/meeting-create/httpie-request.adoc[]
+Multipart/form-data
+include::{snippets}/meeting-create/request-parts.adoc[]
+meetingCreateRequest
+include::{snippets}/meeting-create/request-part-meetingCreateRequest-fields.adoc[]
+
+=== 응답
+include::{snippets}/meeting-create/http-response.adoc[]
+
+Response Header
+include::{snippets}/meeting-create/response-headers.adoc[]
+
