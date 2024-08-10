@@ -8,7 +8,6 @@ import com.boardgo.oauth2.dto.OAuth2CreateUserRequest;
 import com.boardgo.oauth2.dto.OAuth2Response;
 import com.boardgo.oauth2.dto.OAuth2UserResponseFactory;
 import com.boardgo.oauth2.entity.CustomOAuth2User;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -39,19 +38,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         UserInfoEntity userInfoEntity =
                 userRepository
-                        .findByEmailAndProviderType(oAuth2Response.getEmail(), providerType)
-                        .orElse(
-                                createUser(
-                                        new OAuth2CreateUserRequest(
-                                                oAuth2Response.getEmail(), providerType)));
-        // FIXME: 소셜회원ID로 저장하기
-        if (Objects.isNull(userInfoEntity)) {
-            userInfoEntity =
-                    createUser(
-                            new OAuth2CreateUserRequest(oAuth2Response.getEmail(), providerType));
-        } else {
-            userInfoEntity.updateEmail(oAuth2Response.getEmail());
-        }
+                        .findByEmailAndProviderType(oAuth2Response.getProviderId(), providerType)
+                        .orElseGet(
+                                () ->
+                                        createUser(
+                                                new OAuth2CreateUserRequest(
+                                                        oAuth2Response.getProviderId(),
+                                                        providerType)));
 
         return CustomOAuth2User.create(userInfoEntity, oAuth2User.getAttributes());
     }

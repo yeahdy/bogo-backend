@@ -1,12 +1,13 @@
 <included>
     <property name="LOG_PATH" value=".logs"/>
-    <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{30} - %msg%n"/>
+    <property name="PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}} %-4relative [%thread] %-5level %logger{30} - %msg%n"/>
 
     <springProfile name="info-logging">
         <appender name="INFO-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_PATH}/LogFile.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>logFile_%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+                <fileNamePattern>logFile_%d{yyyy-MM-dd, ${logback.timezone:-Asia/Seoul}}_%i.log.gz</fileNamePattern>
                 <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                     <maxFileSize>10MB</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>

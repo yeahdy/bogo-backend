@@ -26,7 +26,7 @@ public class UserInfoEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100, nullable = false, unique = true)
     private String email;
 
     @Column(length = 100)
@@ -60,9 +60,5 @@ public class UserInfoEntity extends BaseEntity {
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
-    }
-
-    public void updateEmail(String email) {
-        this.email = email;
     }
 }
