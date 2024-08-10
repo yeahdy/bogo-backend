@@ -2,6 +2,7 @@ package com.boardgo.common.exception.advice;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNoSuchElementException;
+import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.common.exception.advice.dto.ErrorCode;
 import com.boardgo.common.exception.advice.dto.ErrorResponse;
 import com.boardgo.common.exception.advice.dto.FieldErrorResponse;
@@ -77,6 +78,18 @@ public class CommonControllerAdvice {
     public ResponseEntity<ErrorResponse> customNoSuchElementException(
             CustomNoSuchElementException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND.value())
+                .body(
+                        ErrorResponse.builder()
+                                .errorCode(exception.getErrorCode())
+                                .messages(exception.getMessage())
+                                .build());
+    }
+
+    /** 데이터가 존재하지 않을 경우 * */
+    @ExceptionHandler(CustomNullPointException.class)
+    public ResponseEntity<ErrorResponse> CustomNullPointException(
+            CustomNullPointException exception) {
+        return ResponseEntity.badRequest()
                 .body(
                         ErrorResponse.builder()
                                 .errorCode(exception.getErrorCode())

@@ -3,7 +3,7 @@ package com.boardgo.domain.user.controller;
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
 import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
 import static com.boardgo.common.constant.HeaderConstant.BEARER;
-import static com.boardgo.common.utils.CookieUtil.getCookie;
+import static com.boardgo.common.utils.CookieUtils.getCookie;
 import static com.boardgo.common.utils.CustomStringUtils.existString;
 
 import com.boardgo.common.exception.CookieNotFoundException;

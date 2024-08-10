@@ -1,5 +1,6 @@
 package com.boardgo.domain.user.service.dto;
 
+import com.boardgo.domain.user.entity.RoleType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,10 +15,9 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         Collection<GrantedAuthority> collection = new ArrayList<>();
 
-        collection.add((GrantedAuthority) () -> "USER");
+        collection.add((GrantedAuthority) () -> RoleType.USER.getCode());
 
         return collection;
     }

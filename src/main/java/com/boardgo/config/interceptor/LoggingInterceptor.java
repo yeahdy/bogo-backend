@@ -6,7 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
@@ -98,7 +100,12 @@ public class LoggingInterceptor implements HandlerInterceptor {
 
     /** SecurityContext 에서 회원 확인 */
     private Long getUserId() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (Objects.isNull(authentication)) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
         if (principal instanceof CustomUserDetails) {
             CustomUserDetails user = (CustomUserDetails) principal;
             return user.getId();

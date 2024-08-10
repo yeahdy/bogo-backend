@@ -2,7 +2,7 @@ package com.boardgo.oauth2.handler;
 
 import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
 import static com.boardgo.common.constant.TimeConstant.ACCESS_TOKEN_DURATION;
-import static com.boardgo.common.utils.CookieUtil.createCookies;
+import static com.boardgo.common.utils.CookieUtils.createCookies;
 import static com.boardgo.common.utils.CustomStringUtils.existString;
 
 import com.boardgo.jwt.JWTUtil;

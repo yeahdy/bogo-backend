@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import java.util.Optional;
 
-public abstract class CookieUtil {
+public abstract class CookieUtils {
 
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();

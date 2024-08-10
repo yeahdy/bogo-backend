@@ -2,6 +2,7 @@ package com.boardgo.config;
 
 import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
 
+import com.boardgo.domain.user.entity.RoleType;
 import com.boardgo.jwt.JWTFilter;
 import com.boardgo.jwt.JWTUtil;
 import com.boardgo.jwt.LoginFilter;
@@ -87,6 +88,7 @@ public class SecurityConfig {
                                         .requestMatchers(
                                                 "/h2-console/**",
                                                 "/resources/**",
+                                                "/health",
                                                 "/error",
                                                 "/signup",
                                                 "/login",
@@ -96,6 +98,8 @@ public class SecurityConfig {
                                                 "/login/oauth2/**",
                                                 "/token")
                                         .permitAll()
+                                        .requestMatchers("/social/signup")
+                                        .hasRole(RoleType.USER.toString())
                                         .anyRequest()
                                         .authenticated())
                 .oauth2Login(

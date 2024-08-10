@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum RoleType {
-    USER("USER", "일반회원 권한"),
-    GUEST("GUEST", "비회원 권한");
+    USER("ROLE_USER", "일반회원 권한"),
+    GUEST("ROLE_GUEST", "비회원 권한");
 
     private final String code;
     private final String displayName;
