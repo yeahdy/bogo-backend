@@ -1,8 +1,10 @@
 package com.boardgo.domain.user.controller;
 
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
+import static com.boardgo.common.utils.SecurityUtils.currentUserId;
 
 import com.boardgo.domain.user.controller.dto.SignupRequest;
+import com.boardgo.domain.user.controller.dto.SocialSignupRequest;
 import com.boardgo.domain.user.service.UserCommandUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +27,9 @@ public class SignupControllerV1 {
     }
 
     @PostMapping(value = "/social/signup", headers = API_VERSION_HEADER1)
-    public ResponseEntity<Void> socialSignup() {
-        // TODO. 소셜회원가입 닉네임, PR 태그 설정
-        //       userUseCase.socialSignup();
+    public ResponseEntity<Void> socialSignup(
+            @Valid @RequestBody SocialSignupRequest socialSignupRequest) {
+        userCommandUseCase.socialSignup(socialSignupRequest, currentUserId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

@@ -1,8 +1,12 @@
 package com.boardgo.integration.user.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.user.controller.dto.SignupRequest;
+import com.boardgo.domain.user.controller.dto.SocialSignupRequest;
+import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.UserPrTagEntity;
 import com.boardgo.domain.user.repository.UserPrTagRepository;
@@ -10,8 +14,13 @@ import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.UserCommandUseCase;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserCommandServiceV1Test extends IntegrationTestSupport {
@@ -51,5 +60,55 @@ public class UserCommandServiceV1Test extends IntegrationTestSupport {
 
         assertThat(userInfoEntity.getEmail()).isEqualTo(signupRequest.email());
         assertThat(userInfoEntity.getNickName()).isEqualTo(signupRequest.nickName());
+    }
+
+    @ParameterizedTest
+    @DisplayName("소셜 회원가입은 회원이 존재하지 않을 경우 예외를 발생한다")
+    @MethodSource("getSocialSignupRequest")
+    void 소셜_회원가입은_회원이_존재하지_않을_경우_예외를_발생한다(SocialSignupRequest request) {
+        // given
+        Long userId = 5626262352L;
+        // when
+        // then
+        assertThatThrownBy(() -> userCommandUseCase.socialSignup(request, userId))
+                .isInstanceOf(CustomNullPointException.class);
+    }
+
+    @ParameterizedTest
+    @DisplayName("소셜 회원가입은 닉네임과 PR태그를 저장한다")
+    @MethodSource("getSocialSignupRequest")
+    void 소셜_회원가입은_닉네임과_PR태그를_저장한다(SocialSignupRequest request) {
+        // given
+        UserInfoEntity userInfoEntity =
+                userRepository.save(
+                        UserInfoEntity.builder()
+                                .email("abc123@google.com")
+                                .password(null)
+                                .nickName(null)
+                                .providerType(ProviderType.GOOGLE)
+                                .deleteAt(null)
+                                .build());
+
+        // when
+        userCommandUseCase.socialSignup(request, userInfoEntity.getId());
+
+        // then
+        UserInfoEntity selectedUserInfo = userRepository.findById(userInfoEntity.getId()).get();
+        assertThat(selectedUserInfo.getNickName()).isEqualTo(request.nickName());
+
+        List<UserPrTagEntity> prTagEntityList =
+                userPrTagRepository.findByUserInfoId(userInfoEntity.getId());
+        assertThat(prTagEntityList.size()).isPositive();
+
+        List<String> prTags =
+                prTagEntityList.stream()
+                        .map(UserPrTagEntity::getTagName)
+                        .collect(Collectors.toList());
+        assertThat(prTags).isEqualTo(request.prTags());
+    }
+
+    private static Stream<Arguments> getSocialSignupRequest() {
+        return Stream.of(
+                Arguments.of(new SocialSignupRequest("Bread", List.of("ENFJ", "HAPPY", "SLEEP"))));
     }
 }

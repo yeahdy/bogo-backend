@@ -1,5 +1,6 @@
 package com.boardgo.common.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
@@ -13,7 +14,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
 
-    @CreatedDate private LocalDateTime createdAt;
+    @CreatedDate
+    @Column(
+            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP",
+            nullable = false,
+            updatable = false)
+    private LocalDateTime createdAt;
 
     @LastModifiedDate private LocalDateTime updatedAt;
 }

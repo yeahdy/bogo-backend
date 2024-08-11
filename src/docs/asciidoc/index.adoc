@@ -54,3 +54,10 @@ include::{snippets}/meeting-create/http-response.adoc[]
 Response Header
 include::{snippets}/meeting-create/response-headers.adoc[]
 
+== 소셜 회원가입
+=== 요청
+Body
+include::{snippets}/social-signup/request-fields.adoc[]
+
+=== 응답
+include::{snippets}/signup/http-response.adoc[]
