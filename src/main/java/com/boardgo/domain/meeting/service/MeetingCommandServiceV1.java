@@ -33,6 +33,7 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
                 meetingMapper.toMeetingEntity(meetingCreateRequest, userId, imageUri);
         return meetingCreateFactory.create(
                 meetingEntity,
+                userId,
                 meetingCreateRequest.boardGameIdList(),
                 meetingCreateRequest.genreIdList());
     }

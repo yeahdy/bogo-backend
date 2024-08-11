@@ -8,12 +8,17 @@ import com.boardgo.domain.meeting.controller.dto.MeetingCreateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingGameMatchEntity;
 import com.boardgo.domain.meeting.entity.MeetingGenreMatchEntity;
+import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.MeetingState;
 import com.boardgo.domain.meeting.entity.MeetingType;
 import com.boardgo.domain.meeting.repository.MeetingGameMatchRepository;
 import com.boardgo.domain.meeting.repository.MeetingGenreMatchRepository;
+import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.service.MeetingCreateFactory;
+import com.boardgo.domain.user.entity.ProviderType;
+import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +31,8 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
     @Autowired private MeetingRepository meetingRepository;
     @Autowired private MeetingGameMatchRepository meetingGameMatchRepository;
     @Autowired private MeetingGenreMatchRepository meetingGenreMatchRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private MeetingParticipantRepository meetingParticipantRepository;
 
     @Test
     @DisplayName("모임을 저장할 수 있다")
@@ -34,6 +41,16 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
         MeetingMapper meetingMapper = MeetingMapper.INSTANCE;
 
         LocalDateTime now = LocalDateTime.now();
+
+        UserInfoEntity savedUser =
+                userRepository.save(
+                        UserInfoEntity.builder()
+                                .nickName("nickName")
+                                .email("aa@aa.com")
+                                .password("password")
+                                .providerType(ProviderType.LOCAL)
+                                .build());
+
         MeetingCreateRequest meetingCreateRequest =
                 new MeetingCreateRequest(
                         "content",
@@ -48,11 +65,13 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
                         List.of(1L, 2L),
                         List.of(1L, 2L));
         MeetingEntity meetingEntity =
-                meetingMapper.toMeetingEntity(meetingCreateRequest, 1L, "thumbnail");
+                meetingMapper.toMeetingEntity(meetingCreateRequest, savedUser.getId(), "thumbnail");
         List<Long> boardGameIdList = List.of(1L, 2L);
         List<Long> genreIdList = List.of(3L, 4L);
         // when
-        Long meetingId = meetingCreateFactory.create(meetingEntity, boardGameIdList, genreIdList);
+        Long meetingId =
+                meetingCreateFactory.create(
+                        meetingEntity, savedUser.getId(), boardGameIdList, genreIdList);
         // then
         MeetingEntity meeting = meetingRepository.findById(meetingId).get();
         assertThat(meeting.getMeetingDatetime()).isEqualTo(now);
@@ -65,12 +84,16 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
         assertThat(meeting.getThumbnail()).isEqualTo(meetingEntity.getThumbnail());
         assertThat(meeting.getHit()).isEqualTo(0L);
         assertThat(meeting.getState()).isEqualTo(MeetingState.PROGRESS);
-        assertThat(meeting.getUserId()).isEqualTo(1L);
+        assertThat(meeting.getUserId()).isEqualTo(savedUser.getId());
 
         List<MeetingGameMatchEntity> gameMatchEntityList =
                 meetingGameMatchRepository.findByMeetingId(meetingId);
         List<MeetingGenreMatchEntity> genreMatchEntityList =
                 meetingGenreMatchRepository.findByMeetingId(meetingId);
+        MeetingParticipantEntity participantEntity =
+                meetingParticipantRepository.findByMeetingId(meeting.getId()).getFirst();
+
+        assertThat(participantEntity.getUserInfoId()).isEqualTo(savedUser.getId());
         assertThat(gameMatchEntityList).extracting("boardGameId").contains(1L, 2L);
         assertThat(genreMatchEntityList).extracting("boardGameGenreId").contains(3L, 4L);
     }
@@ -79,6 +102,15 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
     @DisplayName("boardGameId가 Null인 경우 에러가 발생한다")
     void boardGameId가_Null인_경우_에러가_발생한다() {
         // given
+
+        UserInfoEntity savedUser =
+                userRepository.save(
+                        UserInfoEntity.builder()
+                                .nickName("nickName")
+                                .email("aa@aa.com")
+                                .password("password")
+                                .providerType(ProviderType.LOCAL)
+                                .build());
         LocalDateTime now = LocalDateTime.now();
         MeetingEntity meetingEntity =
                 MeetingEntity.builder()
@@ -97,7 +129,8 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
         // then
         assertThatThrownBy(
                         () -> {
-                            meetingCreateFactory.create(meetingEntity, null, genreIdList);
+                            meetingCreateFactory.create(
+                                    meetingEntity, savedUser.getId(), null, genreIdList);
                         })
                 .isInstanceOf(CustomIllegalArgumentException.class);
     }
@@ -105,7 +138,16 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("genreId가 Null인 경우 에러가 발생한다")
     void genreId가_Null인_경우_에러가_발생한다() {
+
         // given
+        UserInfoEntity savedUser =
+                userRepository.save(
+                        UserInfoEntity.builder()
+                                .nickName("nickName")
+                                .email("aa@aa.com")
+                                .password("password")
+                                .providerType(ProviderType.LOCAL)
+                                .build());
         LocalDateTime now = LocalDateTime.now();
         MeetingEntity meetingEntity =
                 MeetingEntity.builder()
@@ -124,7 +166,8 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
         // then
         assertThatThrownBy(
                         () -> {
-                            meetingCreateFactory.create(meetingEntity, boardGameIdList, null);
+                            meetingCreateFactory.create(
+                                    meetingEntity, savedUser.getId(), boardGameIdList, null);
                         })
                 .isInstanceOf(CustomIllegalArgumentException.class);
     }
