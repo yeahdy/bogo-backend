@@ -16,7 +16,14 @@ public class WebConfig implements WebMvcConfigurer {
     private final LoggingInterceptor interceptor;
 
     private static final String[] INTERCEPTOR_WHITE_LIST = {
-        "/css/**", "/js/**", "/images/**", "/fonts/**", "/*.html", "/error", "/favicon.ico"
+        "/css/**",
+        "/js/**",
+        "/images/**",
+        "/fonts/**",
+        "/*.html",
+        "/error",
+        "/favicon.ico",
+        "/h2-console/**"
     };
 
     @Override

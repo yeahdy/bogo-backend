@@ -1,7 +1,6 @@
 package com.boardgo.domain.user.service;
 
 import static com.boardgo.common.exception.advice.dto.ErrorCode.DUPLICATE_DATA;
-import static com.boardgo.common.exception.advice.dto.ErrorCode.NULL_ERROR;
 import static com.boardgo.common.utils.ValidateUtils.validateNickname;
 import static com.boardgo.common.utils.ValidateUtils.validatePrTag;
 
@@ -45,10 +44,7 @@ public class UserCommandCommandServiceV1 implements UserCommandUseCase {
         UserInfoEntity userInfoEntity =
                 userRepository
                         .findById(userId)
-                        .orElseThrow(
-                                () ->
-                                        new CustomNullPointException(
-                                                NULL_ERROR.getCode(), "회원이 존재하지 않습니다"));
+                        .orElseThrow(() -> new CustomNullPointException("회원이 존재하지 않습니다"));
 
         if (userRepository.existsByNickName(signupRequest.nickName())) {
             throw new CustomIllegalArgumentException(DUPLICATE_DATA.getCode(), "중복된 닉네임입니다.");

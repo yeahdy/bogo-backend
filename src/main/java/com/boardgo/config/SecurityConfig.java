@@ -98,7 +98,7 @@ public class SecurityConfig {
                                                 "/login/oauth2/**",
                                                 "/token")
                                         .permitAll()
-                                        .requestMatchers("/social/signup")
+                                        .requestMatchers("/social/signup", "/personal-info")
                                         .hasRole(RoleType.USER.toString())
                                         .anyRequest()
                                         .authenticated())

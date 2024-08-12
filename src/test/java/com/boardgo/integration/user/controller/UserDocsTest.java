@@ -10,6 +10,7 @@ import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
@@ -25,7 +26,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
+import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 
 public class UserDocsTest extends RestDocsTestSupport {
 
@@ -100,9 +103,7 @@ public class UserDocsTest extends RestDocsTestSupport {
                 .log()
                 .all()
                 .header(API_VERSION_HEADER, "1")
-                .header(
-                        AUTHORIZATION,
-                        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwicm9sZSI6IlVTRVIiLCJpYXQiOjE3MjMwMDQ2MjgsImV4cCI6MTcyNDczMjYyOH0.wLeDqO_VIrgtvn47LLIlfjpiEaJDb2XOrsPpEgg5N4s")
+                .header(AUTHORIZATION, testAccessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .filter(
@@ -126,5 +127,46 @@ public class UserDocsTest extends RestDocsTestSupport {
         return requestFields(
                 fieldWithPath("nickName").type(STRING).description("닉네임"),
                 fieldWithPath("prTags").type(ARRAY).description("PR태그").optional());
+    }
+
+    @Test
+    @DisplayName("내 개인정보 조회하기")
+    void 내_개인정보_조회하기() {
+        userRepository.save(
+                UserInfoEntity.builder()
+                        .email("53634734")
+                        .password(null)
+                        .nickName("Bread")
+                        .profileImage("앙버터프레즐.jpg")
+                        .providerType(ProviderType.KAKAO)
+                        .build());
+
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .filter(
+                        document(
+                                "personal-info",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                getPersonalInfoResponseFieldsSnippet()))
+                .when()
+                .get("/personal-info")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    private ResponseFieldsSnippet getPersonalInfoResponseFieldsSnippet() {
+        return responseFields(
+                fieldWithPath("email").type(JsonFieldType.STRING).description("회원 고유 ID"),
+                fieldWithPath("nickName").type(JsonFieldType.STRING).description("닉네임"),
+                fieldWithPath("profileImage").type(JsonFieldType.STRING).description("프로필 이미지"),
+                fieldWithPath("averageGrade").type(JsonFieldType.NUMBER).description("평균 별점"),
+                fieldWithPath("prTags")
+                        .type(JsonFieldType.ARRAY)
+                        .description("PR태그 (없을 경우 빈배열 반환)"));
     }
 }

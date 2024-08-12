@@ -1,9 +1,11 @@
 package com.boardgo.domain.user.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
+import static com.boardgo.common.utils.SecurityUtils.currentUserId;
 
 import com.boardgo.domain.user.controller.dto.EmailRequest;
 import com.boardgo.domain.user.controller.dto.NickNameRequest;
+import com.boardgo.domain.user.controller.dto.UserPersonalInfoResponse;
 import com.boardgo.domain.user.service.UserQueryUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +34,11 @@ public class UserControllerV1 {
     @GetMapping(value = "/me", headers = API_VERSION_HEADER1)
     public ResponseEntity<String> me() {
         return ResponseEntity.ok(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @GetMapping(value = "/personal-info", headers = API_VERSION_HEADER1)
+    public ResponseEntity<UserPersonalInfoResponse> getPersonalInfo() {
+        UserPersonalInfoResponse personalInfo = userQueryUseCase.getPersonalInfo(currentUserId());
+        return ResponseEntity.ok(personalInfo);
     }
 }

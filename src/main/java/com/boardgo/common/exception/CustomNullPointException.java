@@ -1,18 +1,16 @@
 package com.boardgo.common.exception;
 
+import static com.boardgo.common.exception.advice.dto.ErrorCode.NULL_ERROR;
+
 import lombok.Getter;
 
 @Getter
 public class CustomNullPointException extends NullPointerException {
     private final int errorCode;
 
-    public CustomNullPointException(int errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public CustomNullPointException(int errorCode, String message) {
+    public CustomNullPointException(String message) {
         super(message);
-        this.errorCode = errorCode;
+        this.errorCode = NULL_ERROR.getCode();
     }
 
     @Override

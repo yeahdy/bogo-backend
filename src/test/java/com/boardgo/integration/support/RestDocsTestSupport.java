@@ -1,7 +1,8 @@
 package com.boardgo.integration.support;
 
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;

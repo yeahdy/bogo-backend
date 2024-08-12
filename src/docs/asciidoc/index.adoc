@@ -54,10 +54,36 @@ include::{snippets}/meeting-create/http-response.adoc[]
 Response Header
 include::{snippets}/meeting-create/response-headers.adoc[]
 
+== 소셜 로그인 토큰 발급
+=== 요청
+.curl-request
+include::{snippets}/token/curl-request.adoc[]
+.header
+include::{snippets}/token/request-headers.adoc[]
+.cookie
+include::{snippets}/token/request-cookies.adoc[]
+
+=== 응답
+.header
+include::{snippets}/token/response-headers.adoc[]
+
 == 소셜 회원가입
 === 요청
-Body
+.curl-request
+include::{snippets}/social-signup/curl-request.adoc[]
+.body
 include::{snippets}/social-signup/request-fields.adoc[]
 
 === 응답
-include::{snippets}/signup/http-response.adoc[]
+include::{snippets}/social-signup/http-response.adoc[]
+
+== 개인정보 조회
+=== 요청
+.curl-request
+include::{snippets}/personal-info/curl-request.adoc[]
+.http-request
+include::{snippets}/personal-info/http-request.adoc[]
+
+=== 응답
+include::{snippets}/personal-info/http-response.adoc[]
+include::{snippets}/personal-info/response-fields.adoc[]
