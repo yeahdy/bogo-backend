@@ -1,4 +1,4 @@
-package com.boardgo.domain.meeting.controller.dto;
+package com.boardgo.domain.meeting.controller.request;
 
 import com.boardgo.common.validator.annotation.AllowedValues;
 import com.fasterxml.jackson.annotation.JsonFormat;

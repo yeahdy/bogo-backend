@@ -45,10 +45,10 @@ public class S3ServiceTest {
         when(amazonS3Client.putObject(any(PutObjectRequest.class))).thenReturn(putObjectResult);
 
         // when
-        String uploadedFileName = s3Service.upload(fileName, mockMultipartFile);
+        String uploadedFileName = s3Service.upload("meeting", fileName, mockMultipartFile);
 
         // then
         verify(amazonS3Client).putObject(any(PutObjectRequest.class));
-        Assertions.assertThat(uploadedFileName).isEqualTo(fileName + ".png");
+        Assertions.assertThat(uploadedFileName).isEqualTo("meeting/" + fileName + ".png");
     }
 }

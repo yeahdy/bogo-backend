@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.domain.mapper.MeetingMapper;
-import com.boardgo.domain.meeting.controller.dto.MeetingCreateRequest;
+import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingGameMatchEntity;
 import com.boardgo.domain.meeting.entity.MeetingGenreMatchEntity;

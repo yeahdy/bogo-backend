@@ -15,9 +15,13 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+@Order(1)
 @Component
+@Profile({"dev", "local", "test"})
 @RequiredArgsConstructor
 public class BoardGameInitializer implements ApplicationRunner {
     private final UserRepository userRepository;
@@ -38,14 +42,14 @@ public class BoardGameInitializer implements ApplicationRunner {
         for (int j = 0; j < 10; j++) {
             boardGameGenreEntities.add(
                     boardGameGenreRepository.save(
-                            BoardGameGenreEntity.builder().genre("장르" + j).build()));
+                            BoardGameGenreEntity.builder().genre("genre" + j).build()));
         }
 
         // 보드게임
         for (int i = 0; i < 10; i++) {
             BoardGameEntity entity =
                     BoardGameEntity.builder()
-                            .title("title" + i)
+                            .title("boardTitle" + i)
                             .minPeople(1 + i)
                             .maxPeople(3 + i)
                             .maxPlaytime(100 + i)
@@ -53,7 +57,8 @@ public class BoardGameInitializer implements ApplicationRunner {
                             .thumbnail("thumbnail" + i)
                             .build();
             BoardGameEntity savedBoardGame = boardGameRepository.save(entity);
-            for (BoardGameGenreEntity boardGameGenreEntity : boardGameGenreEntities) {
+            for (int j = 0; j <= i; j++) {
+                BoardGameGenreEntity boardGameGenreEntity = boardGameGenreEntities.get(j);
                 genreMatchRepository.save(
                         GameGenreMatchEntity.builder()
                                 .boardGameId(savedBoardGame.getId())
@@ -71,7 +76,7 @@ public class BoardGameInitializer implements ApplicationRunner {
         return UserInfoEntity.builder()
                 .email("imhappy" + i + "@naver.com")
                 .password("password" + i)
-                .nickName("nickName" + i)
+                .nickName("해피니스" + i)
                 .profileImage("행복한내사진.jpg")
                 .providerType(ProviderType.LOCAL)
                 .build();

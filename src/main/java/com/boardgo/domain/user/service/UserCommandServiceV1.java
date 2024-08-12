@@ -1,8 +1,7 @@
 package com.boardgo.domain.user.service;
 
-import static com.boardgo.common.exception.advice.dto.ErrorCode.DUPLICATE_DATA;
-import static com.boardgo.common.utils.ValidateUtils.validateNickname;
-import static com.boardgo.common.utils.ValidateUtils.validatePrTag;
+import static com.boardgo.common.exception.advice.dto.ErrorCode.*;
+import static com.boardgo.common.utils.ValidateUtils.*;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
@@ -24,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserCommandCommandServiceV1 implements UserCommandUseCase {
+public class UserCommandServiceV1 implements UserCommandUseCase {
     private final UserRepository userRepository;
     private final UserPrTagRepository userPrTagRepository;
     private final UserInfoMapper userInfoMapper;
@@ -32,6 +31,7 @@ public class UserCommandCommandServiceV1 implements UserCommandUseCase {
 
     @Override
     public Long signup(SignupRequest signupRequest) {
+        validateNickNameAndPrTag(signupRequest.nickName(), signupRequest.prTags());
         UserInfoEntity userInfo = userInfoMapper.toUserInfoEntity(signupRequest);
         userInfo.encodePassword(passwordEncoder);
         UserInfoEntity savedUser = userRepository.save(userInfo);
@@ -49,15 +49,18 @@ public class UserCommandCommandServiceV1 implements UserCommandUseCase {
         if (userRepository.existsByNickName(signupRequest.nickName())) {
             throw new CustomIllegalArgumentException(DUPLICATE_DATA.getCode(), "중복된 닉네임입니다.");
         }
-        validateNickname(signupRequest.nickName());
-
-        List<String> prTagList = signupRequest.prTags();
-        if (!Objects.isNull(prTagList)) {
-            validatePrTag(prTagList);
-        }
+        validateNickNameAndPrTag(signupRequest.nickName(), signupRequest.prTags());
 
         userInfoEntity.updateNickname(signupRequest.nickName());
-        userPrTagRepository.bulkInsertPrTags(prTagList, userInfoEntity.getId());
+        userPrTagRepository.bulkInsertPrTags(signupRequest.prTags(), userInfoEntity.getId());
         return userInfoEntity.getId();
+    }
+
+    private void validateNickNameAndPrTag(String nickName, List<String> prTags) {
+        validateNickname(nickName);
+
+        if (!Objects.isNull(prTags)) {
+            validatePrTag(prTags);
+        }
     }
 }

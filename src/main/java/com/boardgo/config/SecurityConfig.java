@@ -1,6 +1,6 @@
 package com.boardgo.config;
 
-import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static com.boardgo.common.constant.HeaderConstant.*;
 
 import com.boardgo.domain.user.entity.RoleType;
 import com.boardgo.jwt.JWTFilter;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,6 +24,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
@@ -42,6 +44,26 @@ public class SecurityConfig {
 
     @Value("${spring.cors.headers}")
     private String corsHeaders;
+
+    AntPathRequestMatcher[] permitAllUri = {
+        AntPathRequestMatcher.antMatcher("/h2-console/**"),
+        AntPathRequestMatcher.antMatcher("/resources/**"),
+        AntPathRequestMatcher.antMatcher("/health"),
+        AntPathRequestMatcher.antMatcher("/error"),
+        AntPathRequestMatcher.antMatcher("/signup"),
+        AntPathRequestMatcher.antMatcher("/login"),
+        AntPathRequestMatcher.antMatcher("/docs/**"),
+        AntPathRequestMatcher.antMatcher("/check-email"),
+        AntPathRequestMatcher.antMatcher("/check-nickname"),
+        AntPathRequestMatcher.antMatcher("/login/oauth2/**"),
+        AntPathRequestMatcher.antMatcher("/token"),
+        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/meeting")
+    };
+
+    AntPathRequestMatcher[] permitUserUri = {
+        AntPathRequestMatcher.antMatcher("/social/signup"),
+        AntPathRequestMatcher.antMatcher("/personal-info")
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -85,20 +107,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize ->
                                 authorize
-                                        .requestMatchers(
-                                                "/h2-console/**",
-                                                "/resources/**",
-                                                "/health",
-                                                "/error",
-                                                "/signup",
-                                                "/login",
-                                                "/docs/**",
-                                                "/check-email",
-                                                "/check-nickname",
-                                                "/login/oauth2/**",
-                                                "/token")
+                                        .requestMatchers(permitAllUri)
                                         .permitAll()
-                                        .requestMatchers("/social/signup", "/personal-info")
+                                        .requestMatchers(permitUserUri)
                                         .hasRole(RoleType.USER.toString())
                                         .anyRequest()
                                         .authenticated())

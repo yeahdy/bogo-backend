@@ -22,14 +22,14 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String upload(String fileName, MultipartFile multipartFile) {
+    public String upload(String folderName, String fileName, MultipartFile multipartFile) {
         String extensionFromFile = FileUtils.getExtensionFromFile(multipartFile);
         log.info("{}", fileName);
-        return upload(fileName, multipartFile, extensionFromFile);
+        return upload(folderName, fileName, multipartFile, extensionFromFile);
     }
 
-    private String upload(String fileName, MultipartFile file, String extend) {
-        String newFileName = fileName + extend;
+    private String upload(String folderName, String fileName, MultipartFile file, String extend) {
+        String newFileName = folderName + "/" + fileName + extend;
         try {
             put(file, newFileName);
         } catch (IOException e) {
