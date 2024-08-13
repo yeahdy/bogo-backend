@@ -16,7 +16,8 @@ public class MeetingGameMatchJdbcRepositoryImpl implements MeetingGameMatchJdbcR
 
     @Override
     public void bulkInsert(List<Long> gameIdList, Long meetingId) {
-        String sql = "INSERT INTO meeting_game_match(meeting_id, board_game_id) VALUES (?, ?)";
+        String sql =
+                "INSERT IGNORE INTO meeting_game_match(meeting_id, board_game_id) VALUES (?, ?)";
 
         jdbcTemplate.batchUpdate(
                 sql,

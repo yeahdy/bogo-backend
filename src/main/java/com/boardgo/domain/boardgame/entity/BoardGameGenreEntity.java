@@ -22,7 +22,8 @@ public class BoardGameGenreEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column private String genre;
+    @Column(unique = true)
+    private String genre;
 
     @Builder
     private BoardGameGenreEntity(Long id, String genre) {

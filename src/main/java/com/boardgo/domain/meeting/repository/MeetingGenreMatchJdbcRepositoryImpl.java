@@ -16,7 +16,7 @@ public class MeetingGenreMatchJdbcRepositoryImpl implements MeetingGenreMatchJdb
     @Override
     public void bulkInsert(List<Long> genreIdList, Long meetingId) {
         String sql =
-                "INSERT INTO meeting_genre_match (meeting_id, board_game_genre_id) VALUES (?, ?)";
+                "INSERT IGNORE INTO meeting_genre_match (meeting_id, board_game_genre_id) VALUES (?, ?)";
 
         jdbcTemplate.batchUpdate(
                 sql,

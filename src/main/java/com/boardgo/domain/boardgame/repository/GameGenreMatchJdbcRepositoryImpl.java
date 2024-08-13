@@ -17,7 +17,7 @@ public class GameGenreMatchJdbcRepositoryImpl implements GameGenreMatchJdbcRepos
     public void bulkInsert(Long boardGameId, List<Long> genreIdList) {
 
         String sql =
-                "INSERT INTO game_genre_match (board_game_id, board_game_genre_id) VALUES (?, ?)";
+                "INSERT IGNORE INTO game_genre_match (board_game_id, board_game_genre_id) VALUES (?, ?)";
 
         jdbcTemplate.batchUpdate(
                 sql,

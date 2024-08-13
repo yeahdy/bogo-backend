@@ -18,7 +18,7 @@ public class UserPrTagJdbcRepositoryImpl implements UserPrTagJdbcRepository {
         if (prTags == null) {
             return;
         }
-        String sql = "INSERT INTO user_pr_tag (tag_name, user_info_id) VALUES (?, ?)";
+        String sql = "INSERT IGNORE INTO user_pr_tag (tag_name, user_info_id) VALUES (?, ?)";
 
         jdbcTemplate.batchUpdate(
                 sql,

@@ -17,7 +17,7 @@ public class BoardGameGenreJdbcRepositoryImpl implements BoardGameGenreJdbcRepos
     @Override
     public void bulkInsert(List<String> genres) {
 
-        String sql = "INSERT INTO board_game_genre (genre) VALUES (?)";
+        String sql = "INSERT IGNORE INTO board_game_genre (genre) VALUES (?)";
 
         jdbcTemplate.batchUpdate(
                 sql,
