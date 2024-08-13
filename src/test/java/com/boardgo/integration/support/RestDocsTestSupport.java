@@ -1,9 +1,10 @@
 package com.boardgo.integration.support;
 
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
@@ -31,8 +32,11 @@ public abstract class RestDocsTestSupport {
 
     @LocalServerPort protected int port;
 
+    protected ObjectMapper objectMapper = new ObjectMapper();
+
     @BeforeEach
     public void setUp(RestDocumentationContextProvider restDocumentation) {
+        objectMapper.registerModule(new JavaTimeModule());
         this.spec =
                 new RequestSpecBuilder()
                         .addFilter(

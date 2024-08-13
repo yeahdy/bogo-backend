@@ -102,3 +102,14 @@ include::{snippets}/meeting-list/http-response.adoc[]
 Response Body
 include::{snippets}/meeting-list/response-fields.adoc[]
 
+== 보드게임 등록
+=== 요청
+include::{snippets}/boardgame-create/http-request.adoc[]
+include::{snippets}/boardgame-create/httpie-request.adoc[]
+Multipart/form-data
+include::{snippets}/boardgame-create/request-parts.adoc[]
+boardGameCreateListRequest
+include::{snippets}/boardgame-create/request-part-boardGameCreateListRequest-fields.adoc[]
+
+=== 응답
+include::{snippets}/boardgame-create/http-response.adoc[]

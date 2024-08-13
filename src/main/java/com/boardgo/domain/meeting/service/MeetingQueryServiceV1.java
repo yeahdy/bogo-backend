@@ -6,8 +6,10 @@ import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MeetingQueryServiceV1 implements MeetingQueryUseCase {
     private final MeetingRepository meetingRepository;

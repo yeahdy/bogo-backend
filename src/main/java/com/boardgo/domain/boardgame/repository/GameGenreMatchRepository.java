@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface GameGenreMatchRepository extends JpaRepository<GameGenreMatchEntity, Long> {
+public interface GameGenreMatchRepository
+        extends JpaRepository<GameGenreMatchEntity, Long>, GameGenreMatchJdbcRepository {
 
     @Query(
             "SELECT g.boardGameGenreId FROM GameGenreMatchEntity g WHERE g.boardGameId IN :boardGameIdList")

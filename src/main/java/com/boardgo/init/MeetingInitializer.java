@@ -19,7 +19,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Order(3)
-@Profile({"dev", "local", "test"})
+@Profile({"dev", "local"})
 @Component
 @RequiredArgsConstructor
 public class MeetingInitializer implements ApplicationRunner {

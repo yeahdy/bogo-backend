@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 
 @Order(1)
 @Component
-@Profile({"dev", "local", "test"})
+@Profile({"dev", "local"})
 @RequiredArgsConstructor
 public class BoardGameInitializer implements ApplicationRunner {
     private final UserRepository userRepository;

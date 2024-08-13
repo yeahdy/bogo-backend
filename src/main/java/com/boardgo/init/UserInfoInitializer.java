@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Order(2)
 @Component
-@Profile({"dev", "local", "test"})
+@Profile({"dev", "local"})
 @RequiredArgsConstructor
 public class UserInfoInitializer implements ApplicationRunner {
 

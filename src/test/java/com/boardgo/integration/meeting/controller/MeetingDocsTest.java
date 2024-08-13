@@ -32,7 +32,6 @@ public class MeetingDocsTest extends RestDocsTestSupport {
     @DisplayName("사용자는 모임을 만들 수 있다")
     void 사용자는_모임을_만들_수_있다() throws JsonProcessingException {
         // 사용자 생성
-
         MeetingCreateRequest request =
                 new MeetingCreateRequest(
                         "Test Meeting",
