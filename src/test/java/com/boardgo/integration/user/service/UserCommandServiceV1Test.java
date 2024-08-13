@@ -111,4 +111,13 @@ public class UserCommandServiceV1Test extends IntegrationTestSupport {
         return Stream.of(
                 Arguments.of(new SocialSignupRequest("Bread", List.of("ENFJ", "HAPPY", "SLEEP"))));
     }
+
+    // TODO 회원 프로필 이미지, 닉네임, 비밀번호 는 변경할 수 있다
+
+    // TODO 프로필 이미지를 수정할 수 있다 (+기존의 이미지는 삭제된다)
+    // TODO 전달된 프로필 이미지가 없을 경우 기존의 이미지는 삭제된다
+
+    // TODO PR태그를 수정할 수 있다
+    // TODO 전달된 PR태그가 없을 경우 모두 삭제된다
+    // TODO 전달된 PR태그의 형식이 적절하지 못하면 에러가 발생하고 기존의 태그는 보존된다
 }

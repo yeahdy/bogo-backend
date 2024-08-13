@@ -1,13 +1,19 @@
 package com.boardgo.common.exception.advice;
 
+import static com.boardgo.common.exception.advice.dto.ErrorCode.INTERNAL_SERVER_ERROR;
+
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.common.exception.advice.dto.ErrorCode;
 import com.boardgo.common.exception.advice.dto.ErrorResponse;
 import com.boardgo.common.exception.advice.dto.FieldErrorResponse;
+import com.boardgo.config.log.OutputLog;
 import jakarta.validation.ConstraintViolationException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -18,6 +24,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 @RestControllerAdvice
+@Slf4j
 public class CommonControllerAdvice {
     /** Entity Validation Error */
     @ExceptionHandler({ConstraintViolationException.class, HandlerMethodValidationException.class})
@@ -87,7 +94,7 @@ public class CommonControllerAdvice {
 
     /** 데이터가 존재하지 않을 경우 * */
     @ExceptionHandler(CustomNullPointException.class)
-    public ResponseEntity<ErrorResponse> CustomNullPointException(
+    public ResponseEntity<ErrorResponse> customNullPointException(
             CustomNullPointException exception) {
         return ResponseEntity.badRequest()
                 .body(
@@ -95,5 +102,22 @@ public class CommonControllerAdvice {
                                 .errorCode(exception.getErrorCode())
                                 .messages(exception.getMessage())
                                 .build());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> exception(Exception exception) {
+        OutputLog.logError(getPrintStackTrace(exception));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(
+                        ErrorResponse.builder()
+                                .errorCode(INTERNAL_SERVER_ERROR.getCode())
+                                .messages(INTERNAL_SERVER_ERROR.getMessage())
+                                .build());
+    }
+
+    private String getPrintStackTrace(Exception e) {
+        StringWriter error = new StringWriter();
+        e.printStackTrace(new PrintWriter(error));
+        return error.toString();
     }
 }

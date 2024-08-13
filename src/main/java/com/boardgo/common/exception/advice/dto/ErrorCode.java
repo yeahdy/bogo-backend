@@ -10,13 +10,14 @@ public enum ErrorCode {
     TYPECASTING_ERROR(4003, "타입 캐스팅 변환에 실패했습니다"),
     NULL_ERROR(4004, "변수가 Null입니다"),
     COOKIE_NOT_FOUND(4005, "쿠키가 존재하지 않습니다"),
-    BAD_OAUTH2(4006, "OAuth2 인증 및 인가가 유효하지 않습니다"),
+    OAUTH2_ERROR(4006, "OAuth2 인증 및 인가가 유효하지 않습니다"),
+    S3_ERROR(4007, "Amazon S3 요청 중 예외가 발생했습니다"),
     BAD_REQUEST(400, "유효하지 않는 데이터 입니다."),
     UNAUTHORIZED(401, "권한이 존재하지 않습니다"),
     FORBIDDEN(403, "권한이 적절하지 않습니다"),
     NOT_FOUND(404, "존재하지 않는 URI 입니다"),
     ELEMENT_NOT_FOUND(4040, "존재하지 않는 리소스입니다."),
-    INTERNAL_SERVER_ERROR(500, "알 수 없는 서버 에러 입니다");
+    INTERNAL_SERVER_ERROR(4041, "알 수 없는 에러 입니다");
 
     private final int code;
     private final String message;

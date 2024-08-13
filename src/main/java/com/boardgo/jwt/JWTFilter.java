@@ -1,6 +1,7 @@
 package com.boardgo.jwt;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static com.boardgo.common.constant.HeaderConstant.BEARER;
 
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.service.dto.CustomUserDetails;

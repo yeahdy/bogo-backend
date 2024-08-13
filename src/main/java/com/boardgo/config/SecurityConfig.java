@@ -1,6 +1,6 @@
 package com.boardgo.config;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
 
 import com.boardgo.domain.user.entity.RoleType;
 import com.boardgo.jwt.JWTFilter;
@@ -63,7 +63,7 @@ public class SecurityConfig {
 
     AntPathRequestMatcher[] permitUserUri = {
         AntPathRequestMatcher.antMatcher("/social/signup"),
-        AntPathRequestMatcher.antMatcher("/personal-info")
+        AntPathRequestMatcher.antMatcher("/personal-info/**")
     };
 
     @Bean

@@ -44,13 +44,34 @@ include::{snippets}/signup/response-body.adoc[]
 == 개인정보 조회
 === 요청
 .curl-request
-include::{snippets}/personal-info/curl-request.adoc[]
+include::{snippets}/get-personal-info/curl-request.adoc[]
 .http-request
-include::{snippets}/personal-info/http-request.adoc[]
+include::{snippets}/get-personal-info/http-request.adoc[]
 
 === 응답
-include::{snippets}/personal-info/http-response.adoc[]
-include::{snippets}/personal-info/response-fields.adoc[]
+include::{snippets}/get-personal-info/http-response.adoc[]
+include::{snippets}/get-personal-info/response-fields.adoc[]
+
+== 개인정보 수정
+=== 요청
+.http-request
+include::{snippets}/patch-personal-info/request-fields.adoc[]
+
+=== 응답
+include::{snippets}/patch-personal-info/http-response.adoc[]
+
+== 프로필 수정
+./personal-info/profile
+
+== PR태그 수정
+=== 요청
+.curl-request
+include::{snippets}/patch-profile/curl-request.adoc[]
+.http-request
+include::{snippets}/patch-profile/request-parts.adoc[]
+
+=== 응답
+include::{snippets}/patch-profile/http-response.adoc[]
 
 == 이메일 중복체크
 === 요청

@@ -1,11 +1,11 @@
 package com.boardgo.common.utils;
 
-import static com.boardgo.common.exception.advice.dto.ErrorCode.*;
-
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.common.exception.CustomNullPointException;
+import com.boardgo.common.exception.CustomS3Exception;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,9 @@ public class S3Service {
         try {
             put(file, newFileName);
         } catch (IOException e) {
-            throw new CustomIllegalArgumentException(NULL_ERROR.getCode(), "File이 Null입니다.");
+            throw new CustomNullPointException("File이 Null입니다.");
+        } catch (SdkClientException sce) {
+            throw new CustomS3Exception(sce.getMessage());
         }
         return newFileName;
     }
@@ -46,5 +48,13 @@ public class S3Service {
         PutObjectRequest putObjectRequest =
                 new PutObjectRequest(bucket, fileName, file.getInputStream(), metadata);
         amazonS3Client.putObject(putObjectRequest);
+    }
+
+    public void deleteFile(String fileName) {
+        try {
+            amazonS3Client.deleteObject(bucket, fileName);
+        } catch (SdkClientException sce) {
+            throw new CustomS3Exception(sce.getMessage());
+        }
     }
 }

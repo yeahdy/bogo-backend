@@ -1,6 +1,7 @@
 package com.boardgo.domain.boardgame.service;
 
-import static com.boardgo.common.exception.advice.dto.ErrorCode.*;
+import static com.boardgo.common.constant.S3BucketConstant.BOARDGAME;
+import static com.boardgo.common.exception.advice.dto.ErrorCode.BAD_REQUEST;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.utils.FileUtils;
@@ -43,8 +44,7 @@ public class BoardGameCommandServiceV1 implements BoardGameCommandUseCase {
         for (int i = 0; i < requestList.size(); i++) {
             MultipartFile imageFile = imageFileList.get(i);
             String thumbnail =
-                    s3Service.upload(
-                            "boardgame", FileUtils.getUniqueFileName(imageFile), imageFile);
+                    s3Service.upload(BOARDGAME, FileUtils.getUniqueFileName(imageFile), imageFile);
 
             BoardGameCreateRequest boardGameCreateRequest = requestList.get(i);
 

@@ -2,7 +2,7 @@ package com.boardgo.unittest.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.boardgo.common.utils.StringUtils;
+import com.boardgo.common.utils.CustomStringUtils;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +17,7 @@ public class StringUtilsTest {
         List<String> list = Arrays.asList("ENFJ", " ", "나는 행복하다", "");
 
         // when
-        List<String> emptyAndSpaceList = StringUtils.removeEmptyAndSpace(list);
+        List<String> emptyAndSpaceList = CustomStringUtils.removeEmptyAndSpace(list);
 
         // then
         for (String data : emptyAndSpaceList) {
