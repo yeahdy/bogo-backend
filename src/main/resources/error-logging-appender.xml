@@ -13,7 +13,7 @@
             <file>${LOG_PATH}/errorFile.log</file>
 
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>errorFile_%d{yyyy-MM-dd, ${logback.timezone:-Asia/Seoul}}_%i.log.gz</fileNamePattern>
+                <fileNamePattern>errorFile_%d{yyyy-MM-dd, ${logback.timezone:-Asia/Seoul}}.log.gz</fileNamePattern>
                 <maxFileSize>100MB</maxFileSize>
                 <maxHistory>30</maxHistory>
             </rollingPolicy>
