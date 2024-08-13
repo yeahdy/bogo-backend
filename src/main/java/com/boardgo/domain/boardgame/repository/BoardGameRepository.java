@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface BoardGameRepository
-        extends JpaRepository<BoardGameEntity, Long>, BoardGameJdbcRepository {
+        extends JpaRepository<BoardGameEntity, Long>,
+                BoardGameJdbcRepository,
+                BoardGameDslRepository {
 
     @Query("SELECT b.id FROM BoardGameEntity b WHERE b.id IN :idList")
     List<Long> findByIdIn(@Param("idList") List<Long> idList);

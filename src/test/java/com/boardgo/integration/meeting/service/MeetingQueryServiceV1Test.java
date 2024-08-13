@@ -2,33 +2,19 @@ package com.boardgo.integration.meeting.service;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.boardgo.domain.boardgame.entity.BoardGameEntity;
-import com.boardgo.domain.boardgame.entity.BoardGameGenreEntity;
-import com.boardgo.domain.boardgame.entity.GameGenreMatchEntity;
-import com.boardgo.domain.boardgame.repository.BoardGameGenreRepository;
-import com.boardgo.domain.boardgame.repository.BoardGameRepository;
-import com.boardgo.domain.boardgame.repository.GameGenreMatchRepository;
-import com.boardgo.domain.mapper.MeetingMapper;
-import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
-import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
-import com.boardgo.domain.meeting.entity.ParticipantType;
 import com.boardgo.domain.meeting.repository.MeetingGameMatchRepository;
 import com.boardgo.domain.meeting.repository.MeetingGenreMatchRepository;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
-import com.boardgo.domain.meeting.service.MeetingCreateFactory;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
-import com.boardgo.domain.user.entity.ProviderType;
-import com.boardgo.domain.user.entity.UserInfoEntity;
-import com.boardgo.domain.user.repository.UserPrTagRepository;
-import com.boardgo.domain.user.repository.UserRepository;
+import com.boardgo.integration.init.TestBoardGameInitializer;
+import com.boardgo.integration.init.TestMeetingInitializer;
+import com.boardgo.integration.init.TestUserInfoInitializer;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,13 +28,9 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private MeetingGameMatchRepository meetingGameMatchRepository;
     @Autowired private MeetingGenreMatchRepository meetingGenreMatchRepository;
 
-    @Autowired private UserRepository userRepository;
-    @Autowired private BoardGameRepository boardGameRepository;
-    @Autowired private BoardGameGenreRepository boardGameGenreRepository;
-    @Autowired private GameGenreMatchRepository genreMatchRepository;
-    @Autowired private UserPrTagRepository userPrTagRepository;
-    @Autowired private MeetingCreateFactory meetingCreateFactory;
-    @Autowired private GameGenreMatchRepository gameGenreMatchRepository;
+    @Autowired private TestUserInfoInitializer testUserInfoInitializer;
+    @Autowired private TestBoardGameInitializer testBoardGameInitializer;
+    @Autowired private TestMeetingInitializer testMeetingInitializer;
 
     @Test
     @DisplayName("페이징하여 목록을 조회할 수 있다")
@@ -291,119 +273,8 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
     }
 
     private void initEssentialData() {
-        initBoardGameData();
-        initUserData();
-        initMeetingData();
-    }
-
-    private void initMeetingData() {
-        MeetingMapper meetingMapper = MeetingMapper.INSTANCE;
-
-        for (int i = 0; i < 30; i++) {
-            int limitNumber = Math.max(i % 10, 2);
-
-            long userId = (long) (i % 30) + 1;
-            long rotationNumber = (i % 10) + 1L;
-
-            List<Long> boardGameIdList = List.of(rotationNumber);
-            List<Long> genreIdList = gameGenreMatchRepository.findByBoardGameIdIn(boardGameIdList);
-            MeetingEntity meetingEntity =
-                    meetingMapper.toMeetingEntity(
-                            new MeetingCreateRequest(
-                                    "content" + rotationNumber,
-                                    "FREE",
-                                    limitNumber,
-                                    "title" + rotationNumber,
-                                    "city" + limitNumber,
-                                    "county" + limitNumber,
-                                    i + ".12321321",
-                                    i + ".787878",
-                                    LocalDateTime.now().plusDays(rotationNumber),
-                                    boardGameIdList,
-                                    genreIdList),
-                            userId,
-                            "thumbnail" + i);
-            Long savedMeetingId =
-                    meetingCreateFactory.create(
-                            meetingEntity, userId, boardGameIdList, genreIdList);
-
-            int participantLimit = Math.max(i % limitNumber, 1);
-
-            for (int j = 0; j < participantLimit; j++) {
-                MeetingParticipantEntity.MeetingParticipantEntityBuilder builder =
-                        MeetingParticipantEntity.builder();
-                if (j == 0) {
-                    builder.type(ParticipantType.LEADER);
-                } else {
-                    builder.type(ParticipantType.PARTICIPANT);
-                }
-                meetingParticipantRepository.save(
-                        builder.meetingId(savedMeetingId)
-                                .userInfoId((userId + j) % 30 + 1)
-                                .build());
-            }
-        }
-    }
-
-    private void initBoardGameData() {
-        // 보드게임 장르
-        List<BoardGameGenreEntity> boardGameGenreEntities = new ArrayList<>();
-        for (int j = 0; j < 10; j++) {
-            boardGameGenreEntities.add(
-                    boardGameGenreRepository.save(
-                            BoardGameGenreEntity.builder().genre("genre" + j).build()));
-        }
-
-        // 보드게임
-        for (int i = 0; i < 10; i++) {
-            BoardGameEntity entity =
-                    BoardGameEntity.builder()
-                            .title("boardTitle" + i)
-                            .minPeople(1 + i)
-                            .maxPeople(3 + i)
-                            .maxPlaytime(100 + i)
-                            .minPlaytime(10 + i)
-                            .thumbnail("thumbnail" + i)
-                            .build();
-            BoardGameEntity savedBoardGame = boardGameRepository.save(entity);
-            for (int j = 0; j <= i; j++) {
-                BoardGameGenreEntity boardGameGenreEntity = boardGameGenreEntities.get(j);
-                genreMatchRepository.save(
-                        GameGenreMatchEntity.builder()
-                                .boardGameId(savedBoardGame.getId())
-                                .boardGameGenreId(boardGameGenreEntity.getId())
-                                .build());
-            }
-        }
-    }
-
-    private void initUserData() {
-        for (int i = 0; i < 10; i++) {
-            userRepository.save(
-                    UserInfoEntity.builder()
-                            .email("local" + i + "@aa.com")
-                            .providerType(ProviderType.LOCAL)
-                            .nickName("nickName" + i)
-                            .password("password" + i)
-                            .build());
-        }
-        for (int i = 10; i < 20; i++) {
-            userRepository.save(
-                    UserInfoEntity.builder()
-                            .email("kakao" + i + "@aa.com")
-                            .providerType(ProviderType.KAKAO)
-                            .nickName("nickName" + i)
-                            .password("password" + i)
-                            .build());
-        }
-        for (int i = 20; i < 30; i++) {
-            userRepository.save(
-                    UserInfoEntity.builder()
-                            .email("google" + i + "@aa.com")
-                            .providerType(ProviderType.GOOGLE)
-                            .nickName("nickName" + i)
-                            .password("password" + i)
-                            .build());
-        }
+        testBoardGameInitializer.generateBoardGameData();
+        testUserInfoInitializer.generateUserData();
+        testMeetingInitializer.generateMeetingData();
     }
 }

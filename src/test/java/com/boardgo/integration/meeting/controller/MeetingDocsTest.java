@@ -9,9 +9,10 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
-import com.boardgo.domain.user.repository.UserRepository;
+import com.boardgo.integration.init.TestBoardGameInitializer;
+import com.boardgo.integration.init.TestMeetingInitializer;
+import com.boardgo.integration.init.TestUserInfoInitializer;
 import com.boardgo.integration.support.RestDocsTestSupport;
-import com.boardgo.jwt.JWTUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -25,8 +26,10 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 public class MeetingDocsTest extends RestDocsTestSupport {
-    @Autowired private JWTUtil jwtUtil;
-    @Autowired private UserRepository userRepository;
+
+    @Autowired private TestUserInfoInitializer testUserInfoInitializer;
+    @Autowired private TestBoardGameInitializer testBoardGameInitializer;
+    @Autowired private TestMeetingInitializer testMeetingInitializer;
 
     @Test
     @DisplayName("사용자는 모임을 만들 수 있다")
@@ -122,7 +125,7 @@ public class MeetingDocsTest extends RestDocsTestSupport {
     @Test
     @DisplayName("사용자는 모임 목록을 조회할 수 있다")
     void 사용자는_모임_목록을_조회할_수_있다() {
-
+        initEssentialData();
         given(this.spec)
                 .log()
                 .all()
@@ -260,5 +263,11 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                 .get("/meeting")
                 .then()
                 .statusCode(HttpStatus.OK.value());
+    }
+
+    private void initEssentialData() {
+        testBoardGameInitializer.generateBoardGameData();
+        testUserInfoInitializer.generateUserData();
+        testMeetingInitializer.generateMeetingData();
     }
 }

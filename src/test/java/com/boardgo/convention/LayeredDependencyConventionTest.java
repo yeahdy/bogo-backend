@@ -47,7 +47,7 @@ public class LayeredDependencyConventionTest {
                 .whereLayer("Service")
                 .mayOnlyBeAccessedByLayers("Controller", "JWT", "Common", "Config", "Init")
                 .whereLayer("Repository")
-                .mayOnlyBeAccessedByLayers("Service", "Init", "Controller")
+                .mayOnlyBeAccessedByLayers("Service", "Init", "Controller", "Mapper")
                 .check(javaClasses);
     }
 }

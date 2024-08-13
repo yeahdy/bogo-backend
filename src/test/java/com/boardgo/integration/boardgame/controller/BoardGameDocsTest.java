@@ -8,6 +8,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import com.boardgo.domain.boardgame.controller.request.BoardGameCreateRequest;
+import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.support.RestDocsTestSupport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.builder.MultiPartSpecBuilder;
@@ -16,9 +17,15 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 public class BoardGameDocsTest extends RestDocsTestSupport {
+
+    @Autowired TestBoardGameInitializer testBoardGameInitializer;
+
     @Test
     @DisplayName("사용자는 보드게임 데이터를 등록할 수 있다")
     void 사용자는_보드게임_데이터를_등록할_수_있다() throws JsonProcessingException {
@@ -91,5 +98,121 @@ public class BoardGameDocsTest extends RestDocsTestSupport {
                 .log()
                 .all()
                 .statusCode(201);
+    }
+
+    @Test
+    @DisplayName("사용자는 보드게임을 검색할 수 있다")
+    void 사용자는_보드게임을_검색할_수_있다() {
+        // given
+        testBoardGameInitializer.generateBoardGameData();
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .filter(
+                        document(
+                                "boardgame-list",
+                                queryParameters(
+                                        parameterWithName("count")
+                                                .description(
+                                                        "현재 검색 조건의 전체 개수(캐싱을 위함) 기존 요청에서 전체 개수를 가져올 수 있을 때 사용하시면 됩니다!")
+                                                .optional(),
+                                        parameterWithName("searchWord")
+                                                .description("검색어 (제목으로 검색합니다!)")
+                                                .optional(),
+                                        parameterWithName("page")
+                                                .description("페이지 위치 ex) 1, 2, 3 ...")
+                                                .optional(),
+                                        parameterWithName("size")
+                                                .description("페이지 크기 (만약을 대비해서)")
+                                                .optional()),
+                                responseFields(
+                                        fieldWithPath("content[]")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description("content")
+                                                .optional(),
+                                        fieldWithPath("content[].id")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("보드게임 ID"),
+                                        fieldWithPath("content[].title")
+                                                .type(JsonFieldType.STRING)
+                                                .description("보드게임 제목"),
+                                        fieldWithPath("content[].thumbnail")
+                                                .type(JsonFieldType.STRING)
+                                                .description("보드게임 썸네일 URI"),
+                                        fieldWithPath("content[].genres[]")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description("genre 데이터 배열"),
+                                        fieldWithPath("content[].genres[].id")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("genre id"),
+                                        fieldWithPath("content[].genres[].genre")
+                                                .type(JsonFieldType.STRING)
+                                                .description("genre id"),
+                                        fieldWithPath("totalElements")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("전체 개수 (요청 때 count에 넣어주시면 캐싱 됩니다..!)"),
+                                        fieldWithPath("totalPages")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("전체 페이지 수"),
+                                        fieldWithPath("number")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("현재 페이지"),
+                                        fieldWithPath("size")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("한 페이지 당 개수"),
+                                        fieldWithPath("sort.empty")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("정렬 조건이 비어있는지 여부"),
+                                        fieldWithPath("sort.sorted")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("content가 정렬되어 있는지의 여부"),
+                                        fieldWithPath("sort.unsorted")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("정렬이 안되어있는지의 여부"),
+                                        fieldWithPath("first")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("가장 첫번째 페이지의 숫자"),
+                                        fieldWithPath("last")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("가장 마지막 페이지의 숫자"),
+                                        fieldWithPath("numberOfElements")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("현재 페이지에 있는 content.size()"),
+                                        fieldWithPath("empty")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("페이지가 비어있는지 여부"),
+                                        fieldWithPath("pageable.pageNumber")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("현재 페이지 번호"),
+                                        fieldWithPath("pageable.pageSize")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("페이지 당 항목 수"),
+                                        fieldWithPath("pageable.offset")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("현재 페이지의 시작 지점"),
+                                        fieldWithPath("pageable.paged")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("페이지가 페이징 되었는지 여부"),
+                                        fieldWithPath("pageable.unpaged")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("페이지가 페이징 되지 않았는지 여부"),
+                                        fieldWithPath("pageable.sort.empty")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("정렬 조건이 비어있는지 여부"),
+                                        fieldWithPath("pageable.sort.sorted")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("정렬이 되었는지 여부"),
+                                        fieldWithPath("pageable.sort.unsorted")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("정렬되지 않았는지 여부"))))
+                .when()
+                .get("/boardgame")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .contentType(APPLICATION_JSON_VALUE);
     }
 }

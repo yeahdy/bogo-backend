@@ -171,11 +171,11 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
         BooleanBuilder builder = new BooleanBuilder();
 
         // 동적 조건 추가 메서드 호출
-        builder.and(genreFilter(searchRequest.tag(), g))
-                .and(meetingDateBetween(searchRequest.startDate(), searchRequest.endDate(), m))
-                .and(searchKeyword(searchRequest.searchWord(), searchRequest.searchType(), m))
-                .and(cityFilter(searchRequest.city(), m))
-                .and(countyFilter(searchRequest.county(), m));
+        builder.and(genreFilter(searchRequest.tag()))
+                .and(meetingDateBetween(searchRequest.startDate(), searchRequest.endDate()))
+                .and(searchKeyword(searchRequest.searchWord(), searchRequest.searchType()))
+                .and(cityFilter(searchRequest.city()))
+                .and(countyFilter(searchRequest.county()));
         return builder;
     }
 
@@ -188,42 +188,43 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
     }
 
     // 동적 조건 메서드들
-    private BooleanExpression genreFilter(String genreFilter, QBoardGameGenreEntity g) {
+    private BooleanExpression genreFilter(String genreFilter) {
         return Objects.nonNull(genreFilter)
                 ? m.id.in(
                         JPAExpressions.select(mgem.meetingId)
                                 .from(mgem)
-                                .innerJoin(g)
-                                .on(mgem.boardGameGenreId.eq(g.id))
-                                .where(g.genre.eq(genreFilter)))
+                                .innerJoin(bgg)
+                                .on(mgem.boardGameGenreId.eq(bgg.id))
+                                .where(bgg.genre.eq(genreFilter)))
                 : null;
     }
 
-    private BooleanExpression meetingDateBetween(
-            LocalDateTime startDate, LocalDateTime endDate, QMeetingEntity m) {
+    private BooleanExpression meetingDateBetween(LocalDateTime startDate, LocalDateTime endDate) {
         return Objects.nonNull(startDate) && Objects.nonNull(endDate)
                 ? m.meetingDatetime.between(startDate, endDate)
                 : null;
     }
 
-    private BooleanExpression searchKeyword(
-            String searchWord, String searchType, QMeetingEntity m) {
+    private BooleanExpression searchKeyword(String searchWord, String searchType) {
         if (Objects.isNull(searchWord)) {
             return null;
         } else if (searchType.equals("TITLE")) {
-            return m.title.contains(searchWord);
+            return m.title.toLowerCase().contains(searchWord.toLowerCase());
         } else if (searchType.equals("CONTENT")) {
-            return m.content.contains(searchWord);
+            return m.content.toLowerCase().contains(searchWord.toLowerCase());
         } else {
-            return m.title.contains(searchWord).or(m.content.contains(searchWord));
+            return m.title
+                    .toLowerCase()
+                    .contains(searchWord.toLowerCase())
+                    .or(m.content.toLowerCase().contains(searchWord.toLowerCase()));
         }
     }
 
-    private BooleanExpression cityFilter(String cityFilter, QMeetingEntity m) {
+    private BooleanExpression cityFilter(String cityFilter) {
         return Objects.nonNull(cityFilter) ? m.city.eq(cityFilter) : null;
     }
 
-    private BooleanExpression countyFilter(String countyFilter, QMeetingEntity m) {
+    private BooleanExpression countyFilter(String countyFilter) {
         return Objects.nonNull(countyFilter) ? m.county.eq(countyFilter) : null;
     }
 

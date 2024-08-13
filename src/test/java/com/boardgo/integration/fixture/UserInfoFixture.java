@@ -3,7 +3,7 @@ package com.boardgo.integration.fixture;
 import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 
-public class UserInfoFixture {
+public abstract class UserInfoFixture {
 
     public static UserInfoEntity socialUserInfoEntity(ProviderType providerType) {
         return UserInfoEntity.builder()

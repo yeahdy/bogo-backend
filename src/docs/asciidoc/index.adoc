@@ -134,3 +134,17 @@ include::{snippets}/boardgame-create/request-part-boardGameCreateListRequest-fie
 
 === 응답
 include::{snippets}/boardgame-create/http-response.adoc[]
+
+== 보드게임 검색 기능(페이징)
+=== 요청
+include::{snippets}/boardgame-list/http-request.adoc[]
+include::{snippets}/boardgame-list/httpie-request.adoc[]
+.QueryString
+include::{snippets}/boardgame-list/query-parameters.adoc[]
+
+=== 응답
+include::{snippets}/boardgame-list/http-response.adoc[]
+
+.Response Body
+
+include::{snippets}/boardgame-list/response-fields.adoc[]
