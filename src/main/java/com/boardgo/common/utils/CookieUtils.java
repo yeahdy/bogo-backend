@@ -27,6 +27,7 @@ public abstract class CookieUtils {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(Math.toIntExact(ACCESS_TOKEN_DURATION));
         cookie.setPath("/");
+        cookie.setSecure(true);
         cookie.setHttpOnly(true);
 
         return cookie;
