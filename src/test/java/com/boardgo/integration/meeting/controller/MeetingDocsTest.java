@@ -193,6 +193,9 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("content[].nickName")
                                                 .type(JsonFieldType.STRING)
                                                 .description("모임 개설자 닉네임"),
+                                        fieldWithPath("content[].thumbnail")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 썸네일 URI"),
                                         fieldWithPath("content[].games")
                                                 .type(JsonFieldType.ARRAY)
                                                 .description("보드게임 제목들"),

@@ -7,6 +7,7 @@ public record MeetingSearchProjection(
         String title,
         String city,
         String county,
+        String thumbnail,
         LocalDateTime meetingDate,
         Integer limitParticipant,
         String nickName,

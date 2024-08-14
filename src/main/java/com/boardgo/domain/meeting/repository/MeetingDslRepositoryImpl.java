@@ -96,6 +96,7 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                                 m.title,
                                 m.city,
                                 m.county,
+                                m.thumbnail,
                                 m.meetingDatetime.as("meetingDatetime"),
                                 m.limitParticipant.as("limitParticipant"),
                                 u.nickName,

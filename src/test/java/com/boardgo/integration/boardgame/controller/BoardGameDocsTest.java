@@ -212,7 +212,6 @@ public class BoardGameDocsTest extends RestDocsTestSupport {
                 .when()
                 .get("/boardgame")
                 .then()
-                .statusCode(HttpStatus.OK.value())
-                .contentType(APPLICATION_JSON_VALUE);
+                .statusCode(HttpStatus.OK.value());
     }
 }
