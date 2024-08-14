@@ -129,16 +129,44 @@ public class PersonalInfoDocsTest extends RestDocsTestSupport {
                 .multiPart("prTags", "ENFJ")
                 .filter(
                         document(
-                                "patch-profile",
+                                "patch-prtag",
                                 preprocessResponse(prettyPrint()),
-                                getRequestPartBodySnippet()))
+                                getPrTagsRequestPartBodySnippet()))
                 .when()
                 .patch("/personal-info/prTags")
                 .then()
                 .statusCode(HttpStatus.OK.value());
     }
 
-    RequestPartsSnippet getRequestPartBodySnippet() {
+    RequestPartsSnippet getPrTagsRequestPartBodySnippet() {
         return requestParts(partWithName("prTags").description("PR태그 목록(ARRAY)"));
+    }
+
+    @Test
+    @DisplayName("프로필 이미지 수정하기")
+    void 프로필_이미지_수정하기() {
+        userRepository.save(socialUserInfoEntity(ProviderType.KAKAO));
+
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .multiPart("profileImage", "profileImage.jpg", "image/jpeg".getBytes())
+                .filter(
+                        document(
+                                "patch-profile",
+                                preprocessResponse(prettyPrint()),
+                                getProfileImageRequestPartBodySnippet()))
+                .when()
+                .patch("/personal-info/profile")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    RequestPartsSnippet getProfileImageRequestPartBodySnippet() {
+        return requestParts(partWithName("profileImage").description("회원 프로필 이미지"));
     }
 }

@@ -7,7 +7,7 @@ public abstract class UserInfoFixture {
 
     public static UserInfoEntity socialUserInfoEntity(ProviderType providerType) {
         return UserInfoEntity.builder()
-                .email("1241f524562")
+                .email("3465227754")
                 .password(null)
                 .nickName("Board")
                 .profileImage("보드게임왕.jpg")

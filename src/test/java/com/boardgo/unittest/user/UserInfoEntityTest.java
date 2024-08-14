@@ -64,4 +64,7 @@ public class UserInfoEntityTest {
         assertThat(userInfoEntity.getNickName()).isEqualTo(request.nickName());
         assertThat(userInfoEntity.getNickName()).isNotBlank();
     }
+
+    // TODO. updateProfileImage() 테스트
+
 }

@@ -1,5 +1,7 @@
 package com.boardgo.integration.user.service;
 
+import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
+import static com.boardgo.integration.fixture.UserPrTagFixture.userPrTagEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -44,15 +46,8 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
     @DisplayName("해당 이메일이 존재하면 error를 반환한다")
     void 해당_이메일이_존재하면_error를_반환한다() {
         // given
-        EmailRequest emailRequest = new EmailRequest("aa@aa.com");
-        UserInfoEntity userInfoEntity =
-                UserInfoEntity.builder()
-                        .email("aa@aa.com")
-                        .password("password")
-                        .nickName("nickName")
-                        .providerType(ProviderType.LOCAL)
-                        .build();
-        userRepository.save(userInfoEntity);
+        EmailRequest emailRequest = new EmailRequest("ghksdagh@naver.com");
+        userRepository.save(localUserInfoEntity());
         // when
 
         // then
@@ -75,15 +70,8 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
     @DisplayName("해당 닉네임이 존재하면 에러가 발생한다")
     void 해당_닉네임이_존재하면_에러가_발생한다() {
         // given
-        NickNameRequest nickNameRequest = new NickNameRequest("nickName");
-        UserInfoEntity userInfoEntity =
-                UserInfoEntity.builder()
-                        .email("aa@aa.com")
-                        .password("password")
-                        .nickName("nickName")
-                        .providerType(ProviderType.LOCAL)
-                        .build();
-        userRepository.save(userInfoEntity);
+        NickNameRequest nickNameRequest = new NickNameRequest("water");
+        userRepository.save(localUserInfoEntity());
         // when
         // then
         Assertions.assertThatThrownBy(() -> userQueryUseCase.existNickName(nickNameRequest))
@@ -108,15 +96,12 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
     void 회원정보로_이메일_닉네임_프로필이미지_평점_PR태그를_조회한다(UserInfoEntity userInfo) {
         // given
         Long userId = getUserId(userInfo);
-        List<UserPrTagEntity> prTagEntities =
-                List.of(
-                        UserPrTagEntity.builder().tagName("ENFJ").userInfoId(userId).build(),
-                        UserPrTagEntity.builder().tagName("반모환영").userInfoId(userId).build(),
-                        UserPrTagEntity.builder().tagName("보드게임신").userInfoId(userId).build());
-
-        UserPrTagEntity userPrTagEntity1 = userPrTagRepository.save(prTagEntities.get(0));
-        UserPrTagEntity userPrTagEntity2 = userPrTagRepository.save(prTagEntities.get(1));
-        UserPrTagEntity userPrTagEntity3 = userPrTagRepository.save(prTagEntities.get(2));
+        UserPrTagEntity userPrTagEntity1 =
+                userPrTagRepository.save(userPrTagEntity(userId, "ENFJ"));
+        UserPrTagEntity userPrTagEntity2 =
+                userPrTagRepository.save(userPrTagEntity(userId, "반모환영"));
+        UserPrTagEntity userPrTagEntity3 =
+                userPrTagRepository.save(userPrTagEntity(userId, "보드게임신"));
 
         // when
         UserPersonalInfoResponse personalInfo = userQueryUseCase.getPersonalInfo(userId);

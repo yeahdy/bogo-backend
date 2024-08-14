@@ -48,7 +48,6 @@ public class UserQueryServiceV1 implements UserQueryUseCase {
                         .findById(userId)
                         .orElseThrow(() -> new CustomNullPointException("회원이 존재하지 않습니다"));
         // TODO. 리뷰 기능 구현 필요: 평균별점
-        // TODO. 이미지 조회 시 s3 url 붙여서 나가는지?
         Double averageGrade = 4.3;
         List<UserPrTagEntity> userPrTagEntities =
                 userPrTagRepository.findByUserInfoId(userInfoEntity.getId());
