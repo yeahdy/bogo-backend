@@ -1,0 +1,145 @@
+name: prod-cd
+run-name: prod-cd
+on:
+  push:
+    branches:
+      - prod
+env:
+  AWS_S3_BUCKET: backend-prod-deploy
+
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Pull Request URL 가져오기
+        id: pr-url
+        run: |
+          PR_URL=$(jq -r .pull_request.html_url "$GITHUB_EVENT_PATH")
+          echo "PR_URL=${PR_URL}" >> $GITHUB_ENV
+
+      - name: 서브모듈 추가
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.GIT_TOKEN }}
+
+      - name: JDK 21 설치
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+
+      - name: gradlew에 실행 권한 부여
+        run: chmod +x ./gradlew
+
+      - name: Gradle 캐시 설정
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-  
+
+      - name: 테스트 진행
+        run: ./gradlew test -Dspring.profiles.active=test
+
+      - name: 🍀 테스트 결과 Report
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+         report_paths: 'build/test-results/test/TEST-*.xml'
+
+      - name: Get current time
+        uses: 1466587594/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
+
+      - name: Show Current Time
+        run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
+        shell: bash
+
+      - name: 프로젝트 빌드
+        run: ./gradlew -Dspring.profiles.active=prod build -x test
+
+      - name: 🍀 테스트 실패시 디스코드 알림
+        if: failure()
+        uses: tsickert/discord-webhook@v5.3.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          content: "테스트 실패: ${{ github.repository }} \nPR 주소 : ${{ env.PR_URL }}"
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 서브모듈 추가
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.GIT_TOKEN }}
+
+      - name: JDK 21 설치
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+
+      - name: Gradle 캐시 설정
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-  
+
+      - name: gradlew에 실행 권한 부여
+        run: chmod +x ./gradlew
+
+      - name: 프로젝트 빌드
+        run: ./gradlew clean build -Pprofile=prod
+        shell: bash
+
+      - name: Get current time
+        uses: 1466587594/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
+
+      - name: Show Current Time
+        run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
+        shell: bash
+
+
+      - name: Generate deployment package
+        run: |
+          mkdir -p deploy
+          cp build/libs/*.jar deploy/application.jar
+          cp Procfile deploy/Procfile
+          cp -r .ebextensions deploy/.ebextensions
+          cp -r .platform deploy/.platform
+          cd deploy && zip -r deploy.zip .
+
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{secrets.PROD_CD_ACCESS_KEY}}
+          aws_secret_key: ${{secrets.PROD_CD_SECRET_KEY}}
+          application_name: LuckyBe-env
+          environment_name: LuckyBe-env-env
+          version_label: github-action-${{steps.current-time.outputs.formattedTime}}
+          region: ap-northeast-2
+          deployment_package: deploy/deploy.zip
+          wait_for_environment_recovery: 60
+
+      - name: Cleanup Gradle Cache
+        if: ${{ always() }}
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties
