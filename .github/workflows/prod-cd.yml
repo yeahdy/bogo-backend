@@ -132,7 +132,7 @@ jobs:
           aws_access_key: ${{secrets.PROD_CD_ACCESS_KEY}}
           aws_secret_key: ${{secrets.PROD_CD_SECRET_KEY}}
           application_name: LuckyBe-env
-          environment_name: LuckyBe-env-env
+          environment_name: LuckyBe
           version_label: github-action-${{steps.current-time.outputs.formattedTime}}
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
