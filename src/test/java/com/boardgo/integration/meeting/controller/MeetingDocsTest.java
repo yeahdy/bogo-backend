@@ -268,6 +268,96 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                 .statusCode(HttpStatus.OK.value());
     }
 
+    @Test
+    @DisplayName("사용자는 모임 상세 조회를 할 수 있다")
+    void 사용자는_모임_상세_조회를_할_수_있다() {
+        initEssentialData();
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParams("id", 10)
+                .filter(
+                        document(
+                                "meeting-detail",
+                                pathParameters(parameterWithName("id").description("모임 id")),
+                                responseFields(
+                                        fieldWithPath("meetingId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("모임 id")
+                                                .optional(),
+                                        fieldWithPath("title")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 제목"),
+                                        fieldWithPath("content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 내용"),
+                                        fieldWithPath("city")
+                                                .type(JsonFieldType.STRING)
+                                                .description("도시"),
+                                        fieldWithPath("county")
+                                                .type(JsonFieldType.STRING)
+                                                .description("county..(군, 구)"),
+                                        fieldWithPath("longitude")
+                                                .type(JsonFieldType.STRING)
+                                                .description("경도"),
+                                        fieldWithPath("latitude")
+                                                .type(JsonFieldType.STRING)
+                                                .description("위도"),
+                                        fieldWithPath("meetingDatetime")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 시간"),
+                                        fieldWithPath("limitParticipant")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("최대 참가자 수"),
+                                        fieldWithPath("userNickName")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 개설자 닉네임"),
+                                        fieldWithPath("state")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 상태"),
+                                        fieldWithPath("genres")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description("장르들(태그들)"),
+                                        fieldWithPath("totalParticipantCount")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("모임 참가자 수"),
+                                        fieldWithPath("userParticipantResponseList")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description("참가자들 중 유저 목록"),
+                                        fieldWithPath("userParticipantResponseList[].userId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("참가자 user Id"),
+                                        fieldWithPath("userParticipantResponseList[].profileImage")
+                                                .type(JsonFieldType.STRING)
+                                                .description("참가자 user 프로필 이미지"),
+                                        fieldWithPath("userParticipantResponseList[].nickname")
+                                                .type(JsonFieldType.STRING)
+                                                .description("참가자 user 닉네임"),
+                                        fieldWithPath("userParticipantResponseList[].type")
+                                                .type(JsonFieldType.STRING)
+                                                .description(
+                                                        "참가자 user 역할 타입: (LEADER - 모임 생성자, PARTICIPANT - 참여자)"),
+                                        fieldWithPath("boardGameListResponseList")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description("∑모임 참가자 수"),
+                                        fieldWithPath("boardGameListResponseList[].boardGameId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("참가자 boardGame Id"),
+                                        fieldWithPath("boardGameListResponseList[].title")
+                                                .type(JsonFieldType.STRING)
+                                                .description("참가자 boardGame 제목"),
+                                        fieldWithPath("boardGameListResponseList[].thumbnail")
+                                                .type(JsonFieldType.STRING)
+                                                .description("참가자 boardGame 썸네일 URI"))))
+                .when()
+                .get("/meeting/{id}")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
     private void initEssentialData() {
         testBoardGameInitializer.generateBoardGameData();
         testUserInfoInitializer.generateUserData();

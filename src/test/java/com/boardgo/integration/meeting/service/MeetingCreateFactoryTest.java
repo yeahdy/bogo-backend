@@ -69,9 +69,7 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
         List<Long> boardGameIdList = List.of(1L, 2L);
         List<Long> genreIdList = List.of(3L, 4L);
         // when
-        Long meetingId =
-                meetingCreateFactory.create(
-                        meetingEntity, savedUser.getId(), boardGameIdList, genreIdList);
+        Long meetingId = meetingCreateFactory.create(meetingEntity, boardGameIdList, genreIdList);
         // then
         MeetingEntity meeting = meetingRepository.findById(meetingId).get();
         assertThat(meeting.getMeetingDatetime()).isEqualTo(now);
@@ -129,8 +127,7 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
         // then
         assertThatThrownBy(
                         () -> {
-                            meetingCreateFactory.create(
-                                    meetingEntity, savedUser.getId(), null, genreIdList);
+                            meetingCreateFactory.create(meetingEntity, null, genreIdList);
                         })
                 .isInstanceOf(CustomIllegalArgumentException.class);
     }
@@ -166,8 +163,7 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
         // then
         assertThatThrownBy(
                         () -> {
-                            meetingCreateFactory.create(
-                                    meetingEntity, savedUser.getId(), boardGameIdList, null);
+                            meetingCreateFactory.create(meetingEntity, boardGameIdList, null);
                         })
                 .isInstanceOf(CustomIllegalArgumentException.class);
     }

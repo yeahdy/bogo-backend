@@ -1,3 +1,8 @@
 package com.boardgo.domain.boardgame.repository.projection;
 
-public record GenreSearchProjection(Long boardGameId, Long id, String genre) {}
+import com.querydsl.core.annotations.QueryProjection;
+
+public record GenreSearchProjection(Long boardGameId, Long id, String genre) {
+    @QueryProjection
+    public GenreSearchProjection {}
+}

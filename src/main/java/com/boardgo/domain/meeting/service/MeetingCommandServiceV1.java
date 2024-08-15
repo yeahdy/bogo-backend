@@ -1,6 +1,6 @@
 package com.boardgo.domain.meeting.service;
 
-import static com.boardgo.common.constant.S3BucketConstant.MEETING;
+import static com.boardgo.common.constant.S3BucketConstant.*;
 
 import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.common.exception.advice.dto.ErrorCode;
@@ -37,7 +37,6 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
                 meetingMapper.toMeetingEntity(meetingCreateRequest, userId, imageUri);
         return meetingCreateFactory.create(
                 meetingEntity,
-                userId,
                 meetingCreateRequest.boardGameIdList(),
                 meetingCreateRequest.genreIdList());
     }

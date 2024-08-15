@@ -63,8 +63,7 @@ public class TestMeetingInitializer {
                             userId,
                             "thumbnail" + i);
             Long savedMeetingId =
-                    meetingCreateFactory.create(
-                            meetingEntity, userId, boardGameIdList, genreIdList);
+                    meetingCreateFactory.create(meetingEntity, boardGameIdList, genreIdList);
 
             int participantLimit = Math.max(i % limitNumber, 1);
 

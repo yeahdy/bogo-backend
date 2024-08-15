@@ -23,11 +23,7 @@ public class MeetingCreateFactoryV1 implements MeetingCreateFactory {
     private final MeetingGameMatchRepository meetingGameMatchRepository;
     private final MeetingParticipantRepository meetingParticipantRepository;
 
-    public Long create(
-            MeetingEntity meeting,
-            Long userId,
-            List<Long> boardGameIdList,
-            List<Long> genreIdList) {
+    public Long create(MeetingEntity meeting, List<Long> boardGameIdList, List<Long> genreIdList) {
         Optional.ofNullable(boardGameIdList)
                 .orElseThrow(
                         () ->
@@ -40,7 +36,7 @@ public class MeetingCreateFactoryV1 implements MeetingCreateFactory {
                                         NULL_ERROR.getCode(), "genreIdList Null"));
 
         Long meetingId = meetingRepository.save(meeting).getId();
-        meetingParticipantRepository.save(getMeetingParticipant(userId, meetingId));
+        meetingParticipantRepository.save(getMeetingParticipant(meeting.getUserId(), meetingId));
         meetingGenreMatchRepository.bulkInsert(genreIdList, meetingId);
         meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
         return meetingId;

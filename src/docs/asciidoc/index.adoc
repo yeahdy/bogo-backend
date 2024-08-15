@@ -172,9 +172,21 @@ include::{snippets}/meeting-list/query-parameters.adoc[]
 
 include::{snippets}/meeting-list/http-response.adoc[]
 
+== 모임 상세 조회
+
+=== 요청
+
+include::{snippets}/meeting-detail/http-request.adoc[]
+include::{snippets}/meeting-detail/httpie-request.adoc[]
+include::{snippets}/meeting-detail/path-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/meeting-detail/http-response.adoc[]
+
 Response Body
 
-include::{snippets}/meeting-list/response-fields.adoc[]
+include::{snippets}/meeting-detail/response-fields.adoc[]
 
 == 보드게임 등록
 

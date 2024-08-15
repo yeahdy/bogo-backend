@@ -2,6 +2,7 @@ package com.boardgo.domain.meeting.service;
 
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
+import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,5 +17,10 @@ public class MeetingQueryServiceV1 implements MeetingQueryUseCase {
 
     public Page<MeetingSearchResponse> search(MeetingSearchRequest meetingSearchRequest) {
         return meetingRepository.findByFilters(meetingSearchRequest);
+    }
+
+    @Override
+    public MeetingDetailResponse getDetailById(Long meetingId) {
+        return meetingRepository.findDetailById(meetingId);
     }
 }

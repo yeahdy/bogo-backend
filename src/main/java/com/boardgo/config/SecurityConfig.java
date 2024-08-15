@@ -1,6 +1,6 @@
 package com.boardgo.config;
 
-import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static com.boardgo.common.constant.HeaderConstant.*;
 
 import com.boardgo.domain.user.entity.RoleType;
 import com.boardgo.jwt.JWTFilter;
@@ -57,7 +57,7 @@ public class SecurityConfig {
         AntPathRequestMatcher.antMatcher("/check-nickname"),
         AntPathRequestMatcher.antMatcher("/login/oauth2/**"),
         AntPathRequestMatcher.antMatcher("/token"),
-        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/meeting"),
+        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/meeting/**"),
         AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/boardgame")
     };
 

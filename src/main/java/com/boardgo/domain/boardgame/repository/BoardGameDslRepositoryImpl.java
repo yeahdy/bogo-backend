@@ -4,14 +4,20 @@ import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
 import com.boardgo.domain.boardgame.entity.QBoardGameEntity;
 import com.boardgo.domain.boardgame.entity.QBoardGameGenreEntity;
 import com.boardgo.domain.boardgame.entity.QGameGenreMatchEntity;
+import com.boardgo.domain.boardgame.repository.projection.BoardGameByMeetingIdProjection;
 import com.boardgo.domain.boardgame.repository.projection.BoardGameSearchProjection;
 import com.boardgo.domain.boardgame.repository.projection.GenreSearchProjection;
+import com.boardgo.domain.boardgame.repository.projection.QBoardGameByMeetingIdProjection;
+import com.boardgo.domain.boardgame.repository.projection.QBoardGameSearchProjection;
+import com.boardgo.domain.boardgame.repository.projection.QGenreSearchProjection;
+import com.boardgo.domain.boardgame.repository.response.BoardGameByMeetingIdResponse;
 import com.boardgo.domain.boardgame.repository.response.BoardGameSearchResponse;
 import com.boardgo.domain.boardgame.repository.response.GenreSearchResponse;
 import com.boardgo.domain.mapper.BoardGameGenreMapper;
 import com.boardgo.domain.mapper.BoardGameMapper;
-import com.querydsl.core.types.Projections;
+import com.boardgo.domain.meeting.entity.QMeetingGameMatchEntity;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
@@ -33,6 +39,7 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
     private final QBoardGameEntity b = QBoardGameEntity.boardGameEntity;
     private final QBoardGameGenreEntity bgg = QBoardGameGenreEntity.boardGameGenreEntity;
     private final QGameGenreMatchEntity ggm = QGameGenreMatchEntity.gameGenreMatchEntity;
+    private final QMeetingGameMatchEntity mgm = QMeetingGameMatchEntity.meetingGameMatchEntity;
 
     public BoardGameDslRepositoryImpl(
             EntityManager entityManager,
@@ -76,12 +83,34 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
         return new PageImpl<>(boardGameSearchResponseList, pageable, total);
     }
 
+    @Override
+    public List<BoardGameByMeetingIdResponse> findMeetingDetailByMeetingId(Long meetingId) {
+        List<BoardGameByMeetingIdProjection> queryResults =
+                queryFactory
+                        .select(
+                                new QBoardGameByMeetingIdProjection(
+                                        b.id,
+                                        b.title,
+                                        b.thumbnail,
+                                        Expressions.stringTemplate("GROUP_CONCAT({0})", bgg.genre)
+                                                .as("genres")))
+                        .from(mgm)
+                        .innerJoin(b)
+                        .on(mgm.boardGameId.eq(b.id))
+                        .innerJoin(ggm)
+                        .on(b.id.eq(ggm.boardGameId))
+                        .innerJoin(bgg)
+                        .on(bgg.id.eq(ggm.boardGameGenreId))
+                        .where(mgm.meetingId.eq(meetingId))
+                        .groupBy(b.id)
+                        .fetch();
+        return queryResults.stream().map(boardGameMapper::toBoardGameByMeetingIdResponse).toList();
+    }
+
     private List<GenreSearchProjection> findGenreByBoardGameId(
             List<BoardGameSearchProjection> boardGameList) {
         return queryFactory
-                .select(
-                        Projections.constructor(
-                                GenreSearchProjection.class, ggm.boardGameId, bgg.id, bgg.genre))
+                .select(new QGenreSearchProjection(ggm.boardGameId, bgg.id, bgg.genre))
                 .from(bgg)
                 .innerJoin(ggm)
                 .on(bgg.id.eq(ggm.boardGameId))
@@ -94,9 +123,7 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
     private List<BoardGameSearchProjection> findBoardGameBySearchWord(
             BoardGameSearchRequest request, int size, int offset) {
         return queryFactory
-                .select(
-                        Projections.constructor(
-                                BoardGameSearchProjection.class, b.id, b.title, b.thumbnail))
+                .select(new QBoardGameSearchProjection(b.id, b.title, b.thumbnail))
                 .from(b)
                 .where(searchKeyword(request.searchWord()))
                 .offset(offset)

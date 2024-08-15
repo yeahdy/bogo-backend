@@ -116,7 +116,6 @@ jobs:
         run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
         shell: bash
 
-
       - name: Generate deployment package
         run: |
           mkdir -p deploy
@@ -127,7 +126,7 @@ jobs:
           cd deploy && zip -r deploy.zip .
 
       - name: Beanstalk Deploy
-        uses: einaregilsson/beanstalk-deploy@v20
+        uses: einaregilsson/beanstalk-deploy@v22
         with:
           aws_access_key: ${{secrets.PROD_CD_ACCESS_KEY}}
           aws_secret_key: ${{secrets.PROD_CD_SECRET_KEY}}

@@ -24,6 +24,7 @@ public class TestUserInfoInitializer {
                             .providerType(ProviderType.LOCAL)
                             .nickName("nickName" + i)
                             .password("password" + i)
+                            .profileImage("profileImage" + i)
                             .build());
         }
         for (int i = 10; i < 20; i++) {
@@ -33,6 +34,7 @@ public class TestUserInfoInitializer {
                             .providerType(ProviderType.KAKAO)
                             .nickName("nickName" + i)
                             .password("password" + i)
+                            .profileImage("profileImage" + i)
                             .build());
         }
         for (int i = 20; i < 30; i++) {
@@ -42,6 +44,7 @@ public class TestUserInfoInitializer {
                             .providerType(ProviderType.GOOGLE)
                             .nickName("nickName" + i)
                             .password("password" + i)
+                            .profileImage("profileImage" + i)
                             .build());
         }
     }
