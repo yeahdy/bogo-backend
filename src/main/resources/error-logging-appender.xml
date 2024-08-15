@@ -1,7 +1,7 @@
 <included>
-    <property name="LOG_PATH" value=".logs"/>
+    <property name="LOG_PATH" value="/home/ubuntu/backend"/>
     <property name="PATTERN"
-              value="%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}} %-4relative [%thread] %-5level %logger{30} - %msg%n"/>
+              value="%green(%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}}) %-4relative [%thread] %-5level %logger{30} - %msg%n"/>
 
     <springProfile name="error-logging">
         <appender name="ERROR-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
