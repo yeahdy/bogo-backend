@@ -1,5 +1,4 @@
 <included>
-    <property name="LOG_PATH" value="/home/ubuntu/backend/logs"/>
     <property name="PATTERN"
               value="%green(%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}}) %-4relative [%thread] %-5level %logger{30} - %msg%n"/>
 
@@ -10,7 +9,7 @@
                 <onMatch>ACCEPT</onMatch>
                 <onMismatch>DENY</onMismatch>
             </filter>
-            <file>${LOG_PATH}/errorFile.log</file>
+            <file>errorFile.log</file>
 
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
                 <fileNamePattern>errorFile_%d{yyyy-MM-dd, ${logback.timezone:-Asia/Seoul}}.log.gz</fileNamePattern>
