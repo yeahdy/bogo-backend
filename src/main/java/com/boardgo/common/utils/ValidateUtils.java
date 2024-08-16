@@ -38,9 +38,9 @@ public abstract class ValidateUtils {
 
         for (String tag : prTags) {
             tag = tag.trim();
-            if (tag.length() > 30) {
+            if (tag.length() > 30) { // FIXME: 10자까지로 줄이고 테스트코드 수정
                 throw new CustomIllegalArgumentException(
-                        BAD_REQUEST.getCode(), "PR태그 글자 수는 30자 까지 가능합니다.");
+                        BAD_REQUEST.getCode(), "PR태그 글자 수는 10자 까지 가능합니다.");
             }
             if (!containsHanEngNumSpace(tag)) {
                 throw new CustomIllegalArgumentException(

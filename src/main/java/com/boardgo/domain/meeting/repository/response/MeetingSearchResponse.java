@@ -16,7 +16,7 @@ public record MeetingSearchResponse(
         String nickName,
         List<String> games,
         Set<String> tags,
-        Long participantCount) {
+        Integer participantCount) {
     public MeetingSearchResponse(MeetingSearchProjection queryDto, List<String> games) {
         this(
                 queryDto.id(),

@@ -1,6 +1,9 @@
 package com.boardgo.domain.meeting.entity;
 
+import static com.boardgo.domain.meeting.entity.MeetingState.COMPLETE;
+
 import com.boardgo.common.domain.BaseEntity;
+import com.boardgo.common.exception.CustomIllegalArgumentException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -98,5 +101,12 @@ public class MeetingEntity extends BaseEntity {
         this.meetingDatetime = meetingDatetime;
         this.hit = hit;
         this.state = state;
+    }
+
+    public boolean checkCompleteState() {
+        if (COMPLETE == this.state) {
+            throw new CustomIllegalArgumentException("모집 완료된 모임으로 참가 불가능 합니다");
+        }
+        return true;
     }
 }

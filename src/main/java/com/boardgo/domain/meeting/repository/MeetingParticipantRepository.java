@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MeetingParticipantRepository
         extends JpaRepository<MeetingParticipantEntity, Long> {
     List<MeetingParticipantEntity> findByMeetingId(Long meetingId);
+
+    boolean existsByUserInfoId(Long userId);
 }

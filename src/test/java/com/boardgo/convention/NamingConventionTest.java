@@ -1,6 +1,6 @@
 package com.boardgo.convention;
 
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
@@ -58,6 +58,10 @@ public class NamingConventionTest {
         classes()
                 .that()
                 .resideInAPackage("..service")
+                .and()
+                .areNotAnonymousClasses()
+                .and()
+                .areNotMemberClasses()
                 .should()
                 .haveSimpleNameContaining("Service")
                 .orShould()

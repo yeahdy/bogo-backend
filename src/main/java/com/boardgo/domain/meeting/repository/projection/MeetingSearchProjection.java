@@ -13,7 +13,7 @@ public record MeetingSearchProjection(
         Integer limitParticipant,
         String nickName,
         String genres,
-        Long participantCount) {
+        Integer participantCount) {
     @QueryProjection
     public MeetingSearchProjection {}
 }

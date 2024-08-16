@@ -1,5 +1,5 @@
 <included>
-    <property name="LOG_PATH" value="/home/ubuntu/backend"/>
+    <property name="LOG_PATH" value="/home/ubuntu/backend/logs"/>
     <property name="PATTERN"
               value="%green(%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}}) %-4relative [%thread] %-5level %logger{30} - %msg%n"/>
 

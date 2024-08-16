@@ -164,7 +164,7 @@ public class ValidateUtilsTest {
                         () -> ValidateUtils.validatePrTag(prTags));
 
         // then
-        assertThat(exception.getMessage()).isEqualTo("PR태그 글자 수는 30자 까지 가능합니다.");
+        assertThat(exception.getMessage()).isEqualTo("PR태그 글자 수는 10자 까지 가능합니다.");
     }
 
     @Test
