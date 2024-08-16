@@ -50,15 +50,23 @@ public class MeetingEntity extends BaseEntity {
 
     @Column private String thumbnail;
 
-    @Column private String city;
+    @Column(nullable = false)
+    private String city;
 
-    @Column private String county;
+    @Column(nullable = false)
+    private String county;
 
-    @Column(length = 64)
+    @Column(length = 64, nullable = false)
     private String latitude;
 
-    @Column(length = 64)
+    @Column(length = 64, nullable = false)
     private String longitude;
+
+    @Column(name = "location_name", length = 64, nullable = false)
+    private String locationName;
+
+    @Column(name = "detail_address", nullable = false)
+    private String detailAddress;
 
     @Column(name = "meeting_datetime", nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime meetingDatetime;
@@ -84,6 +92,8 @@ public class MeetingEntity extends BaseEntity {
             String county,
             String latitude,
             String longitude,
+            String locationName,
+            String detailAddress,
             LocalDateTime meetingDatetime,
             Long hit,
             MeetingState state) {
@@ -98,6 +108,8 @@ public class MeetingEntity extends BaseEntity {
         this.county = county;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.locationName = locationName;
+        this.detailAddress = detailAddress;
         this.meetingDatetime = meetingDatetime;
         this.hit = hit;
         this.state = state;

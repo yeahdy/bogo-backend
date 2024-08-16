@@ -62,7 +62,11 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
                         .meetingDatetime(meetingDatetime)
                         .type(MeetingType.FREE)
                         .content("content")
+                        .city("city")
+                        .county("county")
                         .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
                         .limitParticipant(5)
                         .build();
         List<Long> boardGameIdList = List.of(1L, 2L);

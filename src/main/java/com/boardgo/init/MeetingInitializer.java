@@ -51,6 +51,8 @@ public class MeetingInitializer implements ApplicationRunner {
                                     "county" + limitNumber,
                                     i + ".12321321",
                                     i + ".787878",
+                                    "detailAddress",
+                                    "location",
                                     LocalDateTime.now().plusDays(rotationNumber),
                                     boardGameIdList,
                                     genreIdList),

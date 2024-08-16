@@ -33,6 +33,8 @@ public interface MeetingMapper {
                 .content(meetingCreateRequest.content())
                 .latitude(meetingCreateRequest.latitude())
                 .longitude(meetingCreateRequest.longitude())
+                .detailAddress(meetingCreateRequest.detailAddress())
+                .locationName(meetingCreateRequest.locationName())
                 .limitParticipant(meetingCreateRequest.limitParticipant())
                 .thumbnail(imageUri)
                 .build();

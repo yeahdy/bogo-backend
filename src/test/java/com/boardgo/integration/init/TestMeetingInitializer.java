@@ -57,6 +57,8 @@ public class TestMeetingInitializer {
                                     "county" + limitNumber,
                                     i + ".12321321",
                                     i + ".787878",
+                                    "detailAddress" + i,
+                                    "location" + i,
                                     LocalDateTime.now().plusDays(rotationNumber),
                                     boardGameIdList,
                                     genreIdList),

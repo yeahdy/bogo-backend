@@ -45,6 +45,8 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                         "Gangnam",
                         "37.5665",
                         "126.9780",
+                        "detailAddress",
+                        "location",
                         LocalDateTime.now().plusDays(1),
                         Arrays.asList(1L, 2L),
                         Arrays.asList(1L, 2L));
@@ -98,6 +100,12 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("longitude")
                                                 .type(JsonFieldType.STRING)
                                                 .description("모임 장소의 경도"),
+                                        fieldWithPath("detailAddress")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 장소의 상세주소"),
+                                        fieldWithPath("locationName")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 장소의 이름"),
                                         fieldWithPath("meetingDatetime")
                                                 .type(JsonFieldType.STRING)
                                                 .description("모임 시간"),
@@ -342,7 +350,7 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                                         "참가자 user 역할 타입: (LEADER - 모임 생성자, PARTICIPANT - 참여자)"),
                                         fieldWithPath("boardGameListResponseList")
                                                 .type(JsonFieldType.ARRAY)
-                                                .description("∑모임 참가자 수"),
+                                                .description("모임 참가자 수"),
                                         fieldWithPath("boardGameListResponseList[].boardGameId")
                                                 .type(JsonFieldType.NUMBER)
                                                 .description("참가자 boardGame Id"),

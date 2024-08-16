@@ -61,6 +61,8 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
                         "강남",
                         "32.12321321321",
                         "147.12321321321",
+                        "detailAddress",
+                        "location",
                         now,
                         List.of(1L, 2L),
                         List.of(1L, 2L));

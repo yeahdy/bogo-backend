@@ -29,6 +29,8 @@ public class MeetingEntityTest {
                         "강남",
                         "32.12321321321",
                         "147.12321321321",
+                        "detailAddress",
+                        "location",
                         LocalDateTime.MIN,
                         List.of(1L, 2L),
                         List.of(1L, 2L));
@@ -48,5 +50,8 @@ public class MeetingEntityTest {
         assertThat(meetingEntity.getHit()).isEqualTo(0L);
         assertThat(meetingEntity.getUserId()).isEqualTo(1L);
         assertThat(meetingEntity.getState()).isEqualTo(MeetingState.PROGRESS);
+        assertThat(meetingEntity.getDetailAddress())
+                .isEqualTo(meetingCreateRequest.detailAddress());
+        assertThat(meetingEntity.getLocationName()).isEqualTo(meetingCreateRequest.locationName());
     }
 }
