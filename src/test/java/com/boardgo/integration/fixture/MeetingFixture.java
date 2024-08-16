@@ -20,6 +20,8 @@ public abstract class MeetingFixture {
                 .county("관악구")
                 .latitude("51.5429")
                 .longitude("434.5785")
+                .detailAddress("detailAddress")
+                .locationName("locationName")
                 .meetingDatetime(LocalDateTime.now().plusDays(5))
                 .state(MeetingState.PROGRESS)
                 .build();
@@ -38,6 +40,8 @@ public abstract class MeetingFixture {
                 .county("강남구")
                 .latitude("5441.5429")
                 .longitude("434.5785")
+                .detailAddress("detailAddress")
+                .locationName("locationName")
                 .meetingDatetime(LocalDateTime.now().minusDays(5))
                 .state(MeetingState.COMPLETE)
                 .build();
