@@ -1,4 +1,5 @@
 <included>
+    <property name="LOG_PATH" value="./log"/>
     <property name="PATTERN"
               value="%green(%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}}) %-4relative [%thread] %-5level %logger{30} - %msg%n"/>
 
@@ -9,7 +10,7 @@
                 <onMatch>ACCEPT</onMatch>
                 <onMismatch>DENY</onMismatch>
             </filter>
-            <file>errorFile.log</file>
+            <file>${LOG_PATH}/errorFile.log</file>
 
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
                 <fileNamePattern>errorFile_%d{yyyy-MM-dd, ${logback.timezone:-Asia/Seoul}}.log.gz</fileNamePattern>
