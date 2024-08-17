@@ -245,6 +245,21 @@ include::{snippets}/meeting-participation/request-fields.adoc[]
 ==== *응답*
 
 include::{snippets}/meeting-participation/http-response.adoc[]
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+| 모임이 존재하지 않습니다
+
+| 400
+| 모임 날짜가 지난 모임으로 참가 불가능 합니다 +
+이미 참여된 모임 입니다 +
+모임 정원으로 참가 불가능 합니다 +
+모집 완료된 모임으로 참가 불가능 합니다 +
+
+|===
 
 ---
 

@@ -121,4 +121,14 @@ public class MeetingEntity extends BaseEntity {
         }
         return true;
     }
+
+    /**
+     * @return 현재 시간이 모임날짜 보다 미래일 경우 true, 아닐 경우 false
+     */
+    public boolean isAfterMeeting() {
+        if (LocalDateTime.now().isAfter(this.meetingDatetime)) {
+            throw new CustomIllegalArgumentException("모임 날짜가 지난 모임으로 참가 불가능 합니다");
+        }
+        return false;
+    }
 }

@@ -1,6 +1,6 @@
 package com.boardgo.domain.boardgame.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
 
 import com.boardgo.domain.boardgame.controller.request.BoardGameCreateRequest;
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +37,10 @@ public class BoardGameController {
         return ResponseEntity.ok(search);
     }
 
-    @PostMapping(value = "/boardgame", headers = API_VERSION_HEADER1)
+    @PostMapping(
+            value = "/boardgame",
+            headers = API_VERSION_HEADER1,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> create(
             @RequestPart("boardGameCreateListRequest") @Valid
                     List<BoardGameCreateRequest> boardGameCreateListRequest,
