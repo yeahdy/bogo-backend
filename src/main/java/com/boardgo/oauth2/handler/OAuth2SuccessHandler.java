@@ -9,6 +9,7 @@ import com.boardgo.jwt.JWTUtil;
 import com.boardgo.oauth2.dto.OAuthLoginProperties;
 import com.boardgo.oauth2.entity.CustomOAuth2User;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -35,7 +36,15 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken =
                 jwtUtil.createJwt(
                         oAuth2User.getId(), oAuth2User.getRoleType(), ACCESS_TOKEN_DURATION);
-        response.addCookie(createCookies(AUTHORIZATION, accessToken));
+        Cookie cookies = createCookies(AUTHORIZATION, accessToken);
+        // FIXME 첫번째 시도 성공 시 주석 코드 삭제
+        cookies.setDomain(properties.domain());
+        response.addCookie(cookies);
+
+        // FIXME 두번째 시도 코드
+        //        ResponseCookie responseCookie = createCookies(AUTHORIZATION, accessToken,
+        // properties.domain());
+        //        response.setHeader("set-Cookie", responseCookie.toString());
 
         String redirectUrl = properties.main();
         if (!existString(oAuth2User.getNickname())) {
@@ -45,7 +54,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                             .build()
                             .toUriString();
         }
-        log.info("OAuth2 :: {} redirectUrl :: {}", oAuth2User.getAttributes(), redirectUrl);
+
+        log.info("OAuth2 :: {} redirectUrl :: {} ", oAuth2User.getAttributes(), redirectUrl);
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 }

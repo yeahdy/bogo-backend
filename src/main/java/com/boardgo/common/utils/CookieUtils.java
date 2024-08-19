@@ -6,6 +6,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import java.util.Optional;
+import org.springframework.http.ResponseCookie;
 
 public abstract class CookieUtils {
 
@@ -30,6 +31,19 @@ public abstract class CookieUtils {
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
 
+        return cookie;
+    }
+
+    public static ResponseCookie createCookies(String name, String value, String domain) {
+        ResponseCookie cookie =
+                ResponseCookie.from(name, value)
+                        .maxAge(Math.toIntExact(ACCESS_TOKEN_DURATION))
+                        .path("/")
+                        .secure(true)
+                        .httpOnly(true)
+                        .domain(domain)
+                        .sameSite("None")
+                        .build();
         return cookie;
     }
 }
