@@ -9,12 +9,12 @@ import com.boardgo.jwt.JWTUtil;
 import com.boardgo.oauth2.dto.OAuthLoginProperties;
 import com.boardgo.oauth2.entity.CustomOAuth2User;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -36,15 +36,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken =
                 jwtUtil.createJwt(
                         oAuth2User.getId(), oAuth2User.getRoleType(), ACCESS_TOKEN_DURATION);
-        Cookie cookies = createCookies(AUTHORIZATION, accessToken);
-        // FIXME 첫번째 시도 성공 시 주석 코드 삭제
-        cookies.setDomain(properties.domain());
-        response.addCookie(cookies);
+        //        Cookie cookies = createCookies(AUTHORIZATION, accessToken);
+        //        cookies.setDomain(properties.domain());
+        //        response.addCookie(cookies);
 
-        // FIXME 두번째 시도 코드
-        //        ResponseCookie responseCookie = createCookies(AUTHORIZATION, accessToken,
-        // properties.domain());
-        //        response.setHeader("set-Cookie", responseCookie.toString());
+        ResponseCookie responseCookie =
+                createCookies(AUTHORIZATION, accessToken, properties.domain());
+        response.setHeader("Set-cookie", responseCookie.toString());
 
         String redirectUrl = properties.main();
         if (!existString(oAuth2User.getNickname())) {

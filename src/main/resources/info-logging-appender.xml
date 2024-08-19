@@ -7,9 +7,10 @@
         <appender name="INFO-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_PATH}/logFile.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>logFile_%d{yyyy-MM-dd, ${logback.timezone:-Asia/Seoul}}_%i.log.gz</fileNamePattern>
+                <fileNamePattern>${LOG_PATH}/log_gz/logFile_%d{yyyy-MM-dd, ${logback.timezone:-Asia/Seoul}}_%i.log.gz
+                </fileNamePattern>
                 <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                    <maxFileSize>10MB</maxFileSize>
+                    <maxFileSize>100MB</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
                 <maxHistory>30</maxHistory>
                 <!--전체 로크 파일 크기 100MB 초과 시 가장 오래된 로그 파일부터 삭제-->
