@@ -16,5 +16,4 @@ public interface MeetingParticipantRepository
             @Param("types") List<String> types, @Param("userId") Long userId);
 
     boolean existsByUserInfoIdAndMeetingId(Long userId, Long meetingId);
-  
 }
