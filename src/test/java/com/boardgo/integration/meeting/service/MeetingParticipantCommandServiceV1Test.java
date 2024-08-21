@@ -8,6 +8,7 @@ import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntit
 import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.domain.meeting.controller.request.MeetingParticipateRequest;
@@ -35,7 +36,8 @@ public class MeetingParticipantCommandServiceV1Test extends IntegrationTestSuppo
     void 이미_참여한_모임일_경우_예외가_발생한다() {
         // given
         UserInfoEntity participants = getDuplicateMeetingParticipationData();
-        MeetingParticipateRequest participateRequest = new MeetingParticipateRequest(1L);
+        Long meetingId = 1L;
+        MeetingParticipateRequest participateRequest = new MeetingParticipateRequest(meetingId);
 
         // when
         // then
@@ -45,6 +47,9 @@ public class MeetingParticipantCommandServiceV1Test extends IntegrationTestSuppo
                                         participateRequest, participants.getId()))
                 .isInstanceOf(CustomIllegalArgumentException.class)
                 .hasMessageContaining("이미 참여된 모임");
+        assertTrue(
+                meetingParticipantRepository.existsByUserInfoIdAndMeetingId(
+                        participants.getId(), meetingId));
     }
 
     private UserInfoEntity getDuplicateMeetingParticipationData() {
@@ -54,7 +59,8 @@ public class MeetingParticipantCommandServiceV1Test extends IntegrationTestSuppo
                 meetingRepository.save(
                         getProgressMeetingEntity(leader.getId(), MeetingType.FREE, 3));
         meetingParticipantRepository.save(
-                getLeaderMeetingParticipantEntity(meeting.getId(), leader.getId()));
+                getLeaderMeetingParticipantEntity(
+                        meeting.getId(), leader.getId())); // meeting.getId = 1L
 
         meetingParticipantRepository.save(
                 getParticipantMeetingParticipantEntity(meeting.getId(), participants.getId()));
@@ -124,13 +130,16 @@ public class MeetingParticipantCommandServiceV1Test extends IntegrationTestSuppo
     void 수락_형식_모임일_경우_바로_모임에_참가할_수_없다() {
         // given
         UserInfoEntity participants = getAcceptMeetingParticipationData();
-        MeetingParticipateRequest participateRequest = new MeetingParticipateRequest(1L);
+        Long meetingId = 1L;
+        MeetingParticipateRequest participateRequest = new MeetingParticipateRequest(meetingId);
 
         // when
         participantCommandUseCase.participateMeeting(participateRequest, participants.getId());
 
         // then
-        assertFalse(meetingParticipantRepository.existsByUserInfoId(participants.getId()));
+        assertFalse(
+                meetingParticipantRepository.existsByUserInfoIdAndMeetingId(
+                        participants.getId(), meetingId));
     }
 
     private UserInfoEntity getAcceptMeetingParticipationData() {

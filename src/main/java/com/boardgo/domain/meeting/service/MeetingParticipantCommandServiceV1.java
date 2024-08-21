@@ -39,22 +39,26 @@ public class MeetingParticipantCommandServiceV1 implements MeetingParticipantCom
                         .orElseThrow(() -> new CustomNullPointException("모임이 존재하지 않습니다"));
         validateParticipateMeeting(meetingEntity, userId);
 
-        MeetingParticipantEntity participant =
-                meetingParticipantMapper.toMeetingParticipantEntity(
-                        meetingEntity.getId(), userId, ParticipantType.PARTICIPANT);
-        MeetingParticipateWaitingEntity participateWaitingEntity =
-                meetingParticipateWaitingMapper.toMeetingParticipateWaitingEntity(
-                        meetingEntity.getId(), userId, AcceptState.WAIT);
-
         switch (meetingEntity.getType()) {
-            case FREE -> meetingParticipantRepository.save(participant);
-            case ACCEPT -> meetingParticipateWaitingRepository.save(participateWaitingEntity);
+            case FREE -> {
+                MeetingParticipantEntity participant =
+                        meetingParticipantMapper.toMeetingParticipantEntity(
+                                meetingEntity.getId(), userId, ParticipantType.PARTICIPANT);
+                meetingParticipantRepository.save(participant);
+            }
+            case ACCEPT -> {
+                MeetingParticipateWaitingEntity participateWaitingEntity =
+                        meetingParticipateWaitingMapper.toMeetingParticipateWaitingEntity(
+                                meetingEntity.getId(), userId, AcceptState.WAIT);
+                meetingParticipateWaitingRepository.save(participateWaitingEntity);
+            }
         }
     }
 
     private void validateParticipateMeeting(MeetingEntity meetingEntity, Long userId) {
         meetingEntity.isAfterMeeting();
-        if (meetingParticipantRepository.existsByUserInfoId(userId)) {
+        if (meetingParticipantRepository.existsByUserInfoIdAndMeetingId(
+                userId, meetingEntity.getId())) {
             throw new CustomIllegalArgumentException("이미 참여된 모임 입니다");
         }
 
