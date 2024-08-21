@@ -92,9 +92,9 @@ public class ValidateUtilsTest {
     }
 
     @ParameterizedTest
-    @DisplayName("PR태그 목록은 10개 이하이고, PR태그는 30자 이하이고 한글,영문,숫자, 스페이스만 포함한다")
+    @DisplayName("PR태그 목록은 10개 이하이고, PR태그는 10자 이하이고 한글,영문,숫자, 스페이스만 포함한다")
     @MethodSource("getPrTagList")
-    void PR태그_목록은_10개_이하이고_PR태그는_30자_이하이고_한글_영문_숫자만_포함한다(List<String> prTags) {
+    void PR태그_목록은_10개_이하이고_PR태그는_10자_이하이고_한글_영문_숫자만_포함한다(List<String> prTags) {
         // when
         boolean validatePrTag = ValidateUtils.validatePrTag(prTags);
 
@@ -112,7 +112,7 @@ public class ValidateUtilsTest {
                                 "Test code",
                                 "언제 다 작성하죠",
                                 "할수있다",
-                                "아직 192시간 남았다구 12시 넘어서 191시간이네요",
+                                "이제 일주일남았따",
                                 "긍정적 사고",
                                 "럭키비키",
                                 "도전")));
@@ -144,7 +144,7 @@ public class ValidateUtilsTest {
                                 "Test code",
                                 "언제 다 작성하죠",
                                 "할수있다",
-                                "아직 192시간 남았다구 12시 넘어서 191시간이네요",
+                                "일주일동안 박살내기",
                                 "긍정적 사고",
                                 "럭키비키",
                                 "도전",
@@ -152,10 +152,10 @@ public class ValidateUtilsTest {
     }
 
     @Test
-    @DisplayName("PR태그가 30자를 초과할 경우 예외를 발생한다")
-    void PR태그가_30자를_초과할_경우_예외를_발생한다() {
+    @DisplayName("PR태그가 10자를 초과할 경우 예외를 발생한다")
+    void PR태그가_10자를_초과할_경우_예외를_발생한다() {
         // given
-        List<String> prTags = Arrays.asList("ENFJ", "아직 192시간 남았다구 12시 넘어서 191시간이네요 30자초과");
+        List<String> prTags = Arrays.asList("ENFJ", "아직 시간 남았다구 10자초과");
 
         // when
         CustomIllegalArgumentException exception =

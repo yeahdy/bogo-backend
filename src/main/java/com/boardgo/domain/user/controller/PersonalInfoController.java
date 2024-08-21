@@ -3,16 +3,19 @@ package com.boardgo.domain.user.controller;
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
 import static com.boardgo.common.utils.SecurityUtils.currentUserId;
 
+import com.boardgo.domain.user.controller.dto.OtherPersonalInfoResponse;
 import com.boardgo.domain.user.controller.dto.UserPersonalInfoResponse;
 import com.boardgo.domain.user.controller.dto.UserPersonalInfoUpdateRequest;
 import com.boardgo.domain.user.service.UserCommandUseCase;
 import com.boardgo.domain.user.service.UserQueryUseCase;
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,8 +32,13 @@ public class PersonalInfoController {
 
     @GetMapping(value = "", headers = API_VERSION_HEADER1)
     public ResponseEntity<UserPersonalInfoResponse> getPersonalInfo() {
-        UserPersonalInfoResponse personalInfo = userQueryUseCase.getPersonalInfo(currentUserId());
-        return ResponseEntity.ok(personalInfo);
+        return ResponseEntity.ok(userQueryUseCase.getPersonalInfo(currentUserId()));
+    }
+
+    @GetMapping(value = "/{userId}", headers = API_VERSION_HEADER1)
+    public ResponseEntity<OtherPersonalInfoResponse> getOtherPersonalInfo(
+            @PathVariable("userId") @Positive @NotNull long userId) {
+        return ResponseEntity.ok(userQueryUseCase.getOtherPersonalInfo(userId));
     }
 
     @PatchMapping(value = "", headers = API_VERSION_HEADER1)
@@ -48,7 +56,8 @@ public class PersonalInfoController {
     }
 
     @PatchMapping(value = "/prTags", headers = API_VERSION_HEADER1)
-    public ResponseEntity<Void> updatePrTags(@RequestParam("prTags") @Valid List<String> prTags) {
+    public ResponseEntity<Void> updatePrTags(
+            @RequestParam(name = "prTags", required = false) List<String> prTags) {
         userCommandUseCase.updatePrTags(prTags, currentUserId());
         return ResponseEntity.ok().build();
     }

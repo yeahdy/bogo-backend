@@ -38,7 +38,7 @@ public abstract class ValidateUtils {
 
         for (String tag : prTags) {
             tag = tag.trim();
-            if (tag.length() > 30) { // FIXME: 10자까지로 줄이고 테스트코드 수정
+            if (tag.length() > 10) {
                 throw new CustomIllegalArgumentException(
                         BAD_REQUEST.getCode(), "PR태그 글자 수는 10자 까지 가능합니다.");
             }

@@ -2,6 +2,7 @@ package com.boardgo.integration.user.service;
 
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
 import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
+import static com.boardgo.integration.fixture.UserPrTagFixture.userPrTagEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -26,6 +27,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 public class UserCommandServiceV1Test extends IntegrationTestSupport {
 
@@ -126,14 +128,36 @@ public class UserCommandServiceV1Test extends IntegrationTestSupport {
         // then
         UserInfoEntity changedUserInfo = userRepository.findById(originalUserInfo.getId()).get();
         assertThat(changedUserInfo.getNickName()).isEqualTo(updateRequest.nickName());
-        // TODO 비밀번호 암호화 시 같은 값도 항상 다른게 반환, 복호화 불가능 어떻게 테스트하는지?
         assertThat(changedUserInfo.getPassword()).isNotEqualTo(originalPw);
     }
 
-    // TODO 프로필 이미지를 수정할 수 있다 (+기존의 이미지는 삭제된다)
-    // TODO 전달된 프로필 이미지가 없을 경우 기존의 이미지는 삭제된다
+    @Test
+    @DisplayName("전달된 프로필 이미지가 없을 경우 기존의 이미지는 삭제된다")
+    void 전달된_프로필_이미지가_없을_경우_기존의_이미지는_삭제된다() {
+        // given
+        UserInfoEntity userInfo = userRepository.save(localUserInfoEntity());
+        MultipartFile profileImage = null;
 
-    // TODO PR태그를 수정할 수 있다
-    // TODO 전달된 PR태그가 없을 경우 모두 삭제된다
-    // TODO 전달된 PR태그의 형식이 적절하지 못하면 에러가 발생하고 기존의 태그는 보존된다
+        // when
+        userCommandUseCase.updateProfileImage(userInfo.getId(), profileImage);
+
+        // then
+        assertThat(userInfo.getProfileImage()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("전달된 PR태그가 없을 경우 모두 삭제된다")
+    void 전달된_PR태그가_없을_경우_모두_삭제된다() {
+        // given
+        UserInfoEntity userInfo = userRepository.save(localUserInfoEntity());
+        userPrTagRepository.save(userPrTagEntity(userInfo.getId(), "123"));
+        userPrTagRepository.save(userPrTagEntity(userInfo.getId(), "456"));
+
+        // when
+        userCommandUseCase.updatePrTags(null, userInfo.getId());
+
+        // then
+        List<UserPrTagEntity> trTags = userPrTagRepository.findByUserInfoId(userInfo.getId());
+        assertThat(trTags).isEmpty();
+    }
 }

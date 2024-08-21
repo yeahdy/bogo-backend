@@ -74,7 +74,7 @@ public class UserCommandServiceV1 implements UserCommandUseCase {
         UserInfoEntity userInfoEntity = getUserInfoEntity(userId);
         String originalImage = userInfoEntity.getProfileImage();
         String newImage = "";
-        if (!profileImage.isEmpty()) {
+        if (!Objects.isNull(profileImage)) {
             newImage =
                     s3Service.upload(USER, FileUtils.getUniqueFileName(profileImage), profileImage);
         }
@@ -98,7 +98,9 @@ public class UserCommandServiceV1 implements UserCommandUseCase {
     @Override
     public void updatePrTags(List<String> changedPrTag, Long userId) {
         List<UserPrTagEntity> prTags = userPrTagRepository.findByUserInfoId(userId);
-        validatePrTag(changedPrTag);
+        if (!Objects.isNull(changedPrTag)) {
+            validatePrTag(changedPrTag);
+        }
         userPrTagRepository.deleteAllInBatch(prTags);
         userPrTagRepository.bulkInsertPrTags(changedPrTag, userId);
     }

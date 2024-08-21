@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorCode {
-    UNSUPPORTED_HTTP_METHOD(4000, "요청한 HTTP 메소드는 지원되지 않습니다"),
+    UNSUPPORTED_HTTP_METHOD(4000, "요청한 HTTP 메소드는 지원하지 않는 형식입니다"),
     JSON_PARSING_ERROR(4001, "JSON 데이터 파싱 중 오류가 발생했습니다"),
     DUPLICATE_DATA(4002, "중복된 데이터 입니다"),
     TYPECASTING_ERROR(4003, "타입 캐스팅 변환에 실패했습니다"),

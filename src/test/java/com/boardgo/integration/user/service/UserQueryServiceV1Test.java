@@ -1,5 +1,6 @@
 package com.boardgo.integration.user.service;
 
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
 import static com.boardgo.integration.fixture.UserPrTagFixture.userPrTagEntity;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -7,8 +8,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
+import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.user.controller.dto.EmailRequest;
 import com.boardgo.domain.user.controller.dto.NickNameRequest;
+import com.boardgo.domain.user.controller.dto.OtherPersonalInfoResponse;
 import com.boardgo.domain.user.controller.dto.UserPersonalInfoResponse;
 import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
@@ -30,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UserQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private UserRepository userRepository;
     @Autowired private UserPrTagRepository userPrTagRepository;
+    @Autowired private MeetingParticipantRepository meetingParticipantRepository;
     @Autowired private UserQueryUseCase userQueryUseCase;
 
     @Test
@@ -110,7 +114,7 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
         assertThat(personalInfo.email()).isEqualTo(userInfo.getEmail());
         assertThat(personalInfo.nickName()).isEqualTo(userInfo.getNickName());
         assertThat(personalInfo.profileImage()).isEqualTo(userInfo.getProfileImage());
-        assertThat(personalInfo.averageGrade()).isEqualTo(4.3); // TODO 리뷰 기능 구현 필요
+        assertThat(personalInfo.averageRating()).isEqualTo(4.3); // TODO 리뷰 기능 구현 필요
         assertThat(personalInfo.prTags())
                 .containsAll(
                         List.of(
@@ -133,6 +137,24 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
         assertThat(personalInfo.profileImage()).isNull();
         List<UserPrTagEntity> prTags = userPrTagRepository.findByUserInfoId(userId);
         assertThat(prTags).isEmpty();
+    }
+
+    @ParameterizedTest
+    @DisplayName("다른 사람 프로필 조회 시 회원의 모임 참석 횟수를 알 수 있다")
+    @MethodSource("getNoImageAndPrtTagsUserEntity")
+    void 다른_사람_프로필_조회_시_회원의_모임_참석_횟수를_알_수_있다(UserInfoEntity userInfo) {
+        // given
+        Long userId = getUserId(userInfo);
+        int participationCount = 3;
+        for (long i = 0; i < participationCount; i++) {
+            meetingParticipantRepository.save(getParticipantMeetingParticipantEntity(i, userId));
+        }
+
+        // when
+        OtherPersonalInfoResponse otherPersonalInfo = userQueryUseCase.getOtherPersonalInfo(userId);
+
+        // then
+        assertThat(otherPersonalInfo.meetingCount()).isEqualTo(participationCount);
     }
 
     private Long getUserId(UserInfoEntity userInfo) {

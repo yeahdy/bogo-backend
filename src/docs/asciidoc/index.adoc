@@ -87,8 +87,6 @@ include::{snippets}/signup/http-response.adoc[]
 
 ==== *요청*
 
-- curl-request
-include::{snippets}/get-personal-info/curl-request.adoc[]
 - http-request
 include::{snippets}/get-personal-info/http-request.adoc[]
 
@@ -138,6 +136,21 @@ include::{snippets}/patch-prtag/request-parts.adoc[]
 ==== *응답*
 
 include::{snippets}/patch-prtag/http-response.adoc[]
+
+---
+
+=== *다른 사람 프로필 조회*
+
+==== *요청*
+
+- http-request
+include::{snippets}/get-other-personal-info/http-request.adoc[]
+include::{snippets}/get-other-personal-info/path-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/get-other-personal-info/http-response.adoc[]
+include::{snippets}/get-other-personal-info/response-fields.adoc[]
 
 ---
 

@@ -1,6 +1,7 @@
 package com.boardgo.common.exception.advice;
 
 import static com.boardgo.common.exception.advice.dto.ErrorCode.INTERNAL_SERVER_ERROR;
+import static com.boardgo.common.exception.advice.dto.ErrorCode.UNSUPPORTED_HTTP_METHOD;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNoSuchElementException;
@@ -18,17 +19,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 @Slf4j
 public class CommonControllerAdvice {
-    /** Entity Validation Error */
-    @ExceptionHandler({ConstraintViolationException.class, HandlerMethodValidationException.class})
-    public ResponseEntity<ErrorResponse> ConstraintViolationException() {
+    /** Entity Validation Error HTTP Method Type Error */
+    @ExceptionHandler({
+        ConstraintViolationException.class,
+        HandlerMethodValidationException.class,
+        MethodArgumentTypeMismatchException.class
+    })
+    public ResponseEntity<ErrorResponse> ConstraintViolationException(Exception exception) {
+        OutputLog.logError(getPrintStackTrace(exception));
         return ResponseEntity.badRequest()
                 .body(
                         ErrorResponse.builder()
@@ -77,6 +86,20 @@ public class CommonControllerAdvice {
                         ErrorResponse.builder()
                                 .errorCode(exception.getErrorCode())
                                 .messages(exception.getMessage())
+                                .build());
+    }
+
+    /** 메서드에서 지원하지 않는 형식으로 서버가 요청을 거부할 경우 */
+    @ExceptionHandler({
+        HttpMediaTypeNotSupportedException.class,
+        HttpRequestMethodNotSupportedException.class
+    })
+    public ResponseEntity<ErrorResponse> HttpMediaTypeNotSupportedException() {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body(
+                        ErrorResponse.builder()
+                                .errorCode(UNSUPPORTED_HTTP_METHOD.getCode())
+                                .messages(UNSUPPORTED_HTTP_METHOD.getMessage())
                                 .build());
     }
 
