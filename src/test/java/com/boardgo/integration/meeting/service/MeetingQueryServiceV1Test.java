@@ -2,7 +2,6 @@ package com.boardgo.integration.meeting.service;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.boardgo.domain.boardgame.repository.BoardGameGenreRepository;
 import com.boardgo.domain.boardgame.repository.response.BoardGameListResponse;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
@@ -18,6 +17,7 @@ import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
 import com.boardgo.domain.meeting.service.MeetingCreateFactory;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
+import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.repository.response.UserParticipantResponse;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestMeetingInitializer;
@@ -38,7 +38,7 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private MeetingGameMatchRepository meetingGameMatchRepository;
     @Autowired private MeetingGenreMatchRepository meetingGenreMatchRepository;
     @Autowired private MeetingCreateFactory meetingCreateFactory;
-    @Autowired private BoardGameGenreRepository boardGameGenreRepository;
+    @Autowired private UserRepository userRepository;
 
     @Autowired private TestUserInfoInitializer testUserInfoInitializer;
     @Autowired private TestBoardGameInitializer testBoardGameInitializer;
@@ -50,6 +50,7 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
         // given
         testBoardGameInitializer.generateBoardGameData();
         testUserInfoInitializer.generateUserData();
+
         LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
         MeetingEntity meetingEntity =
                 MeetingEntity.builder()
@@ -95,6 +96,8 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
         assertThat(result.latitude()).isEqualTo(meetingEntity.getLatitude());
         assertThat(result.limitParticipant()).isEqualTo(meetingEntity.getLimitParticipant());
         assertThat(result.state()).isEqualTo(meetingEntity.getState());
+        assertThat(result.shareCount()).isEqualTo(0L);
+        assertThat(result.createMeetingCount()).isEqualTo(1L);
         assertThat(result.userParticipantResponseList())
                 .extracting(UserParticipantResponse::userId)
                 .containsExactlyInAnyOrder(1L, 2L);
@@ -120,6 +123,23 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
         assertThat(searchResult.getTotalElements()).isEqualTo(30);
         assertThat(searchResult.getTotalPages()).isEqualTo(3);
         assertThat(searchResult.getNumberOfElements()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("페이징하여 목록을 조회할 수 있다 (데이터 없음)")
+    void 페이징하여_목록을_조회할_수_있다_데이터_X() {
+        // given
+        int page = 0;
+        long count = 10L;
+        MeetingSearchRequest meetingSearchRequest =
+                new MeetingSearchRequest(
+                        count, null, null, null, null, null, null, null, page, null, null);
+        // when
+        Page<MeetingSearchResponse> searchResult = meetingQueryUseCase.search(meetingSearchRequest);
+        // then
+        assertThat(searchResult.getTotalElements()).isEqualTo(10);
+        assertThat(searchResult.getTotalPages()).isEqualTo(1);
+        assertThat(searchResult.getNumberOfElements()).isEqualTo(0);
     }
 
     @Test

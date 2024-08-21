@@ -9,6 +9,9 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
+import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.repository.UserRepository;
+import com.boardgo.domain.user.service.dto.CustomUserDetails;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestMeetingInitializer;
 import com.boardgo.integration.init.TestUserInfoInitializer;
@@ -24,12 +27,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class MeetingDocsTest extends RestDocsTestSupport {
 
     @Autowired private TestUserInfoInitializer testUserInfoInitializer;
     @Autowired private TestBoardGameInitializer testBoardGameInitializer;
     @Autowired private TestMeetingInitializer testMeetingInitializer;
+    @Autowired private UserRepository userRepository;
 
     @Test
     @DisplayName("사용자는 모임을 만들 수 있다")
@@ -279,7 +287,9 @@ public class MeetingDocsTest extends RestDocsTestSupport {
     @Test
     @DisplayName("사용자는 모임 상세 조회를 할 수 있다")
     void 사용자는_모임_상세_조회를_할_수_있다() {
-        initEssentialData();
+        testBoardGameInitializer.generateBoardGameData();
+        testUserInfoInitializer.generateUserData();
+        testMeetingInitializer.generateMeetingData();
         given(this.spec)
                 .log()
                 .all()
@@ -302,6 +312,9 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("content")
                                                 .type(JsonFieldType.STRING)
                                                 .description("모임 내용"),
+                                        fieldWithPath("likeStatus")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 찜 상태 -> (Y, N) 둘 중 하나"),
                                         fieldWithPath("city")
                                                 .type(JsonFieldType.STRING)
                                                 .description("도시"),
@@ -314,6 +327,15 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("latitude")
                                                 .type(JsonFieldType.STRING)
                                                 .description("위도"),
+                                        fieldWithPath("thumbnail")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 썸네일"),
+                                        fieldWithPath("detailAddress")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 장소의 상세주소"),
+                                        fieldWithPath("locationName")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 장소의 이름"),
                                         fieldWithPath("meetingDatetime")
                                                 .type(JsonFieldType.STRING)
                                                 .description("모임 시간"),
@@ -332,6 +354,12 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("totalParticipantCount")
                                                 .type(JsonFieldType.NUMBER)
                                                 .description("모임 참가자 수"),
+                                        fieldWithPath("shareCount")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("모임 공유 수"),
+                                        fieldWithPath("createMeetingCount")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("작성자의 모임 개설 횟수"),
                                         fieldWithPath("userParticipantResponseList")
                                                 .type(JsonFieldType.ARRAY)
                                                 .description("참가자들 중 유저 목록"),
@@ -370,5 +398,21 @@ public class MeetingDocsTest extends RestDocsTestSupport {
         testBoardGameInitializer.generateBoardGameData();
         testUserInfoInitializer.generateUserData();
         testMeetingInitializer.generateMeetingData();
+    }
+
+    private void setSecurityContext() {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+
+        UserInfoEntity userInfoEntity =
+                userRepository
+                        .findById(1L)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+        CustomUserDetails customUserDetails = new CustomUserDetails(userInfoEntity);
+
+        Authentication auth =
+                new UsernamePasswordAuthenticationToken(
+                        customUserDetails, "password1", customUserDetails.getAuthorities());
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
     }
 }

@@ -1,10 +1,9 @@
 package com.boardgo.integration.user.service;
 
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
-import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
-import static com.boardgo.integration.fixture.UserPrTagFixture.userPrTagEntity;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
+import static com.boardgo.integration.fixture.UserInfoFixture.*;
+import static com.boardgo.integration.fixture.UserPrTagFixture.*;
+import static org.assertj.core.api.Assertions.*;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
@@ -19,6 +18,8 @@ import com.boardgo.domain.user.entity.UserPrTagEntity;
 import com.boardgo.domain.user.repository.UserPrTagRepository;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.UserQueryUseCase;
+import com.boardgo.domain.user.service.dto.CustomUserDetails;
+import com.boardgo.integration.init.TestUserInfoInitializer;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import java.util.List;
 import java.util.stream.Stream;
@@ -29,12 +30,30 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class UserQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private UserRepository userRepository;
     @Autowired private UserPrTagRepository userPrTagRepository;
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;
     @Autowired private UserQueryUseCase userQueryUseCase;
+    @Autowired private TestUserInfoInitializer testUserInfoInitializer;
+
+    @Test
+    @DisplayName("유저컨텍스트 테스트")
+    void 유저컨텍스트_테스트() {
+        // given
+        setSecurityContext();
+        // when
+        CustomUserDetails result =
+                (CustomUserDetails)
+                        SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // then
+        assertThat(result.getId()).isEqualTo(1L);
+    }
 
     @Test
     @DisplayName("해당 이메일이 존재하지 않으면 에러가 발생하지 않는다")
@@ -187,5 +206,20 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
     }
 
     // TODO 회원 리뷰 Entity 매개변수
+    private void setSecurityContext() {
+        testUserInfoInitializer.generateUserData();
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
 
+        UserInfoEntity userInfoEntity =
+                userRepository
+                        .findById(1L)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+        CustomUserDetails customUserDetails = new CustomUserDetails(userInfoEntity);
+
+        Authentication auth =
+                new UsernamePasswordAuthenticationToken(
+                        customUserDetails, "password1", customUserDetails.getAuthorities());
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
+    }
 }

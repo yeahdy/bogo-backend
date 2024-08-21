@@ -1,6 +1,6 @@
 package com.boardgo.domain.meeting.entity;
 
-import static com.boardgo.domain.meeting.entity.MeetingState.COMPLETE;
+import static com.boardgo.domain.meeting.entity.MeetingState.*;
 
 import com.boardgo.common.domain.BaseEntity;
 import com.boardgo.common.exception.CustomIllegalArgumentException;
@@ -77,10 +77,14 @@ public class MeetingEntity extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    MeetingState state;
+    private MeetingState state;
+
+    @Column
+    @ColumnDefault("0")
+    private Integer shareCount;
 
     @Builder
-    private MeetingEntity(
+    public MeetingEntity(
             Long id,
             Long userId,
             String title,
@@ -96,7 +100,8 @@ public class MeetingEntity extends BaseEntity {
             String detailAddress,
             LocalDateTime meetingDatetime,
             Long hit,
-            MeetingState state) {
+            MeetingState state,
+            Integer shareCount) {
         this.id = id;
         this.userId = userId;
         this.title = title;
@@ -113,6 +118,7 @@ public class MeetingEntity extends BaseEntity {
         this.meetingDatetime = meetingDatetime;
         this.hit = hit;
         this.state = state;
+        this.shareCount = shareCount;
     }
 
     public boolean checkCompleteState() {

@@ -17,6 +17,7 @@ import com.boardgo.domain.meeting.repository.projection.QMeetingDetailProjection
 import com.boardgo.domain.meeting.repository.projection.QMeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
+import com.boardgo.domain.user.entity.QMeetingLike;
 import com.boardgo.domain.user.entity.QUserInfoEntity;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.repository.response.UserParticipantResponse;
@@ -24,6 +25,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -53,6 +55,7 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
     private final QBoardGameGenreEntity bgg = QBoardGameGenreEntity.boardGameGenreEntity;
     private final QMeetingParticipantSubEntity mpSub =
             QMeetingParticipantSubEntity.meetingParticipantSubEntity;
+    private final QMeetingLike ml = QMeetingLike.meetingLike;
 
     public MeetingDslRepositoryImpl(
             EntityManager entityManager,
@@ -65,6 +68,7 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
         this.boardGameRepository = boardGameRepository;
     }
 
+    @Override
     public Page<MeetingSearchResponse> findByFilters(MeetingSearchRequest searchRequest) {
 
         MeetingState finishState = MeetingState.valueOf("FINISH");
@@ -111,25 +115,39 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                                 new QMeetingDetailProjection(
                                         m.id,
                                         u.nickName,
+                                        u.id,
                                         m.meetingDatetime,
+                                        new CaseBuilder()
+                                                .when(ml.meetingId.isNotNull())
+                                                .then("Y")
+                                                .otherwise("N")
+                                                .as("likeStatus"),
+                                        m.thumbnail,
                                         m.title,
                                         m.content,
                                         m.longitude,
                                         m.latitude,
                                         m.city,
                                         m.county,
+                                        m.locationName,
+                                        m.detailAddress,
                                         m.limitParticipant,
-                                        m.state))
+                                        m.state,
+                                        m.shareCount))
                         .from(m)
                         .innerJoin(u)
                         .on(m.userId.eq(u.id))
+                        .leftJoin(ml)
+                        .on(m.id.eq(ml.meetingId).and(u.id.eq(ml.userId)))
                         .where(m.id.eq(meetingId))
                         .fetchOne();
+        Long createMeetingCount = getCreateMeetingCount(meetingDetailProjection.userId());
 
         return meetingMapper.toMeetingDetailResponse(
                 meetingDetailProjection,
                 userParticipantResponseList,
-                boardGameByMeetingIdResponseList);
+                boardGameByMeetingIdResponseList,
+                createMeetingCount);
     }
 
     private List<MeetingSearchProjection> getMeetingSearchDtoList(
@@ -168,6 +186,10 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                 .offset(offset)
                 .limit(size)
                 .fetch();
+    }
+
+    private Long getCreateMeetingCount(Long userId) {
+        return queryFactory.select(m.id.count()).from(m).where(m.userId.eq(userId)).fetchOne();
     }
 
     private Map<Long, List<String>> findGamesForMeetings(List<Long> meetingIds) {
