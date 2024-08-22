@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,10 @@ public class EvaluationTagEntity {
 
     @Column(name = "tag_phrase", nullable = false)
     private String tagPhrase;
+
+    @Builder
+    private EvaluationTagEntity(EvaluationType evaluationType, String tagPhrase) {
+        this.evaluationType = evaluationType;
+        this.tagPhrase = tagPhrase;
+    }
 }

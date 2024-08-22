@@ -1,15 +1,15 @@
 = 보고!(BoardGo) API 문서
 :doctype: book
 :icons: font
-:source-highlighter: highlightjs // 문서에 표기되는 코드들의 하이라이팅을 highlightjs를 사용
-:toc: left // toc (Table Of Contents)를 문서의 좌측에 두기
+:source-highlighter: highlightjs
+:toc: left
 :toclevels: 2
 :sectlinks:
 
 
-== *소셜 로그인 토큰 발급*
+=== *소셜 로그인 토큰 발급*
 
-=== *요청*
+==== *요청*
 
 include::{snippets}/token/http-request.adoc[]
 - header
@@ -71,7 +71,6 @@ PR태그 글자 수는 10자 까지 가능합니다 +
 ==== *요청*
 
 include::{snippets}/signup/http-request.adoc[]
-include::{snippets}/signup/httpie-request.adoc[]
 
 - Body
 
@@ -99,8 +98,6 @@ PR태그 글자 수는 10자 까지 가능합니다 +
 
 '''
 
-'''
-
 === *개인정보 조회*
 
 ==== *요청*
@@ -112,6 +109,15 @@ include::{snippets}/get-personal-info/http-request.adoc[]
 
 include::{snippets}/get-personal-info/http-response.adoc[]
 include::{snippets}/get-personal-info/response-fields.adoc[]
+
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+| 회원이 존재하지 않습니다
+|===
 
 '''
 
@@ -141,6 +147,20 @@ include::{snippets}/patch-profile/request-parts.adoc[]
 
 include::{snippets}/patch-profile/http-response.adoc[]
 
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+| 회원이 존재하지 않습니다
+
+| 400
+| 글자 수는 8자 까지 가능합니다 +
+한글,영문,숫자만 입력 가능합니다 +
+|
+|===
+
 '''
 
 === *PR태그 수정*
@@ -154,6 +174,17 @@ include::{snippets}/patch-prtag/request-parts.adoc[]
 ==== *응답*
 
 include::{snippets}/patch-prtag/http-response.adoc[]
+
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 400
+|PR 태그 수는 10개 까지 가능합니다 +
+PR태그 글자 수는 10자 까지 가능합니다 +
+한글,영문,숫자,스페이스만 입력 가능합니다
+|===
 
 '''
 
@@ -170,14 +201,25 @@ include::{snippets}/get-other-personal-info/path-parameters.adoc[]
 include::{snippets}/get-other-personal-info/http-response.adoc[]
 include::{snippets}/get-other-personal-info/response-fields.adoc[]
 
----
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+|회원이 존재하지 않습니다
+
+| 400
+|유효하지 않는 데이터 입니다 (요청데이터가 형식에 맞지 않을 경우)
+|===
+
+'''
 
 === *이메일 중복체크*
 
 ==== *요청*
 
 include::{snippets}/checkEmail/http-request.adoc[]
-include::{snippets}/checkEmail/httpie-request.adoc[]
 
 - QueryParameter
 
@@ -194,7 +236,6 @@ include::{snippets}/checkEmail/http-response.adoc[]
 ==== *요청*
 
 include::{snippets}/checkNickName/http-request.adoc[]
-include::{snippets}/checkNickName/httpie-request.adoc[]
 
 - QueryParameter
 
@@ -211,7 +252,6 @@ include::{snippets}/checkNickName/http-response.adoc[]
 ==== *요청*
 
 include::{snippets}/meeting-create/http-request.adoc[]
-include::{snippets}/meeting-create/httpie-request.adoc[]
 
 - Multipart/form-data
 
@@ -236,7 +276,6 @@ include::{snippets}/meeting-create/response-headers.adoc[]
 ==== *요청*
 
 include::{snippets}/meeting-list/http-request.adoc[]
-include::{snippets}/meeting-list/httpie-request.adoc[]
 
 - QueryString
 
@@ -253,7 +292,6 @@ include::{snippets}/meeting-list/http-response.adoc[]
 ==== *요청*
 
 include::{snippets}/meeting-detail/http-request.adoc[]
-include::{snippets}/meeting-detail/httpie-request.adoc[]
 include::{snippets}/meeting-detail/path-parameters.adoc[]
 
 ==== *응답*
@@ -292,14 +330,13 @@ include::{snippets}/meeting-participation/http-response.adoc[]
 
 |===
 
----
+'''
 
 === *보드게임 등록*
 
 ==== *요청*
 
 include::{snippets}/boardgame-create/http-request.adoc[]
-include::{snippets}/boardgame-create/httpie-request.adoc[]
 
 - Multipart/form-data
 
@@ -320,7 +357,6 @@ include::{snippets}/boardgame-create/http-response.adoc[]
 ==== *요청*
 
 include::{snippets}/boardgame-list/http-request.adoc[]
-include::{snippets}/boardgame-list/httpie-request.adoc[]
 - QueryString
 include::{snippets}/boardgame-list/query-parameters.adoc[]
 
@@ -330,3 +366,16 @@ include::{snippets}/boardgame-list/http-response.adoc[]
 
 - Response Body
 include::{snippets}/boardgame-list/response-fields.adoc[]
+
+'''
+
+=== *평가태그 목록 조회*
+
+==== *요청*
+
+include::{snippets}/get-evaluation-tags/http-request.adoc[]
+
+==== *응답*
+
+include::{snippets}/get-evaluation-tags/http-response.adoc[]
+include::{snippets}/get-evaluation-tags/response-fields.adoc[]
