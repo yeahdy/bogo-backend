@@ -102,8 +102,8 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("회원정보 조회 시 회원 조회 불가 시 예외가 발생한다")
-    void 회원정보_조회_시_회원_조회_불가_시_예외가_발생한다() {
+    @DisplayName("회원 조회가 불가할 경우 예외가 발생한다")
+    void 회원_조회가_불가할_경우_예외가_발생한다() {
         // given
         Long userId = 14511515L;
 

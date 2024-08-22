@@ -66,7 +66,8 @@ public class SecurityConfig {
     final AntPathRequestMatcher[] permitUserUri = {
         AntPathRequestMatcher.antMatcher("/social/signup"),
         AntPathRequestMatcher.antMatcher("/personal-info/**"),
-        AntPathRequestMatcher.antMatcher("/meeting-participant/**")
+        AntPathRequestMatcher.antMatcher("/meeting-participant/**"),
+        AntPathRequestMatcher.antMatcher("/evaluationTags")
     };
 
     @Bean
