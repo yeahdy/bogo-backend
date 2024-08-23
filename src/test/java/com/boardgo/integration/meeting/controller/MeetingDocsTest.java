@@ -218,7 +218,7 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("content[].likeStatus")
                                                 .type(JsonFieldType.STRING)
                                                 .description("찜 상태 여부 -> (Y, N)"),
-                                        fieldWithPath("content[].viewCount")
+                                        fieldWithPath("content[].hit")
                                                 .type(JsonFieldType.NUMBER)
                                                 .description("조회 수"),
                                         fieldWithPath("totalElements")
@@ -340,9 +340,6 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("limitParticipant")
                                                 .type(JsonFieldType.NUMBER)
                                                 .description("최대 참가자 수"),
-                                        fieldWithPath("viewCount")
-                                                .type(JsonFieldType.NUMBER)
-                                                .description("조회 수"),
                                         fieldWithPath("userNickName")
                                                 .type(JsonFieldType.STRING)
                                                 .description("모임 개설자 닉네임"),

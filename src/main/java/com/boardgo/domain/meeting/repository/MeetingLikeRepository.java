@@ -1,10 +1,6 @@
 package com.boardgo.domain.meeting.repository;
 
-import com.boardgo.domain.meeting.entity.MeetingLikeEntity;
-import java.util.List;
+import com.boardgo.domain.meeting.entity.MeetingLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MeetingLikeRepository
-        extends JpaRepository<MeetingLikeEntity, Long>, MeetingLikeJdbcRepository {
-    List<MeetingLikeEntity> findByUserId(Long userId);
-}
+public interface MeetingLikeRepository extends JpaRepository<MeetingLike, Long> {}
