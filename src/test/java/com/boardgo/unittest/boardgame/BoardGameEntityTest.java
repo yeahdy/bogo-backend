@@ -8,6 +8,8 @@ import com.boardgo.domain.mapper.BoardGameMapper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 public class BoardGameEntityTest {
 
@@ -16,42 +18,23 @@ public class BoardGameEntityTest {
     void BoardGameCreateRequestList를_BoardGameEntityList로_매핑할_수_있다() {
         // given
         BoardGameMapper boardGameMapper = BoardGameMapper.INSTANCE;
-        List<BoardGameCreateRequest> boardGameCreateRequests =
-                List.of(
-                        new BoardGameCreateRequest(
-                                "title1", 0, 1, 10, 60, List.of("genre1", "genre2")),
-                        new BoardGameCreateRequest(
-                                "title2", 0, 2, 20, 60, List.of("genre3", "genre4")));
+
+        MultipartFile imageFile =
+                new MockMultipartFile("file", "test1.jpg", "image/jpeg", "test image 1".getBytes());
+
+        BoardGameCreateRequest boardGameCreateRequest =
+                new BoardGameCreateRequest(
+                        "title1", 0, 1, 10, 60, List.of("genre1", "genre2"), imageFile);
         // when
-        List<BoardGameEntity> boardGameEntity =
-                boardGameCreateRequests.stream()
-                        .map(
-                                item ->
-                                        boardGameMapper.toBoardGameEntity(
-                                                item,
-                                                "thumbnail"
-                                                        + item.title()
-                                                                .substring(
-                                                                        item.title().length() - 1)))
-                        .toList();
+        BoardGameEntity boardGameEntity =
+                boardGameMapper.toBoardGameEntity(boardGameCreateRequest, "thumbnail");
+
         // then
-        assertThat(boardGameEntity)
-                .extracting(BoardGameEntity::getTitle)
-                .containsExactlyInAnyOrder("title1", "title2");
-        assertThat(boardGameEntity)
-                .extracting(BoardGameEntity::getMinPeople)
-                .containsExactlyInAnyOrder(0, 0);
-        assertThat(boardGameEntity)
-                .extracting(BoardGameEntity::getMaxPeople)
-                .containsExactlyInAnyOrder(1, 2);
-        assertThat(boardGameEntity)
-                .extracting(BoardGameEntity::getMinPlaytime)
-                .containsExactlyInAnyOrder(10, 20);
-        assertThat(boardGameEntity)
-                .extracting(BoardGameEntity::getMaxPlaytime)
-                .containsExactlyInAnyOrder(60, 60);
-        assertThat(boardGameEntity)
-                .extracting(BoardGameEntity::getThumbnail)
-                .contains("thumbnail1", "thumbnail2");
+        assertThat(boardGameEntity.getTitle()).isEqualTo("title1");
+        assertThat(boardGameEntity.getMinPeople()).isEqualTo(0);
+        assertThat(boardGameEntity.getMaxPeople()).isEqualTo(1);
+        assertThat(boardGameEntity.getMinPlaytime()).isEqualTo(10);
+        assertThat(boardGameEntity.getMaxPlaytime()).isEqualTo(60);
+        assertThat(boardGameEntity.getThumbnail()).isEqualTo("thumbnail");
     }
 }
