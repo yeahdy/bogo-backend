@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import com.boardgo.domain.boardgame.repository.response.BoardGameListResponse;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
-import com.boardgo.domain.meeting.entity.MeetingLike;
+import com.boardgo.domain.meeting.entity.MeetingLikeEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.MeetingState;
 import com.boardgo.domain.meeting.entity.MeetingType;
@@ -152,7 +152,10 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
                 meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
 
         meetingLikeRepository.save(
-                MeetingLike.builder().meetingId(meetingEntity.getId()).userId(userId).build());
+                MeetingLikeEntity.builder()
+                        .meetingId(meetingEntity.getId())
+                        .userId(userId)
+                        .build());
 
         MeetingParticipantEntity savedParticipant =
                 meetingParticipantRepository.save(
@@ -223,7 +226,7 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
 
         long anotherUserId = 1L;
         meetingLikeRepository.save(
-                MeetingLike.builder()
+                MeetingLikeEntity.builder()
                         .meetingId(meetingEntity.getId())
                         .userId(anotherUserId)
                         .build());
@@ -583,8 +586,10 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
         MeetingSearchRequest meetingSearchRequest =
                 new MeetingSearchRequest(
                         null, null, null, null, null, null, null, null, null, null, "MEETING_DATE");
-        meetingLikeRepository.save(MeetingLike.builder().meetingId(meetingId1).userId(1L).build());
-        meetingLikeRepository.save(MeetingLike.builder().meetingId(meetingId3).userId(1L).build());
+        meetingLikeRepository.save(
+                MeetingLikeEntity.builder().meetingId(meetingId1).userId(1L).build());
+        meetingLikeRepository.save(
+                MeetingLikeEntity.builder().meetingId(meetingId3).userId(1L).build());
 
         // when
         Page<MeetingSearchResponse> searchResult = meetingQueryUseCase.search(meetingSearchRequest);
@@ -673,8 +678,10 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
         MeetingSearchRequest meetingSearchRequest =
                 new MeetingSearchRequest(
                         null, null, null, null, null, null, null, null, null, null, "MEETING_DATE");
-        meetingLikeRepository.save(MeetingLike.builder().meetingId(meetingId1).userId(1L).build());
-        meetingLikeRepository.save(MeetingLike.builder().meetingId(meetingId3).userId(1L).build());
+        meetingLikeRepository.save(
+                MeetingLikeEntity.builder().meetingId(meetingId1).userId(1L).build());
+        meetingLikeRepository.save(
+                MeetingLikeEntity.builder().meetingId(meetingId3).userId(1L).build());
 
         // when
         Page<MeetingSearchResponse> searchResult = meetingQueryUseCase.search(meetingSearchRequest);
