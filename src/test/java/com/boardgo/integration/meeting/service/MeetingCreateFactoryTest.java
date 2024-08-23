@@ -82,7 +82,7 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
         assertThat(meeting.getContent()).isEqualTo(meetingEntity.getContent());
         assertThat(meeting.getCounty()).isEqualTo(meetingEntity.getCounty());
         assertThat(meeting.getThumbnail()).isEqualTo(meetingEntity.getThumbnail());
-        assertThat(meeting.getHit()).isEqualTo(0L);
+        assertThat(meeting.getViewCount()).isEqualTo(0L);
         assertThat(meeting.getState()).isEqualTo(MeetingState.PROGRESS);
         assertThat(meeting.getUserId()).isEqualTo(savedUser.getId());
 

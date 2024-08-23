@@ -1,5 +1,6 @@
 package com.boardgo.domain.meeting.service;
 
+import com.boardgo.common.utils.SecurityUtils;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
@@ -16,11 +17,13 @@ public class MeetingQueryServiceV1 implements MeetingQueryUseCase {
     private final MeetingRepository meetingRepository;
 
     public Page<MeetingSearchResponse> search(MeetingSearchRequest meetingSearchRequest) {
-        return meetingRepository.findByFilters(meetingSearchRequest);
+        return meetingRepository.findByFilters(
+                meetingSearchRequest, SecurityUtils.currentUserIdWithoutThrow());
     }
 
     @Override
     public MeetingDetailResponse getDetailById(Long meetingId) {
-        return meetingRepository.findDetailById(meetingId);
+        return meetingRepository.findDetailById(
+                meetingId, SecurityUtils.currentUserIdWithoutThrow());
     }
 }

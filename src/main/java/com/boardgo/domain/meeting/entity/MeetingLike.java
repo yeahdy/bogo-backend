@@ -1,4 +1,4 @@
-package com.boardgo.domain.user.entity;
+package com.boardgo.domain.meeting.entity;
 
 import com.boardgo.common.domain.BaseEntity;
 import jakarta.persistence.Column;

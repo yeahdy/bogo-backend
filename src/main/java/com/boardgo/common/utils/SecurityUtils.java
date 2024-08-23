@@ -15,7 +15,17 @@ public abstract class SecurityUtils {
         if (!(authentication.getPrincipal() instanceof CustomUserDetails)) {
             throw new OAuth2Exception("인증된 사용자가 아닙니다.");
         }
-        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-        return user.getId();
+        return ((CustomUserDetails) authentication.getPrincipal()).getId();
+    }
+
+    public static Long currentUserIdWithoutThrow() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return null;
+        }
+        if (!(authentication.getPrincipal() instanceof CustomUserDetails)) {
+            return null;
+        }
+        return ((CustomUserDetails) authentication.getPrincipal()).getId();
     }
 }
