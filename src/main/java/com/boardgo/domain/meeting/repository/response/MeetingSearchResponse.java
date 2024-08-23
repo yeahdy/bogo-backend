@@ -10,7 +10,7 @@ public record MeetingSearchResponse(
         String city,
         String county,
         String thumbnail,
-        Long hit,
+        Long viewCount,
         String likeStatus,
         LocalDateTime meetingDate,
         Integer limitParticipant,
