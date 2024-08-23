@@ -33,6 +33,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -141,7 +142,7 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                         .innerJoin(u)
                         .on(m.userId.eq(u.id))
                         .leftJoin(ml)
-                        .on(m.id.eq(ml.meetingId).and(userIdEqualsFilter(userId)))
+                        .on(m.id.eq(ml.meetingId).and(u.id.eq(ml.userId)))
                         .where(m.id.eq(meetingId))
                         .fetchOne();
         Long createMeetingCount = getCreateMeetingCount(meetingDetailProjection.userId());
@@ -209,6 +210,8 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
     }
 
     private Map<Long, List<String>> findGamesForMeetings(List<Long> meetingIds) {
+        Map<Long, List<String>> results = new HashMap<>();
+
         List<Tuple> queryResults =
                 queryFactory
                         .select(
