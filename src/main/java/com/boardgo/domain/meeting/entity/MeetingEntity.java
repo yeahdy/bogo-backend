@@ -38,7 +38,7 @@ public class MeetingEntity extends BaseEntity {
     @Column(length = 64, nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
     private String content;
 
     @Enumerated(EnumType.STRING)

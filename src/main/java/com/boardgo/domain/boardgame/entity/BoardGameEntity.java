@@ -22,7 +22,8 @@ public class BoardGameEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column private String title;
+    @Column(unique = true)
+    private String title;
 
     @Column private String thumbnail;
 

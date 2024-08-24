@@ -5,4 +5,6 @@ import java.util.List;
 public interface MeetingLikeCommandUseCase {
 
     void createMany(List<Long> meetingIdList);
+
+    void deleteByMeetingId(Long meetingId);
 }
