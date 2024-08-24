@@ -21,7 +21,6 @@ import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.repository.UserPrTagRepository;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.support.RestDocsTestSupport;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,10 +71,10 @@ public class PersonalInfoDocsTest extends RestDocsTestSupport {
 
     @Test
     @DisplayName("내 개인정보 수정하기")
-    void 내_개인정보_수정하기() throws JsonProcessingException {
+    void 내_개인정보_수정하기() {
         UserPersonalInfoUpdateRequest updateRequest =
                 new UserPersonalInfoUpdateRequest("butter", "fskdj234#!@");
-        String jsonValue = objectMapper.writeValueAsString(updateRequest);
+        String jsonValue = writeValueAsString(updateRequest);
         userRepository.save(localUserInfoEntity());
 
         given(this.spec)

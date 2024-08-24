@@ -60,7 +60,8 @@ public class SecurityConfig {
         AntPathRequestMatcher.antMatcher("/actuator/**"),
         AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/meeting/**"),
         AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/boardgame"),
-        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/personal-info/{userId}")
+        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/personal-info/{userId}"),
+        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/home/**")
     };
 
     final AntPathRequestMatcher[] permitUserUri = {

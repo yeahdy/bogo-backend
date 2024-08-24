@@ -396,8 +396,6 @@ include::{snippets}/boardgame-create/http-request.adoc[]
 
 include::{snippets}/boardgame-create/request-parts.adoc[]
 
-
-
 ==== *응답*
 
 include::{snippets}/boardgame-create/http-response.adoc[]
@@ -431,3 +429,16 @@ include::{snippets}/get-evaluation-tags/http-request.adoc[]
 
 include::{snippets}/get-evaluation-tags/http-response.adoc[]
 include::{snippets}/get-evaluation-tags/response-fields.adoc[]
+
+'''
+
+=== *메인 홈 상황별 추천 보드게임*
+
+==== *요청*
+
+include::{snippets}/get-home-situation/http-request.adoc[]
+
+==== *응답*
+
+include::{snippets}/get-home-situation/http-response.adoc[]
+include::{snippets}/get-home-situation/response-fields.adoc[]
