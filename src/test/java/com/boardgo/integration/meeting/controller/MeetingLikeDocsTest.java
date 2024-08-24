@@ -5,6 +5,8 @@ import static io.restassured.RestAssured.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
+import com.boardgo.domain.meeting.entity.MeetingLikeEntity;
+import com.boardgo.domain.meeting.repository.MeetingLikeRepository;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.dto.CustomUserDetails;
@@ -26,6 +28,7 @@ public class MeetingLikeDocsTest extends RestDocsTestSupport {
     @Autowired private TestUserInfoInitializer testUserInfoInitializer;
     @Autowired private TestBoardGameInitializer testBoardGameInitializer;
     @Autowired private TestMeetingInitializer testMeetingInitializer;
+    @Autowired private MeetingLikeRepository meetingLikeRepository;
     @Autowired private UserRepository userRepository;
 
     @Test
@@ -52,6 +55,33 @@ public class MeetingLikeDocsTest extends RestDocsTestSupport {
                                                         "한개만 보내도 되고, 여러개를 콤마(,)찍어서 보내도 됩니다! ex) meetingIdList=1,2,3"))))
                 .when()
                 .post("/meeting/like")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("사용자는 찜을 삭제할 수 있다")
+    void 사용자는_찜을_삭제할_수_있다() {
+        testBoardGameInitializer.generateBoardGameData();
+        setSecurityContext();
+        testMeetingInitializer.generateMeetingData();
+        meetingLikeRepository.save(MeetingLikeEntity.builder().meetingId(1L).userId(1L).build());
+
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("meetingId", 1L)
+                .filter(
+                        document(
+                                "meeting-like-delete",
+                                pathParameters(
+                                        parameterWithName("meetingId").description("meetingId"))))
+                .when()
+                .delete("/meeting/like/{meetingId}")
                 .then()
                 .statusCode(HttpStatus.OK.value());
     }

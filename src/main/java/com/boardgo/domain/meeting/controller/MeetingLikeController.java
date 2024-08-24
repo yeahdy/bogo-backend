@@ -4,6 +4,8 @@ import com.boardgo.domain.meeting.service.MeetingLikeCommandUseCase;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +19,12 @@ public class MeetingLikeController {
     public ResponseEntity<Void> likeMeetings(
             @RequestParam("meetingIdList") List<Long> meetingIdList) {
         meetingLikeCommandUseCase.createMany(meetingIdList);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/meeting/like/{meetingId}")
+    public ResponseEntity<Void> deleteLike(@PathVariable("meetingId") Long meetingId) {
+        meetingLikeCommandUseCase.deleteByMeetingId(meetingId);
         return ResponseEntity.ok().build();
     }
 }
