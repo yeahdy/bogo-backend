@@ -1,6 +1,7 @@
 package com.boardgo.domain.boardgame.repository;
 
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
+import com.boardgo.domain.boardgame.repository.projection.SituationBoardGameProjection;
 import com.boardgo.domain.boardgame.repository.response.BoardGameByMeetingIdResponse;
 import com.boardgo.domain.boardgame.repository.response.BoardGameSearchResponse;
 import java.util.List;
@@ -11,4 +12,6 @@ public interface BoardGameDslRepository {
     Page<BoardGameSearchResponse> findBySearchWord(BoardGameSearchRequest boardGameSearchRequest);
 
     List<BoardGameByMeetingIdResponse> findMeetingDetailByMeetingId(Long meetingId);
+
+    List<SituationBoardGameProjection> findByMaxPeopleBetween(int maxPeople);
 }

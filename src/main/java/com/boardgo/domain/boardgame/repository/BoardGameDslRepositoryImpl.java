@@ -10,6 +10,8 @@ import com.boardgo.domain.boardgame.repository.projection.GenreSearchProjection;
 import com.boardgo.domain.boardgame.repository.projection.QBoardGameByMeetingIdProjection;
 import com.boardgo.domain.boardgame.repository.projection.QBoardGameSearchProjection;
 import com.boardgo.domain.boardgame.repository.projection.QGenreSearchProjection;
+import com.boardgo.domain.boardgame.repository.projection.QSituationBoardGameProjection;
+import com.boardgo.domain.boardgame.repository.projection.SituationBoardGameProjection;
 import com.boardgo.domain.boardgame.repository.response.BoardGameByMeetingIdResponse;
 import com.boardgo.domain.boardgame.repository.response.BoardGameSearchResponse;
 import com.boardgo.domain.boardgame.repository.response.GenreSearchResponse;
@@ -155,5 +157,35 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
         return Objects.nonNull(searchWord)
                 ? b.title.toLowerCase().contains(searchWord.toLowerCase())
                 : null;
+    }
+
+    @Override
+    public List<SituationBoardGameProjection> findByMaxPeopleBetween(int maxPeople) {
+        return queryFactory
+                .select(
+                        new QSituationBoardGameProjection(
+                                b.title, b.thumbnail, b.minPlaytime, b.maxPlaytime, bgg.genre))
+                .from(ggm)
+                .innerJoin(b)
+                .on(ggm.boardGameId.eq(b.id))
+                .innerJoin(bgg)
+                .on(ggm.boardGameGenreId.eq(bgg.id))
+                .where(loeOrgoe(maxPeople))
+                .orderBy(b.minPlaytime.asc())
+                .fetch();
+    }
+
+    private BooleanExpression loeOrgoe(int maxPeople) {
+        switch (maxPeople) {
+            case 2, 3 -> {
+                // x > y and x<= y
+                return b.maxPeople.gt(maxPeople - 1).and(b.maxPeople.loe(maxPeople));
+            }
+            case 4 -> {
+                // x >= y
+                return b.maxPeople.goe(maxPeople);
+            }
+        }
+        return null;
     }
 }

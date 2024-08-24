@@ -22,7 +22,6 @@ import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.support.RestDocsTestSupport;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,7 @@ public class MeetingParticipantDocsTest extends RestDocsTestSupport {
 
     @Test
     @DisplayName("보드게임 모임 참가하기")
-    void 보드게임_모임_참가하기() throws JsonProcessingException {
+    void 보드게임_모임_참가하기() {
         userRepository.save(socialUserInfoEntity(ProviderType.KAKAO));
         UserInfoEntity user2 = userRepository.save(localUserInfoEntity());
         MeetingEntity meeting =
@@ -49,7 +48,7 @@ public class MeetingParticipantDocsTest extends RestDocsTestSupport {
 
         Long meetingId = 1L;
         MeetingParticipateRequest participateRequest = new MeetingParticipateRequest(meetingId);
-        String requestJson = objectMapper.writeValueAsString(participateRequest);
+        String requestJson = writeValueAsString(participateRequest);
 
         given(this.spec)
                 .port(port)
