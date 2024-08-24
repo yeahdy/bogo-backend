@@ -6,7 +6,7 @@ import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
 import org.springframework.data.domain.Page;
 
 public interface MeetingDslRepository {
-    Page<MeetingSearchResponse> findByFilters(MeetingSearchRequest searchRequest);
+    Page<MeetingSearchResponse> findByFilters(MeetingSearchRequest searchRequest, Long userId);
 
-    MeetingDetailResponse findDetailById(Long meetingId);
+    MeetingDetailResponse findDetailById(Long meetingId, Long userId);
 }

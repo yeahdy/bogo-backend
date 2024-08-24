@@ -1,4 +1,4 @@
-package com.boardgo.domain.user.entity;
+package com.boardgo.domain.meeting.entity;
 
 import com.boardgo.common.domain.BaseEntity;
 import jakarta.persistence.Column;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "meeting_like")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MeetingLike extends BaseEntity {
+public class MeetingLikeEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "meeting_like_id")
@@ -29,7 +29,7 @@ public class MeetingLike extends BaseEntity {
     private Long meetingId;
 
     @Builder
-    private MeetingLike(Long id, Long userId, Long meetingId) {
+    private MeetingLikeEntity(Long id, Long userId, Long meetingId) {
         this.id = id;
         this.userId = userId;
         this.meetingId = meetingId;

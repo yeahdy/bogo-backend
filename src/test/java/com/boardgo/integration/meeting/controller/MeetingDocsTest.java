@@ -9,9 +9,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
-import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.repository.UserRepository;
-import com.boardgo.domain.user.service.dto.CustomUserDetails;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestMeetingInitializer;
 import com.boardgo.integration.init.TestUserInfoInitializer;
@@ -27,10 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 public class MeetingDocsTest extends RestDocsTestSupport {
 
@@ -221,6 +215,12 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("content[].participantCount")
                                                 .type(JsonFieldType.NUMBER)
                                                 .description("현재 참가자 수"),
+                                        fieldWithPath("content[].likeStatus")
+                                                .type(JsonFieldType.STRING)
+                                                .description("찜 상태 여부 -> (Y, N)"),
+                                        fieldWithPath("content[].viewCount")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("조회 수"),
                                         fieldWithPath("totalElements")
                                                 .type(JsonFieldType.NUMBER)
                                                 .description("전체 개수 (요청 때 count에 넣어주시면 캐싱 됩니다..!)"),
@@ -287,9 +287,7 @@ public class MeetingDocsTest extends RestDocsTestSupport {
     @Test
     @DisplayName("사용자는 모임 상세 조회를 할 수 있다")
     void 사용자는_모임_상세_조회를_할_수_있다() {
-        testBoardGameInitializer.generateBoardGameData();
-        testUserInfoInitializer.generateUserData();
-        testMeetingInitializer.generateMeetingData();
+        initEssentialData();
         given(this.spec)
                 .log()
                 .all()
@@ -342,6 +340,9 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("limitParticipant")
                                                 .type(JsonFieldType.NUMBER)
                                                 .description("최대 참가자 수"),
+                                        fieldWithPath("viewCount")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("조회 수"),
                                         fieldWithPath("userNickName")
                                                 .type(JsonFieldType.STRING)
                                                 .description("모임 개설자 닉네임"),
@@ -398,21 +399,5 @@ public class MeetingDocsTest extends RestDocsTestSupport {
         testBoardGameInitializer.generateBoardGameData();
         testUserInfoInitializer.generateUserData();
         testMeetingInitializer.generateMeetingData();
-    }
-
-    private void setSecurityContext() {
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-
-        UserInfoEntity userInfoEntity =
-                userRepository
-                        .findById(1L)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
-        CustomUserDetails customUserDetails = new CustomUserDetails(userInfoEntity);
-
-        Authentication auth =
-                new UsernamePasswordAuthenticationToken(
-                        customUserDetails, "password1", customUserDetails.getAuthorities());
-        context.setAuthentication(auth);
-        SecurityContextHolder.setContext(context);
     }
 }

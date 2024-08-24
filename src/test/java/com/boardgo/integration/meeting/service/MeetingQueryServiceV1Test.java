@@ -5,20 +5,24 @@ import static org.assertj.core.api.Assertions.*;
 import com.boardgo.domain.boardgame.repository.response.BoardGameListResponse;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
+import com.boardgo.domain.meeting.entity.MeetingLikeEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.MeetingState;
 import com.boardgo.domain.meeting.entity.MeetingType;
 import com.boardgo.domain.meeting.entity.ParticipantType;
 import com.boardgo.domain.meeting.repository.MeetingGameMatchRepository;
 import com.boardgo.domain.meeting.repository.MeetingGenreMatchRepository;
+import com.boardgo.domain.meeting.repository.MeetingLikeRepository;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
 import com.boardgo.domain.meeting.service.MeetingCreateFactory;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
+import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.repository.response.UserParticipantResponse;
+import com.boardgo.domain.user.service.dto.CustomUserDetails;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestMeetingInitializer;
 import com.boardgo.integration.init.TestUserInfoInitializer;
@@ -30,6 +34,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private MeetingRepository meetingRepository;
@@ -39,22 +47,23 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private MeetingGenreMatchRepository meetingGenreMatchRepository;
     @Autowired private MeetingCreateFactory meetingCreateFactory;
     @Autowired private UserRepository userRepository;
+    @Autowired private MeetingLikeRepository meetingLikeRepository;
 
     @Autowired private TestUserInfoInitializer testUserInfoInitializer;
     @Autowired private TestBoardGameInitializer testBoardGameInitializer;
     @Autowired private TestMeetingInitializer testMeetingInitializer;
 
     @Test
-    @DisplayName("모임 상세조회를 할 수 있다")
-    void 모임_상세조회를_할_수_있다() {
+    @DisplayName("모임 상세조회를 할 수 있다 (찜 X)")
+    void 모임_상세조회를_할_수_있다_찜_X() {
         // given
         testBoardGameInitializer.generateBoardGameData();
-        testUserInfoInitializer.generateUserData();
+        setSecurityContext();
 
         LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
         MeetingEntity meetingEntity =
                 MeetingEntity.builder()
-                        .hit(0L)
+                        .viewCount(0L)
                         .userId(1L)
                         .latitude("12312312")
                         .longitude("12321")
@@ -98,6 +107,154 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
         assertThat(result.state()).isEqualTo(meetingEntity.getState());
         assertThat(result.shareCount()).isEqualTo(0L);
         assertThat(result.createMeetingCount()).isEqualTo(1L);
+        assertThat(result.likeStatus()).isEqualTo("N");
+        assertThat(result.userParticipantResponseList())
+                .extracting(UserParticipantResponse::userId)
+                .containsExactlyInAnyOrder(1L, 2L);
+        assertThat(result.userParticipantResponseList())
+                .extracting(UserParticipantResponse::nickname)
+                .containsExactlyInAnyOrder("nickName0", "nickName1");
+        assertThat(result.boardGameListResponseList())
+                .extracting(BoardGameListResponse::boardGameId)
+                .containsExactlyInAnyOrderElementsOf(boardGameGenreIdList);
+    }
+
+    @Test
+    @DisplayName("모임 상세조회를 할 수 있다 (찜 O)")
+    void 모임_상세조회를_할_수_있다_찜_O() {
+        // given
+        testBoardGameInitializer.generateBoardGameData();
+        setSecurityContext();
+
+        LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
+        long userId = 1L;
+        MeetingEntity meetingEntity =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(userId)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(MeetingState.COMPLETE)
+                        .meetingDatetime(meetingDatetime)
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList = List.of(1L, 2L);
+        List<Long> boardGameGenreIdList = List.of(1L, 2L);
+        Long meetingId =
+                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
+
+        meetingLikeRepository.save(
+                MeetingLikeEntity.builder()
+                        .meetingId(meetingEntity.getId())
+                        .userId(userId)
+                        .build());
+
+        MeetingParticipantEntity savedParticipant =
+                meetingParticipantRepository.save(
+                        MeetingParticipantEntity.builder()
+                                .meetingId(meetingId)
+                                .userInfoId(2L)
+                                .type(ParticipantType.PARTICIPANT)
+                                .build());
+
+        // when
+        MeetingDetailResponse result = meetingQueryUseCase.getDetailById(meetingId);
+        // then
+        assertThat(result.content()).isEqualTo(meetingEntity.getContent());
+        assertThat(result.title()).isEqualTo(meetingEntity.getTitle());
+        assertThat(result.meetingId()).isEqualTo(meetingId);
+        assertThat(result.genres()).contains("genre0", "genre1");
+        assertThat(result.city()).isEqualTo(meetingEntity.getCity());
+        assertThat(result.county()).isEqualTo(meetingEntity.getCounty());
+        assertThat(result.longitude()).isEqualTo(meetingEntity.getLongitude());
+        assertThat(result.latitude()).isEqualTo(meetingEntity.getLatitude());
+        assertThat(result.limitParticipant()).isEqualTo(meetingEntity.getLimitParticipant());
+        assertThat(result.state()).isEqualTo(meetingEntity.getState());
+        assertThat(result.shareCount()).isEqualTo(0L);
+        assertThat(result.createMeetingCount()).isEqualTo(1L);
+        assertThat(result.likeStatus()).isEqualTo("Y");
+        assertThat(result.userParticipantResponseList())
+                .extracting(UserParticipantResponse::userId)
+                .containsExactlyInAnyOrder(1L, 2L);
+        assertThat(result.userParticipantResponseList())
+                .extracting(UserParticipantResponse::nickname)
+                .containsExactlyInAnyOrder("nickName0", "nickName1");
+        assertThat(result.boardGameListResponseList())
+                .extracting(BoardGameListResponse::boardGameId)
+                .containsExactlyInAnyOrderElementsOf(boardGameGenreIdList);
+    }
+
+    @Test
+    @DisplayName("모임 상세 조회에서 다른 사람이 찜한 것은 찜한 것으로 표시되지 않는다")
+    void 모임_상세_조회에서_다른_사람이_찜한_것은_찜한_것으로_표시되지_않는다() {
+        // given
+        testBoardGameInitializer.generateBoardGameData();
+        setSecurityContext();
+
+        LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
+        long userId = 2L;
+        MeetingEntity meetingEntity =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(userId)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(MeetingState.COMPLETE)
+                        .meetingDatetime(meetingDatetime)
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList = List.of(1L, 2L);
+        List<Long> boardGameGenreIdList = List.of(1L, 2L);
+        Long meetingId =
+                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
+
+        long anotherUserId = 1L;
+        meetingLikeRepository.save(
+                MeetingLikeEntity.builder()
+                        .meetingId(meetingEntity.getId())
+                        .userId(anotherUserId)
+                        .build());
+
+        MeetingParticipantEntity savedParticipant =
+                meetingParticipantRepository.save(
+                        MeetingParticipantEntity.builder()
+                                .meetingId(meetingId)
+                                .userInfoId(1L)
+                                .type(ParticipantType.PARTICIPANT)
+                                .build());
+
+        // when
+        MeetingDetailResponse result = meetingQueryUseCase.getDetailById(meetingId);
+        // then
+        assertThat(result.content()).isEqualTo(meetingEntity.getContent());
+        assertThat(result.title()).isEqualTo(meetingEntity.getTitle());
+        assertThat(result.meetingId()).isEqualTo(meetingId);
+        assertThat(result.genres()).contains("genre0", "genre1");
+        assertThat(result.city()).isEqualTo(meetingEntity.getCity());
+        assertThat(result.county()).isEqualTo(meetingEntity.getCounty());
+        assertThat(result.longitude()).isEqualTo(meetingEntity.getLongitude());
+        assertThat(result.latitude()).isEqualTo(meetingEntity.getLatitude());
+        assertThat(result.limitParticipant()).isEqualTo(meetingEntity.getLimitParticipant());
+        assertThat(result.state()).isEqualTo(meetingEntity.getState());
+        assertThat(result.shareCount()).isEqualTo(0L);
+        assertThat(result.createMeetingCount()).isEqualTo(1L);
+        assertThat(result.likeStatus()).isEqualTo("N");
         assertThat(result.userParticipantResponseList())
                 .extracting(UserParticipantResponse::userId)
                 .containsExactlyInAnyOrder(1L, 2L);
@@ -350,6 +507,192 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
     }
 
     @Test
+    @DisplayName("모임 목록에서 찜한 목록들을 알 수 있다")
+    void 모임_목록에서_찜한_목록들을_알_수_있다() {
+        // given
+        testBoardGameInitializer.generateBoardGameData();
+        setSecurityContext();
+
+        MeetingEntity meetingEntity1 =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(1L)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(MeetingState.COMPLETE)
+                        .meetingDatetime(LocalDateTime.now().plusDays(1))
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList1 = List.of(1L, 2L);
+        List<Long> boardGameGenreIdList1 = List.of(1L, 2L);
+        Long meetingId1 =
+                meetingCreateFactory.create(
+                        meetingEntity1, boardGameIdList1, boardGameGenreIdList1);
+        MeetingEntity meetingEntity2 =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(1L)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(MeetingState.COMPLETE)
+                        .meetingDatetime(LocalDateTime.now().plusDays(2))
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList2 = List.of(1L, 2L);
+        List<Long> boardGameGenreIdList2 = List.of(1L, 2L);
+        Long meetingId2 =
+                meetingCreateFactory.create(
+                        meetingEntity2, boardGameIdList2, boardGameGenreIdList2);
+        MeetingEntity meetingEntity3 =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(1L)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(MeetingState.COMPLETE)
+                        .meetingDatetime(LocalDateTime.now().plusDays(3))
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList3 = List.of(1L, 2L);
+        List<Long> boardGameGenreIdList3 = List.of(1L, 2L);
+        Long meetingId3 =
+                meetingCreateFactory.create(
+                        meetingEntity3, boardGameIdList3, boardGameGenreIdList3);
+
+        MeetingSearchRequest meetingSearchRequest =
+                new MeetingSearchRequest(
+                        null, null, null, null, null, null, null, null, null, null, "MEETING_DATE");
+        meetingLikeRepository.save(
+                MeetingLikeEntity.builder().meetingId(meetingId1).userId(1L).build());
+        meetingLikeRepository.save(
+                MeetingLikeEntity.builder().meetingId(meetingId3).userId(1L).build());
+
+        // when
+        Page<MeetingSearchResponse> searchResult = meetingQueryUseCase.search(meetingSearchRequest);
+        // then
+        assertThat(searchResult.getContent().getFirst().likeStatus()).isEqualTo("Y");
+        assertThat(searchResult.getContent().get(1).likeStatus()).isEqualTo("N");
+        assertThat(searchResult.getContent().get(2).likeStatus()).isEqualTo("Y");
+    }
+
+    @Test
+    @DisplayName("비회원의 경우 모든 목록의 찜하기 버튼이 눌러져 있지 않다")
+    void 비회원의_경우_모든_목록의_찜하기_버튼이_눌러져_있지_않다() {
+        testBoardGameInitializer.generateBoardGameData();
+        testUserInfoInitializer.generateUserData();
+
+        MeetingEntity meetingEntity1 =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(1L)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(MeetingState.COMPLETE)
+                        .meetingDatetime(LocalDateTime.now().plusDays(1))
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList1 = List.of(1L, 2L);
+        List<Long> boardGameGenreIdList1 = List.of(1L, 2L);
+        Long meetingId1 =
+                meetingCreateFactory.create(
+                        meetingEntity1, boardGameIdList1, boardGameGenreIdList1);
+        MeetingEntity meetingEntity2 =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(1L)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(MeetingState.COMPLETE)
+                        .meetingDatetime(LocalDateTime.now().plusDays(2))
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList2 = List.of(1L, 2L);
+        List<Long> boardGameGenreIdList2 = List.of(1L, 2L);
+        Long meetingId2 =
+                meetingCreateFactory.create(
+                        meetingEntity2, boardGameIdList2, boardGameGenreIdList2);
+        MeetingEntity meetingEntity3 =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(1L)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(MeetingState.COMPLETE)
+                        .meetingDatetime(LocalDateTime.now().plusDays(3))
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList3 = List.of(1L, 2L);
+        List<Long> boardGameGenreIdList3 = List.of(1L, 2L);
+        Long meetingId3 =
+                meetingCreateFactory.create(
+                        meetingEntity3, boardGameIdList3, boardGameGenreIdList3);
+
+        MeetingSearchRequest meetingSearchRequest =
+                new MeetingSearchRequest(
+                        null, null, null, null, null, null, null, null, null, null, "MEETING_DATE");
+        meetingLikeRepository.save(
+                MeetingLikeEntity.builder().meetingId(meetingId1).userId(1L).build());
+        meetingLikeRepository.save(
+                MeetingLikeEntity.builder().meetingId(meetingId3).userId(1L).build());
+
+        // when
+        Page<MeetingSearchResponse> searchResult = meetingQueryUseCase.search(meetingSearchRequest);
+        // then
+        assertThat(searchResult.getContent().getFirst().likeStatus()).isEqualTo("N");
+        assertThat(searchResult.getContent().get(1).likeStatus()).isEqualTo("N");
+        assertThat(searchResult.getContent().get(2).likeStatus()).isEqualTo("N");
+        assertThat(searchResult.getTotalElements()).isEqualTo(3);
+    }
+
+    @Test
     @DisplayName("모임 목록에서 다른 페이지를 접근할 수 있다")
     void 모임_목록에서_다른_페이지를_접근할_수_있다() {
         // given
@@ -370,5 +713,22 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
         testBoardGameInitializer.generateBoardGameData();
         testUserInfoInitializer.generateUserData();
         testMeetingInitializer.generateMeetingData();
+    }
+
+    private void setSecurityContext() {
+        testUserInfoInitializer.generateUserData();
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+
+        UserInfoEntity userInfoEntity =
+                userRepository
+                        .findById(1L)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+        CustomUserDetails customUserDetails = new CustomUserDetails(userInfoEntity);
+
+        Authentication auth =
+                new UsernamePasswordAuthenticationToken(
+                        customUserDetails, "password1", customUserDetails.getAuthorities());
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
     }
 }

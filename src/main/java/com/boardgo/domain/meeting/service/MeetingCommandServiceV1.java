@@ -3,7 +3,6 @@ package com.boardgo.domain.meeting.service;
 import static com.boardgo.common.constant.S3BucketConstant.*;
 
 import com.boardgo.common.exception.CustomNoSuchElementException;
-import com.boardgo.common.exception.advice.dto.ErrorCode;
 import com.boardgo.common.utils.FileUtils;
 import com.boardgo.common.utils.S3Service;
 import com.boardgo.common.utils.SecurityUtils;
@@ -48,11 +47,7 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
             BoardGameEntity boardGameEntity =
                     boardGameRepository
                             .findById(meetingCreateRequest.boardGameIdList().getFirst())
-                            .orElseThrow(
-                                    () ->
-                                            new CustomNoSuchElementException(
-                                                    ErrorCode.ELEMENT_NOT_FOUND.getCode(),
-                                                    "존재하지 않는 보드게임입니다."));
+                            .orElseThrow(() -> new CustomNoSuchElementException("보드게임"));
             imageUri = boardGameEntity.getThumbnail();
         } else {
             imageUri = s3Service.upload(MEETING, FileUtils.getUniqueFileName(imageFile), imageFile);

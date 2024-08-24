@@ -1,7 +1,7 @@
 package com.boardgo.unittest.meeting;
 
-import static com.boardgo.domain.meeting.entity.MeetingType.FREE;
-import static com.boardgo.integration.fixture.MeetingFixture.getCompleteMeetingEntity;
+import static com.boardgo.domain.meeting.entity.MeetingType.*;
+import static com.boardgo.integration.fixture.MeetingFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -50,7 +50,7 @@ public class MeetingEntityTest {
         assertThat(meetingEntity.getType()).isEqualTo(FREE);
         assertThat(meetingEntity.getLongitude()).isEqualTo(meetingCreateRequest.longitude());
         assertThat(meetingEntity.getLatitude()).isEqualTo(meetingCreateRequest.latitude());
-        assertThat(meetingEntity.getHit()).isEqualTo(0L);
+        assertThat(meetingEntity.getViewCount()).isEqualTo(0L);
         assertThat(meetingEntity.getUserId()).isEqualTo(1L);
         assertThat(meetingEntity.getState()).isEqualTo(MeetingState.PROGRESS);
         assertThat(meetingEntity.getDetailAddress())

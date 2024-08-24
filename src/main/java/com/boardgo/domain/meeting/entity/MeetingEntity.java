@@ -71,9 +71,9 @@ public class MeetingEntity extends BaseEntity {
     @Column(name = "meeting_datetime", nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime meetingDatetime;
 
-    @Column
+    @Column(name = "view_count")
     @ColumnDefault("0")
-    private Long hit;
+    private Long viewCount;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -99,7 +99,7 @@ public class MeetingEntity extends BaseEntity {
             String locationName,
             String detailAddress,
             LocalDateTime meetingDatetime,
-            Long hit,
+            Long viewCount,
             MeetingState state,
             Integer shareCount) {
         this.id = id;
@@ -116,7 +116,7 @@ public class MeetingEntity extends BaseEntity {
         this.locationName = locationName;
         this.detailAddress = detailAddress;
         this.meetingDatetime = meetingDatetime;
-        this.hit = hit;
+        this.viewCount = viewCount;
         this.state = state;
         this.shareCount = shareCount;
     }

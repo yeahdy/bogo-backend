@@ -326,8 +326,35 @@ include::{snippets}/meeting-participation/http-response.adoc[]
 | 모임 날짜가 지난 모임으로 참가 불가능 합니다 +
 이미 참여된 모임 입니다 +
 모임 정원으로 참가 불가능 합니다 +
-모집 완료된 모임으로 참가 불가능 합니다 +
+모집 완료된 모임으로 참가 불가능 합니다
+|===
 
+'''
+
+=== *모임 찜하기*
+
+==== *요청*
+
+include::{snippets}/meeting-like/http-request.adoc[]
+include::{snippets}/meeting-like/query-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/meeting-like/http-response.adoc[]
+
+
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+| 모임이 존재하지 않습니다
+
+| 400
+| 모임 ID 중 존재하지 않는 모임이 있습니다. +
+인증 정보가 존재하지 않습니다. +
+인증된 사용자가 아닙니다.
 |===
 
 '''
@@ -342,9 +369,7 @@ include::{snippets}/boardgame-create/http-request.adoc[]
 
 include::{snippets}/boardgame-create/request-parts.adoc[]
 
-- boardGameCreateListRequest
 
-include::{snippets}/boardgame-create/request-part-boardGameCreateListRequest-fields.adoc[]
 
 ==== *응답*
 

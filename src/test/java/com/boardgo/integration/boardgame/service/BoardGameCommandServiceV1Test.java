@@ -7,7 +7,6 @@ import com.boardgo.domain.boardgame.entity.BoardGameEntity;
 import com.boardgo.domain.boardgame.entity.BoardGameGenreEntity;
 import com.boardgo.domain.boardgame.repository.BoardGameGenreRepository;
 import com.boardgo.domain.boardgame.repository.BoardGameRepository;
-import com.boardgo.domain.boardgame.repository.GameGenreMatchRepository;
 import com.boardgo.domain.boardgame.service.BoardGameCommandUseCase;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import java.util.Arrays;
@@ -26,87 +25,54 @@ public class BoardGameCommandServiceV1Test extends IntegrationTestSupport {
 
     @Autowired private BoardGameGenreRepository boardGameGenreRepository;
 
-    @Autowired private GameGenreMatchRepository gameGenreMatchRepository;
-
     @Test
     @DisplayName("보드게임 데이터를 데이터베이스에 적재할 수 있다")
     void 보드게임_데이터를_데이터베이스에_적재할_수_있다() {
         // given
-        List<String> genres1 = Arrays.asList("Strategy", "Family");
-        List<String> genres2 = Arrays.asList("Card", "Party");
-        List<BoardGameCreateRequest> requestList =
-                Arrays.asList(
-                        new BoardGameCreateRequest("Game1", 2, 4, 30, 60, genres1),
-                        new BoardGameCreateRequest("Game2", 1, 6, 20, 40, genres2));
+        MultipartFile imageFile =
+                new MockMultipartFile("file", "test1.jpg", "image/jpeg", "test image 1".getBytes());
 
-        List<MultipartFile> imageFileList =
-                Arrays.asList(
-                        new MockMultipartFile(
-                                "file", "test1.jpg", "image/jpeg", "test image 1".getBytes()),
-                        new MockMultipartFile(
-                                "file", "test2.jpg", "image/jpeg", "test image 2".getBytes()));
+        List<String> genres1 = Arrays.asList("Strategy", "Family");
+        BoardGameCreateRequest request =
+                new BoardGameCreateRequest("Game1", 2, 4, 30, 60, genres1, imageFile);
+
         // when
-        boardGameCommandUseCase.createMany(requestList, imageFileList);
+        boardGameCommandUseCase.create(request);
 
         // then
         BoardGameEntity boardGameEntity1 = boardGameRepository.findByTitle("Game1").get();
-        BoardGameEntity boardGameEntity2 = boardGameRepository.findByTitle("Game2").get();
 
         assertThat(boardGameEntity1.getMaxPlaytime()).isEqualTo(60);
-        assertThat(boardGameEntity2.getMaxPlaytime()).isEqualTo(40);
 
         List<BoardGameGenreEntity> genreEntityList1 =
                 boardGameGenreRepository.findByGenreIn(genres1);
         Assertions.assertThat(genreEntityList1)
                 .extracting(BoardGameGenreEntity::getGenre)
                 .containsExactlyInAnyOrderElementsOf(genres1);
-        List<BoardGameGenreEntity> genreEntityList2 =
-                boardGameGenreRepository.findByGenreIn(genres2);
-        Assertions.assertThat(genreEntityList2)
-                .extracting(BoardGameGenreEntity::getGenre)
-                .containsExactlyInAnyOrderElementsOf(genres2);
     }
 
     @Test
     @DisplayName("두 개의 똑같은 장르를 삽입하더라도 에러가 발생하지 않는다")
     void 두_개의_똑같은_장르를_삽입하더라도_에러가_발생하지_않는다() {
         // given
-        List<String> genres1 = Arrays.asList("Strategy", "Family");
-        List<String> genres2 = Arrays.asList("Card", "Party", "Family");
-        List<BoardGameCreateRequest> requestList =
-                Arrays.asList(
-                        new BoardGameCreateRequest("Game1", 2, 4, 30, 60, genres1),
-                        new BoardGameCreateRequest("Game2", 1, 6, 20, 40, genres2));
+        MultipartFile imageFile =
+                new MockMultipartFile("file", "test1.jpg", "image/jpeg", "test image 1".getBytes());
 
-        List<MultipartFile> imageFileList =
-                Arrays.asList(
-                        new MockMultipartFile(
-                                "file", "test1.jpg", "image/jpeg", "test image 1".getBytes()),
-                        new MockMultipartFile(
-                                "file", "test2.jpg", "image/jpeg", "test image 2".getBytes()));
+        List<String> genres1 = Arrays.asList("Strategy", "Strategy", "Family", "Card", "Party");
+        BoardGameCreateRequest request =
+                new BoardGameCreateRequest("Game1", 2, 4, 30, 60, genres1, imageFile);
+
         // when
-        boardGameCommandUseCase.createMany(requestList, imageFileList);
+        boardGameCommandUseCase.create(request);
 
         // then
         BoardGameEntity boardGameEntity1 = boardGameRepository.findByTitle("Game1").get();
-        BoardGameEntity boardGameEntity2 = boardGameRepository.findByTitle("Game2").get();
         List<BoardGameGenreEntity> genres = boardGameGenreRepository.findAll();
+
         assertThat(genres)
                 .extracting(BoardGameGenreEntity::getGenre)
                 .containsExactlyInAnyOrder("Family", "Card", "Party", "Strategy");
 
         assertThat(boardGameEntity1.getMaxPlaytime()).isEqualTo(60);
-        assertThat(boardGameEntity2.getMaxPlaytime()).isEqualTo(40);
-
-        List<BoardGameGenreEntity> genreEntityList1 =
-                boardGameGenreRepository.findByGenreIn(genres1);
-        Assertions.assertThat(genreEntityList1)
-                .extracting(BoardGameGenreEntity::getGenre)
-                .containsExactlyInAnyOrderElementsOf(genres1);
-        List<BoardGameGenreEntity> genreEntityList2 =
-                boardGameGenreRepository.findByGenreIn(genres2);
-        Assertions.assertThat(genreEntityList2)
-                .extracting(BoardGameGenreEntity::getGenre)
-                .containsExactlyInAnyOrderElementsOf(genres2);
     }
 }

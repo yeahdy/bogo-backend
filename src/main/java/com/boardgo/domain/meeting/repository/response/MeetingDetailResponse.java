@@ -23,6 +23,7 @@ public record MeetingDetailResponse(
         Integer limitParticipant,
         MeetingState state,
         Integer shareCount,
+        Long viewCount,
         Long createMeetingCount,
         // TODO: 찜 여부 추가
         List<String> genres,

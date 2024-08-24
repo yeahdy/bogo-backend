@@ -6,7 +6,9 @@ import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingState;
 import com.boardgo.domain.meeting.entity.MeetingType;
 import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
+import com.boardgo.domain.meeting.repository.projection.MeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
+import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
 import com.boardgo.domain.user.repository.response.UserParticipantResponse;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +25,7 @@ public interface MeetingMapper {
 
         return MeetingEntity.builder()
                 .state(MeetingState.PROGRESS)
-                .hit(0L)
+                .viewCount(0L)
                 .userId(userId)
                 .title(meetingCreateRequest.title())
                 .city(meetingCreateRequest.city())
@@ -66,6 +68,7 @@ public interface MeetingMapper {
                 meetingDetailProjection.limitParticipant(),
                 meetingDetailProjection.state(),
                 meetingDetailProjection.shareCount(),
+                meetingDetailProjection.viewCount(),
                 createMeetingCount,
                 genres.stream().toList(),
                 (long) userParticipantResponseList.size(),
@@ -73,5 +76,23 @@ public interface MeetingMapper {
                 boardGameByMeetingIdResponseList.stream()
                         .map(BoardGameMapper.INSTANCE::toBoardGameListResponse)
                         .toList());
+    }
+
+    default MeetingSearchResponse toMeetingSearchResponse(
+            MeetingSearchProjection queryDto, List<String> games, String likeStatus) {
+        return new MeetingSearchResponse(
+                queryDto.id(),
+                queryDto.title(),
+                queryDto.city(),
+                queryDto.county(),
+                queryDto.thumbnail(),
+                queryDto.viewCount(),
+                likeStatus,
+                queryDto.meetingDate(),
+                queryDto.limitParticipant(),
+                queryDto.nickName(),
+                games,
+                Set.of(queryDto.genres().split(",")),
+                queryDto.participantCount());
     }
 }
