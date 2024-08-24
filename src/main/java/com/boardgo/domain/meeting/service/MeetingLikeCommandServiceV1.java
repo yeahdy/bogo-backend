@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MeetingLikeCommandServiceV1 implements MeetingLikeCommandUseCase {
 
@@ -23,11 +25,24 @@ public class MeetingLikeCommandServiceV1 implements MeetingLikeCommandUseCase {
 
     @Override
     public void createMany(List<Long> meetingIdList) {
-        checkLikeValidation(meetingIdList);
+        checkCreateLikeValidation(meetingIdList);
         meetingLikeRepository.bulkInsert(meetingIdList, SecurityUtils.currentUserId());
     }
 
-    private void checkLikeValidation(List<Long> meetingIdList) {
+    @Override
+    public void deleteByMeetingId(Long meetingId) {
+        Long userId = SecurityUtils.currentUserId();
+        checkDeleteLikeValidation(meetingId, userId);
+        meetingLikeRepository.deleteByUserIdAndMeetingId(userId, meetingId);
+    }
+
+    private void checkDeleteLikeValidation(Long meetingId, Long userId) {
+        meetingLikeRepository
+                .findByUserIdAndMeetingId(userId, meetingId)
+                .orElseThrow(() -> new CustomNoSuchElementException("찜"));
+    }
+
+    private void checkCreateLikeValidation(List<Long> meetingIdList) {
         checkUserExist();
         checkMeetingIdListExist(meetingIdList);
     }
