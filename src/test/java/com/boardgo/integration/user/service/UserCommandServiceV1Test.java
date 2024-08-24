@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.boardgo.common.exception.CustomNullPointException;
+import com.boardgo.common.exception.DuplicateException;
 import com.boardgo.domain.user.controller.dto.SignupRequest;
 import com.boardgo.domain.user.controller.dto.SocialSignupRequest;
 import com.boardgo.domain.user.controller.dto.UserPersonalInfoUpdateRequest;
@@ -129,6 +130,23 @@ public class UserCommandServiceV1Test extends IntegrationTestSupport {
         UserInfoEntity changedUserInfo = userRepository.findById(originalUserInfo.getId()).get();
         assertThat(changedUserInfo.getNickName()).isEqualTo(updateRequest.nickName());
         assertThat(changedUserInfo.getPassword()).isNotEqualTo(originalPw);
+    }
+
+    @Test
+    @DisplayName("닉네임이 중복일 경우 예외가 발생한다")
+    void 닉네임이_중복일_경우_예외가_발생한다() {
+        // given
+        userCommandUseCase.signup(
+                new SignupRequest("aa@aa.aa", "nickname", "password", List.of("prTag1", "prTag2")));
+        UserInfoEntity user = userRepository.save(localUserInfoEntity());
+        UserPersonalInfoUpdateRequest updateRequest =
+                new UserPersonalInfoUpdateRequest("nickname", "test12!@");
+
+        // when
+        // then
+        assertThatThrownBy(() -> userCommandUseCase.updatePersonalInfo(user.getId(), updateRequest))
+                .isInstanceOf(DuplicateException.class)
+                .hasMessageContaining("중복된 닉네임");
     }
 
     @Test

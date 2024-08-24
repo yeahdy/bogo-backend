@@ -53,10 +53,7 @@ public class UserInfoEntityTest {
                 UserInfoEntity.builder()
                         .id(1L)
                         .email("1355245636623452")
-                        .password(null)
-                        .nickName(null)
                         .providerType(ProviderType.GOOGLE)
-                        .deleteAt(null)
                         .build();
         // when
         userInfoEntity.updateNickname(request.nickName());
@@ -65,6 +62,46 @@ public class UserInfoEntityTest {
         assertThat(userInfoEntity.getNickName()).isNotBlank();
     }
 
-    // TODO. updateProfileImage() 테스트
+    @Test
+    @DisplayName("프로필 이미지 변경 시 새로운 이미지로 변경된다")
+    void 프로필_이미지_변경_시_새로운_이미지로_변경된다() {
+        // given
+        UserInfoEntity userInfoEntity =
+                UserInfoEntity.builder()
+                        .id(1L)
+                        .email("1355245636623452")
+                        .nickName("루피에오")
+                        .providerType(ProviderType.GOOGLE)
+                        .profileImage("루피.jpg")
+                        .build();
+        String newImage = "뽀로로.jpg";
 
+        // when
+        userInfoEntity.updateProfileImage(newImage);
+
+        // then
+        assertThat(userInfoEntity.getProfileImage()).isEqualTo(newImage);
+    }
+
+    @Test
+    @DisplayName("회원 비밀번호 변경 시 새로운 비밀번호로 변경된다")
+    void 회원_비밀번호_변경_시_새로운_비밀번호로_변경된다() {
+        // given
+        UserInfoEntity userInfoEntity =
+                UserInfoEntity.builder()
+                        .id(1L)
+                        .email("fhsdhasl@naver.com")
+                        .password("fhdslg342!@#")
+                        .nickName("크롱")
+                        .providerType(ProviderType.LOCAL)
+                        .build();
+        String newPassword = "12345678";
+        FakePasswordEncoder fakePasswordEncoder = new FakePasswordEncoder();
+
+        // when
+        userInfoEntity.updatePassword(newPassword, fakePasswordEncoder);
+
+        // then
+        assertThat(userInfoEntity.getPassword()).isEqualTo(newPassword);
+    }
 }
