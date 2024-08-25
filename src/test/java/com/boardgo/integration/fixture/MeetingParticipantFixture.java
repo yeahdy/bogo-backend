@@ -1,7 +1,7 @@
 package com.boardgo.integration.fixture;
 
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
-import com.boardgo.domain.meeting.entity.ParticipantType;
+import com.boardgo.domain.meeting.entity.enums.ParticipantType;
 
 public abstract class MeetingParticipantFixture {
 

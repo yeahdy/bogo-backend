@@ -5,7 +5,7 @@ import static com.boardgo.common.exception.advice.dto.ErrorCode.*;
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
-import com.boardgo.domain.meeting.entity.ParticipantType;
+import com.boardgo.domain.meeting.entity.enums.ParticipantType;
 import com.boardgo.domain.meeting.repository.MeetingGameMatchRepository;
 import com.boardgo.domain.meeting.repository.MeetingGenreMatchRepository;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;

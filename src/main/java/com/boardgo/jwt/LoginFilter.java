@@ -1,10 +1,9 @@
 package com.boardgo.jwt;
 
-import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
-import static com.boardgo.common.constant.HeaderConstant.BEARER;
-import static com.boardgo.common.constant.TimeConstant.ACCESS_TOKEN_DURATION;
+import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.TimeConstant.*;
 
-import com.boardgo.domain.user.entity.RoleType;
+import com.boardgo.domain.user.entity.enums.RoleType;
 import com.boardgo.domain.user.service.dto.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

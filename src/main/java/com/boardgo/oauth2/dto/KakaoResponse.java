@@ -1,6 +1,6 @@
 package com.boardgo.oauth2.dto;
 
-import static com.boardgo.domain.user.entity.ProviderType.KAKAO;
+import static com.boardgo.domain.user.entity.enums.ProviderType.*;
 
 import java.util.Map;
 

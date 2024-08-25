@@ -1,8 +1,8 @@
 package com.boardgo.integration.fixture;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
-import com.boardgo.domain.meeting.entity.MeetingState;
-import com.boardgo.domain.meeting.entity.MeetingType;
+import com.boardgo.domain.meeting.entity.enums.MeetingState;
+import com.boardgo.domain.meeting.entity.enums.MeetingType;
 import java.time.LocalDateTime;
 
 public abstract class MeetingFixture {
@@ -44,6 +44,26 @@ public abstract class MeetingFixture {
                 .locationName("locationName")
                 .meetingDatetime(LocalDateTime.now().minusDays(5))
                 .state(MeetingState.COMPLETE)
+                .build();
+    }
+
+    public static MeetingEntity getFinishMeetingEntity(
+            Long userId, MeetingType type, int limitParticipant) {
+        return MeetingEntity.builder()
+                .userId(userId)
+                .title("을지로에서 보드게임 같이 하실분 구해요!")
+                .content("을지로 위워크 앞에서 만나요")
+                .type(type)
+                .limitParticipant(limitParticipant)
+                .thumbnail("보드게임 을지로점.jpg")
+                .city("서울시")
+                .county("중구")
+                .latitude("5441.5429")
+                .longitude("434.5785")
+                .detailAddress("detailAddress")
+                .locationName("locationName")
+                .meetingDatetime(LocalDateTime.now().minusDays(5))
+                .state(MeetingState.FINISH)
                 .build();
     }
 }

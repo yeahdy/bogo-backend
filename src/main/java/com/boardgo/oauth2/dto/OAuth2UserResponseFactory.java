@@ -1,7 +1,7 @@
 package com.boardgo.oauth2.dto;
 
 import com.boardgo.common.exception.OAuth2Exception;
-import com.boardgo.domain.user.entity.ProviderType;
+import com.boardgo.domain.user.entity.enums.ProviderType;
 import java.util.Map;
 
 public class OAuth2UserResponseFactory {

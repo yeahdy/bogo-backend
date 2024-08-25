@@ -1,7 +1,7 @@
 package com.boardgo.domain.user.service.dto;
 
-import com.boardgo.domain.user.entity.RoleType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.entity.enums.RoleType;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.boardgo.unittest.meeting;
 
-import static com.boardgo.domain.meeting.entity.MeetingType.*;
+import static com.boardgo.domain.meeting.entity.enums.MeetingType.*;
 import static com.boardgo.integration.fixture.MeetingFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -9,7 +9,7 @@ import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.domain.mapper.MeetingMapper;
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
-import com.boardgo.domain.meeting.entity.MeetingState;
+import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

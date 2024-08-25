@@ -1,7 +1,7 @@
 package com.boardgo.integration.init;
 
-import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;

@@ -1,25 +1,21 @@
 package com.boardgo.integration.meeting.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
-import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
-import static com.boardgo.integration.fixture.MeetingFixture.getProgressMeetingEntity;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.getLeaderMeetingParticipantEntity;
-import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
-import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
-import static io.restassured.RestAssured.given;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.integration.fixture.MeetingFixture.*;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
+import static com.boardgo.integration.fixture.UserInfoFixture.*;
+import static io.restassured.RestAssured.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import com.boardgo.domain.meeting.controller.request.MeetingParticipateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
-import com.boardgo.domain.meeting.entity.MeetingType;
+import com.boardgo.domain.meeting.entity.enums.MeetingType;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
-import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.support.RestDocsTestSupport;
 import org.junit.jupiter.api.DisplayName;

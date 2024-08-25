@@ -1,6 +1,6 @@
 package com.boardgo.jwt;
 
-import com.boardgo.domain.user.entity.RoleType;
+import com.boardgo.domain.user.entity.enums.RoleType;
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;

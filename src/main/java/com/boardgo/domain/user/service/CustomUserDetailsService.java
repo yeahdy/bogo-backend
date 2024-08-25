@@ -1,7 +1,7 @@
 package com.boardgo.domain.user.service;
 
-import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.dto.CustomUserDetails;
 import java.util.Optional;

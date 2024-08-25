@@ -1,8 +1,8 @@
 package com.boardgo.oauth2.entity;
 
-import com.boardgo.domain.user.entity.ProviderType;
-import com.boardgo.domain.user.entity.RoleType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.entity.enums.ProviderType;
+import com.boardgo.domain.user.entity.enums.RoleType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

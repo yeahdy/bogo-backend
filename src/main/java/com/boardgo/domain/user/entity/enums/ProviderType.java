@@ -1,4 +1,4 @@
-package com.boardgo.domain.user.entity;
+package com.boardgo.domain.user.entity.enums;
 
 import lombok.Getter;
 

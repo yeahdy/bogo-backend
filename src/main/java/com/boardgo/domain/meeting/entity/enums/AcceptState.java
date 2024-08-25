@@ -1,4 +1,4 @@
-package com.boardgo.domain.meeting.entity;
+package com.boardgo.domain.meeting.entity.enums;
 
 public enum AcceptState {
     WAIT,

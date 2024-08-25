@@ -1,15 +1,13 @@
 package com.boardgo.integration.boardgame.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
-import static io.restassured.RestAssured.given;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static com.boardgo.common.constant.HeaderConstant.*;
+import static io.restassured.RestAssured.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
-import com.boardgo.domain.meeting.entity.MeetingState;
+import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestMeetingInitializer;

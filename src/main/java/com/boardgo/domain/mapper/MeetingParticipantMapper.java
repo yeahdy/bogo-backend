@@ -1,7 +1,7 @@
 package com.boardgo.domain.mapper;
 
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
-import com.boardgo.domain.meeting.entity.ParticipantType;
+import com.boardgo.domain.meeting.entity.enums.ParticipantType;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

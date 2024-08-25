@@ -2,7 +2,7 @@ package com.boardgo.config;
 
 import static com.boardgo.common.constant.HeaderConstant.*;
 
-import com.boardgo.domain.user.entity.RoleType;
+import com.boardgo.domain.user.entity.enums.RoleType;
 import com.boardgo.jwt.JWTFilter;
 import com.boardgo.jwt.JWTUtil;
 import com.boardgo.jwt.LoginFilter;

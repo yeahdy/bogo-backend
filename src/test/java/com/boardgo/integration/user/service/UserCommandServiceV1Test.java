@@ -1,19 +1,17 @@
 package com.boardgo.integration.user.service;
 
-import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
-import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
-import static com.boardgo.integration.fixture.UserPrTagFixture.userPrTagEntity;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static com.boardgo.integration.fixture.UserInfoFixture.*;
+import static com.boardgo.integration.fixture.UserPrTagFixture.*;
+import static org.assertj.core.api.Assertions.*;
 
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.common.exception.DuplicateException;
 import com.boardgo.domain.user.controller.dto.SignupRequest;
 import com.boardgo.domain.user.controller.dto.SocialSignupRequest;
 import com.boardgo.domain.user.controller.dto.UserPersonalInfoUpdateRequest;
-import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.UserPrTagEntity;
+import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserPrTagRepository;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.UserCommandUseCase;

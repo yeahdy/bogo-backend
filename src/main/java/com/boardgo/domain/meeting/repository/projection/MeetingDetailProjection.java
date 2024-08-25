@@ -1,6 +1,6 @@
 package com.boardgo.domain.meeting.repository.projection;
 
-import com.boardgo.domain.meeting.entity.MeetingState;
+import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
 
@@ -22,9 +22,7 @@ public record MeetingDetailProjection(
         Integer limitParticipant,
         MeetingState state,
         Integer shareCount,
-        Long viewCount
-        // TODO: 찜 여부 추가
-        ) {
+        Long viewCount) {
     @QueryProjection
     public MeetingDetailProjection {}
 }

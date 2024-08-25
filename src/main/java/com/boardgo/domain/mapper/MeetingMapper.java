@@ -3,14 +3,18 @@ package com.boardgo.domain.mapper;
 import com.boardgo.domain.boardgame.repository.response.BoardGameByMeetingIdResponse;
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
-import com.boardgo.domain.meeting.entity.MeetingState;
-import com.boardgo.domain.meeting.entity.MeetingType;
+import com.boardgo.domain.meeting.entity.MeetingParticipantSubEntity;
+import com.boardgo.domain.meeting.entity.enums.MeetingState;
+import com.boardgo.domain.meeting.entity.enums.MeetingType;
 import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingSearchProjection;
+import com.boardgo.domain.meeting.repository.projection.MyPageMeetingProjection;
 import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
+import com.boardgo.domain.meeting.service.response.MeetingMyPageResponse;
 import com.boardgo.domain.user.repository.response.UserParticipantResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
@@ -94,5 +98,20 @@ public interface MeetingMapper {
                 games,
                 Set.of(queryDto.genres().split(",")),
                 queryDto.participantCount());
+    }
+
+    MeetingMyPageResponse toMeetingMyPageResponse(
+            MyPageMeetingProjection myPageMeetingProjection, Integer currentParticipant);
+
+    default List<MeetingMyPageResponse> toMeetingMyPageResponseList(
+            List<MyPageMeetingProjection> myPageMeetingProjectionList,
+            Map<Long, MeetingParticipantSubEntity> entityMap) {
+        return myPageMeetingProjectionList.stream()
+                .map(
+                        item ->
+                                toMeetingMyPageResponse(
+                                        item,
+                                        entityMap.get(item.meetingId()).getParticipantCount()))
+                .toList();
     }
 }

@@ -19,7 +19,7 @@ public interface UserInfoMapper {
     @Mapping(
             source = "providerType",
             target = "providerType",
-            defaultExpression = "java(com.boardgo.domain.user.entity.ProviderType.LOCAL)")
+            defaultExpression = "java(com.boardgo.domain.user.entity.enums.ProviderType.LOCAL)")
     UserInfoEntity toUserInfoEntity(SignupRequest signupRequest);
 
     UserInfoEntity toUserInfoEntity(OAuth2CreateUserRequest oAuth2CreateUserRequest);

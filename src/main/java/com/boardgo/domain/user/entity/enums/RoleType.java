@@ -1,4 +1,4 @@
-package com.boardgo.domain.user.entity;
+package com.boardgo.domain.user.entity.enums;
 
 import java.util.Arrays;
 import lombok.AllArgsConstructor;
