@@ -72,6 +72,11 @@ public class UserInfoEntity extends BaseEntity {
         this.nickName = nickName;
     }
 
+    public void updatePassword(String password, PasswordEncoder passwordEncoder) {
+        this.password = password;
+        encodePassword(passwordEncoder);
+    }
+
     public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }

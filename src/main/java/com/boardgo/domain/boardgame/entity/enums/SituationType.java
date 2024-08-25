@@ -1,4 +1,4 @@
-package com.boardgo.domain.boardgame.entity;
+package com.boardgo.domain.boardgame.entity.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

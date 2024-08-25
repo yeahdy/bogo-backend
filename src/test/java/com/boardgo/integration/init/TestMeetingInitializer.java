@@ -10,6 +10,7 @@ import com.boardgo.domain.meeting.entity.ParticipantType;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.service.MeetingCreateFactory;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -35,8 +36,9 @@ public class TestMeetingInitializer {
      * 주의!! TestBoardGameInitializer.generateBoardGameData TestUserInfoInitializer.generateUserData
      * 에 의존적인 메서드입니다.
      */
-    public void generateMeetingData() {
+    public List<Long> generateMeetingData() {
         MeetingMapper meetingMapper = MeetingMapper.INSTANCE;
+        List<Long> meetingIds = new ArrayList<>();
 
         for (int i = 0; i < 30; i++) {
             int limitNumber = Math.max(i % 10, 2);
@@ -64,8 +66,10 @@ public class TestMeetingInitializer {
                                     genreIdList),
                             userId,
                             "thumbnail" + i);
+
             Long savedMeetingId =
                     meetingCreateFactory.create(meetingEntity, boardGameIdList, genreIdList);
+            meetingIds.add(savedMeetingId);
 
             int participantLimit = Math.max(i % limitNumber, 1);
 
@@ -83,6 +87,7 @@ public class TestMeetingInitializer {
                                 .build());
             }
         }
+        return meetingIds;
     }
 
     /** 모임 상태 여러 상태로 바꾸고 싶을 때 사용 * */

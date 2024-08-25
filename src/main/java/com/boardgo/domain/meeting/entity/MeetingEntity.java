@@ -1,6 +1,6 @@
 package com.boardgo.domain.meeting.entity;
 
-import static com.boardgo.domain.meeting.entity.MeetingState.*;
+import static com.boardgo.domain.meeting.entity.MeetingState.COMPLETE;
 
 import com.boardgo.common.domain.BaseEntity;
 import com.boardgo.common.exception.CustomIllegalArgumentException;
@@ -136,5 +136,9 @@ public class MeetingEntity extends BaseEntity {
             throw new CustomIllegalArgumentException("모임 날짜가 지난 모임으로 참가 불가능 합니다");
         }
         return false;
+    }
+
+    public void updateMeetingState(MeetingState meetingState) {
+        this.state = meetingState;
     }
 }

@@ -1,13 +1,12 @@
 package com.boardgo.domain.user.service;
 
 import static com.boardgo.common.constant.S3BucketConstant.USER;
-import static com.boardgo.common.exception.advice.dto.ErrorCode.DUPLICATE_DATA;
 import static com.boardgo.common.utils.CustomStringUtils.existString;
 import static com.boardgo.common.utils.ValidateUtils.validateNickname;
 import static com.boardgo.common.utils.ValidateUtils.validatePrTag;
 
-import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
+import com.boardgo.common.exception.DuplicateException;
 import com.boardgo.common.utils.FileUtils;
 import com.boardgo.common.utils.S3Service;
 import com.boardgo.domain.mapper.UserInfoMapper;
@@ -52,7 +51,7 @@ public class UserCommandServiceV1 implements UserCommandUseCase {
     public Long socialSignup(SocialSignupRequest signupRequest, Long userId) {
         UserInfoEntity userInfoEntity = getUserInfoEntity(userId);
         if (userRepository.existsByNickName(signupRequest.nickName())) {
-            throw new CustomIllegalArgumentException(DUPLICATE_DATA.getCode(), "중복된 닉네임입니다.");
+            throw new DuplicateException("중복된 닉네임입니다.");
         }
         validateNickNameAndPrTag(signupRequest.nickName(), signupRequest.prTags());
 
@@ -87,11 +86,15 @@ public class UserCommandServiceV1 implements UserCommandUseCase {
     @Override
     public void updatePersonalInfo(Long userId, UserPersonalInfoUpdateRequest updateRequest) {
         UserInfoEntity userInfoEntity = getUserInfoEntity(userId);
+        if (userRepository.existsByNickName(updateRequest.nickName())) {
+            throw new DuplicateException("중복된 닉네임입니다.");
+        }
+
         if (existString(updateRequest.nickName()) && validateNickname(updateRequest.nickName())) {
             userInfoEntity.updateNickname(updateRequest.nickName());
         }
         if (existString(updateRequest.password())) {
-            userInfoEntity.encodePassword(passwordEncoder);
+            userInfoEntity.updatePassword(updateRequest.password(), passwordEncoder);
         }
     }
 

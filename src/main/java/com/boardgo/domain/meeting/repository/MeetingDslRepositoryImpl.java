@@ -1,8 +1,12 @@
 package com.boardgo.domain.meeting.repository;
 
+import static com.boardgo.domain.meeting.entity.MeetingState.FINISH;
+
 import com.boardgo.domain.boardgame.entity.QBoardGameEntity;
 import com.boardgo.domain.boardgame.entity.QBoardGameGenreEntity;
 import com.boardgo.domain.boardgame.repository.BoardGameRepository;
+import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityCountProjection;
+import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityProjection;
 import com.boardgo.domain.boardgame.repository.response.BoardGameByMeetingIdResponse;
 import com.boardgo.domain.mapper.MeetingMapper;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
@@ -24,6 +28,7 @@ import com.boardgo.domain.user.repository.response.UserParticipantResponse;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -36,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
@@ -341,5 +347,38 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
         } else {
             return m.meetingDatetime.asc();
         }
+    }
+
+    @Override
+    public List<CumulativePopularityProjection> findBoardGameOrderByRank(Set<Long> rankList) {
+        return queryFactory
+                .select(
+                        Projections.constructor(
+                                CumulativePopularityProjection.class,
+                                bg.id,
+                                bg.title,
+                                bg.thumbnail))
+                .from(bg)
+                .where(bg.id.in(rankList))
+                .fetch();
+    }
+
+    /** 누적 게임순위 7위까지 조회 */
+    @Override
+    public List<CumulativePopularityCountProjection> findCumulativePopularityBoardGameRank(
+            int rank) {
+        return queryFactory
+                .select(
+                        Projections.constructor(
+                                CumulativePopularityCountProjection.class,
+                                mgam.boardGameId,
+                                mgam.boardGameId.count()))
+                .from(mgam)
+                .innerJoin(m)
+                .on(mgam.meetingId.eq(m.id))
+                .where(m.state.eq(FINISH))
+                .groupBy(mgam.boardGameId)
+                .limit(rank)
+                .fetch();
     }
 }

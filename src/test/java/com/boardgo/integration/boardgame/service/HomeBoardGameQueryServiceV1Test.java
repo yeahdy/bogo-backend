@@ -1,12 +1,12 @@
 package com.boardgo.integration.boardgame.service;
 
-import static com.boardgo.domain.boardgame.entity.SituationType.ALL;
-import static com.boardgo.domain.boardgame.entity.SituationType.MANY;
-import static com.boardgo.domain.boardgame.entity.SituationType.THREE;
+import static com.boardgo.domain.boardgame.entity.enums.SituationType.ALL;
+import static com.boardgo.domain.boardgame.entity.enums.SituationType.MANY;
+import static com.boardgo.domain.boardgame.entity.enums.SituationType.THREE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.boardgo.domain.boardgame.entity.BoardGameEntity;
-import com.boardgo.domain.boardgame.entity.SituationType;
+import com.boardgo.domain.boardgame.entity.enums.SituationType;
 import com.boardgo.domain.boardgame.repository.BoardGameRepository;
 import com.boardgo.domain.boardgame.service.HomeBoardGameQueryUseCase;
 import com.boardgo.domain.boardgame.service.response.SituationBoardGameResponse;
