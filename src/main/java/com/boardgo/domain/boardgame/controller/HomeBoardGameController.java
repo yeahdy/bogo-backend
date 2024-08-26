@@ -31,6 +31,11 @@ public class HomeBoardGameController {
 
     @GetMapping(value = "/cumulative-popularity", headers = API_VERSION_HEADER1)
     public ResponseEntity<List<CumulativePopularityResponse>> getCumulativePopularity() {
-        return ResponseEntity.ok().body(homeBoardGameQueryUseCase.getCumulativePopularity());
+        List<CumulativePopularityResponse> cumulativePopularityResponseList =
+                homeBoardGameQueryUseCase.getCumulativePopularity();
+        if (cumulativePopularityResponseList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(cumulativePopularityResponseList);
     }
 }

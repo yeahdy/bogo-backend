@@ -325,7 +325,6 @@ include::{snippets}/meeting-share-increment/http-response.adoc[]
 
 |===
 
-
 '''
 
 === *모임 참가하기*
@@ -515,6 +514,18 @@ include::{snippets}/get-home-cumulative-popularity/http-request.adoc[]
 
 include::{snippets}/get-home-cumulative-popularity/http-response.adoc[]
 include::{snippets}/get-home-cumulative-popularity/response-fields.adoc[]
+
+- HTTP 상태 코드
+
+|===
+| code | messages
+
+| 200
+| 데이터 존재 시
+
+| 204
+| 데이터 존재하지 않을 시
+|===
 
 '''
 
