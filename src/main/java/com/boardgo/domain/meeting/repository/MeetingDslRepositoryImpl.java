@@ -239,7 +239,11 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                 .on(mgem.meetingId.eq(m.id))
                 .innerJoin(bgg)
                 .on(bgg.id.eq(mgem.boardGameGenreId))
-                .where(m.state.ne(finishState).and(filters))
+                .where(
+                        m.meetingDatetime
+                                .after(LocalDateTime.now())
+                                .and(m.state.ne(finishState))
+                                .and(filters))
                 .groupBy(m.id)
                 .orderBy(sortOrder)
                 .offset(offset)
@@ -305,7 +309,11 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                             .on(mgem.meetingId.eq(m.id))
                             .innerJoin(bgg)
                             .on(bgg.id.eq(mgem.boardGameGenreId))
-                            .where(m.state.ne(finishState).and(filters))
+                            .where(
+                                    m.meetingDatetime
+                                            .after(LocalDateTime.now())
+                                            .and(m.state.ne(finishState))
+                                            .and(filters))
                             .groupBy(m.id)
                             .fetch()
                             .size();
