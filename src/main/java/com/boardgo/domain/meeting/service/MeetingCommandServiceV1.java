@@ -11,6 +11,7 @@ import com.boardgo.domain.boardgame.repository.BoardGameRepository;
 import com.boardgo.domain.mapper.MeetingMapper;
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
+import com.boardgo.domain.meeting.repository.MeetingRepository;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
     private final BoardGameRepository boardGameRepository;
     private final MeetingCreateFactory meetingCreateFactory;
+    private final MeetingRepository meetingRepository;
     private final MeetingMapper meetingMapper;
     private final S3Service s3Service;
 
@@ -38,6 +40,17 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
                 meetingEntity,
                 meetingCreateRequest.boardGameIdList(),
                 meetingCreateRequest.genreIdList());
+    }
+
+    @Override
+    public void incrementShareCount(Long meetingId) {
+        MeetingEntity meeting =
+                meetingRepository
+                        .findById(meetingId)
+                        .orElseThrow(() -> new CustomNoSuchElementException("모임"));
+        log.info("meeting.getId() : {}", meeting.getId());
+        log.info("shareCount : {}", meeting.getShareCount());
+        meeting.incrementShareCount();
     }
 
     private String registerImage(

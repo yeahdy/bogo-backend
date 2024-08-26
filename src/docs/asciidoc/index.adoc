@@ -304,6 +304,30 @@ include::{snippets}/meeting-detail/response-fields.adoc[]
 
 '''
 
+=== *모임 공유 횟수 증가*
+
+==== *요청*
+
+include::{snippets}/meeting-share-increment/http-request.adoc[]
+include::{snippets}/meeting-share-increment/path-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/meeting-share-increment/http-response.adoc[]
+
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+| 모임이 존재하지 않습니다
+
+|===
+
+
+'''
+
 === *모임 참가하기*
 
 ==== *요청*

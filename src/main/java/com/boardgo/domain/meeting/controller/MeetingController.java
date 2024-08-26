@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -48,5 +49,11 @@ public class MeetingController {
     @GetMapping(value = "/meeting/{id}", headers = API_VERSION_HEADER1)
     public ResponseEntity<MeetingDetailResponse> getById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(meetingQueryUseCase.getDetailById(id));
+    }
+
+    @PatchMapping(value = "/meeting/share/{id}", headers = API_VERSION_HEADER1)
+    public ResponseEntity<Void> incrementShareCount(@PathVariable("id") Long id) {
+        meetingCommandUseCase.incrementShareCount(id);
+        return ResponseEntity.ok().build();
     }
 }
