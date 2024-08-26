@@ -6,11 +6,13 @@ import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantSubEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.entity.enums.MeetingType;
+import com.boardgo.domain.meeting.repository.projection.LikedMeetingMyPageProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.projection.MyPageMeetingProjection;
 import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
+import com.boardgo.domain.meeting.service.response.LikedMeetingMyPageResponse;
 import com.boardgo.domain.meeting.service.response.MeetingMyPageResponse;
 import com.boardgo.domain.user.repository.response.UserParticipantResponse;
 import java.util.List;
@@ -112,6 +114,16 @@ public interface MeetingMapper {
                                 toMeetingMyPageResponse(
                                         item,
                                         entityMap.get(item.meetingId()).getParticipantCount()))
+                .toList();
+    }
+
+    LikedMeetingMyPageResponse toLikedMeetingMyPageResponse(
+            LikedMeetingMyPageProjection likedMeetingMyPageProjection);
+
+    default List<LikedMeetingMyPageResponse> toLikedMeetingMyPageResponseList(
+            List<LikedMeetingMyPageProjection> likedMeetingMyPageProjectionList) {
+        return likedMeetingMyPageProjectionList.stream()
+                .map(this::toLikedMeetingMyPageResponse)
                 .toList();
     }
 }

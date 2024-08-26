@@ -7,15 +7,18 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
+import com.boardgo.domain.meeting.entity.MeetingLikeEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingType;
 import com.boardgo.domain.meeting.entity.enums.MyPageMeetingFilter;
+import com.boardgo.domain.meeting.repository.MeetingLikeRepository;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.fixture.MeetingFixture;
+import com.boardgo.integration.fixture.MeetingLikeFixture;
 import com.boardgo.integration.fixture.MeetingParticipantFixture;
 import com.boardgo.integration.fixture.UserInfoFixture;
 import com.boardgo.integration.support.RestDocsTestSupport;
@@ -29,6 +32,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 public class MyPageMeetingDocsTest extends RestDocsTestSupport {
     @Autowired private UserRepository userRepository;
     @Autowired private MeetingRepository meetingRepository;
+    @Autowired private MeetingLikeRepository meetingLikeRepository;
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;
 
     @Test
@@ -99,6 +103,81 @@ public class MyPageMeetingDocsTest extends RestDocsTestSupport {
                                                 .description("현재 참가자 수"))))
                 .when()
                 .get("/my/meeting")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("마이페이지에서 찜한 목록을 가져올 수 있다")
+    void 마이페이지에서_찜한_목록을_가져올_수_있다() {
+        // given
+        UserInfoEntity userInfoEntity = UserInfoFixture.localUserInfoEntity();
+        UserInfoEntity savedUser = userRepository.save(userInfoEntity);
+
+        MeetingEntity meetingEntity1 =
+                MeetingFixture.getProgressMeetingEntity(2L, MeetingType.FREE, 10);
+        MeetingEntity savedMeeting1 = meetingRepository.save(meetingEntity1);
+        MeetingEntity meetingEntity2 =
+                MeetingFixture.getProgressMeetingEntity(3L, MeetingType.FREE, 20);
+        MeetingEntity savedMeeting2 = meetingRepository.save(meetingEntity2);
+
+        MeetingLikeEntity meetingLike1 =
+                MeetingLikeFixture.getMeetingLike(savedUser.getId(), savedMeeting1.getId());
+        MeetingLikeEntity meetingLike2 =
+                MeetingLikeFixture.getMeetingLike(savedUser.getId(), savedMeeting2.getId());
+        MeetingLikeEntity savedMeetingLike1 = meetingLikeRepository.save(meetingLike1);
+        MeetingLikeEntity savedMeetingLike2 = meetingLikeRepository.save(meetingLike2);
+
+        MeetingParticipantEntity participantMeetingParticipantEntity1 =
+                MeetingParticipantFixture.getParticipantMeetingParticipantEntity(
+                        meetingLike1.getMeetingId(), 2L);
+        MeetingParticipantEntity participantMeetingParticipantEntity2 =
+                MeetingParticipantFixture.getParticipantMeetingParticipantEntity(
+                        meetingLike2.getMeetingId(), 2L);
+        MeetingParticipantEntity participantMeetingParticipantEntity3 =
+                MeetingParticipantFixture.getParticipantMeetingParticipantEntity(
+                        meetingLike2.getMeetingId(), 3L);
+        meetingParticipantRepository.save(participantMeetingParticipantEntity1);
+        meetingParticipantRepository.save(participantMeetingParticipantEntity2);
+        meetingParticipantRepository.save(participantMeetingParticipantEntity3);
+
+        // when
+        // then
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .filter(
+                        document(
+                                "my-liked-meeting",
+                                responseFields(
+                                        fieldWithPath("[].meetingId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("모임 id")
+                                                .optional(),
+                                        fieldWithPath("[].title")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 제목"),
+                                        fieldWithPath("[].thumbnail")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 썸네일"),
+                                        fieldWithPath("[].locationName")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임의 장소 이름"),
+                                        fieldWithPath("[].meetingDatetime")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 시간"),
+                                        fieldWithPath("[].limitParticipant")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("최대 참가자 수"),
+                                        fieldWithPath("[].currentParticipant")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("현재 참가자 수"))))
+                .when()
+                .get("/my/meeting/like")
                 .then()
                 .statusCode(HttpStatus.OK.value());
     }

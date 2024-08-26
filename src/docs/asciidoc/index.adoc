@@ -490,3 +490,36 @@ include::{snippets}/get-home-cumulative-popularity/http-request.adoc[]
 
 include::{snippets}/get-home-cumulative-popularity/http-response.adoc[]
 include::{snippets}/get-home-cumulative-popularity/response-fields.adoc[]
+
+'''
+=== *마이페이지 찜한 모임 조회*
+
+==== *요청*
+
+include::{snippets}/my-liked-meeting/http-request.adoc[]
+
+==== *응답*
+
+include::{snippets}/my-liked-meeting/http-response.adoc[]
+
+
+- HTTP 상태 코드
+
+|===
+| code | messages
+
+| 200
+| 데이터 존재 시
+
+| 204
+| 데이터 존재하지 않을 시
+|===
+
+- HTTP 에러 상태 코드
+|===
+| errorCode | messages
+
+| 400
+|인증 정보가 존재하지 않습니다. +
+인증된 사용자가 아닙니다.
+|===

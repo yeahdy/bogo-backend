@@ -19,9 +19,11 @@ import com.boardgo.domain.meeting.entity.QMeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.QMeetingParticipantSubEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.entity.enums.MyPageMeetingFilter;
+import com.boardgo.domain.meeting.repository.projection.LikedMeetingMyPageProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.projection.MyPageMeetingProjection;
+import com.boardgo.domain.meeting.repository.projection.QLikedMeetingMyPageProjection;
 import com.boardgo.domain.meeting.repository.projection.QMeetingDetailProjection;
 import com.boardgo.domain.meeting.repository.projection.QMeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.projection.QMyPageMeetingProjection;
@@ -186,13 +188,33 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                 .fetch();
     }
 
+    @Override
+    public List<LikedMeetingMyPageProjection> findLikedMeeting(List<Long> meetingIdList) {
+        return queryFactory
+                .select(
+                        new QLikedMeetingMyPageProjection(
+                                m.id,
+                                m.thumbnail,
+                                m.title,
+                                m.locationName,
+                                m.meetingDatetime,
+                                m.limitParticipant,
+                                mpSub.participantCount))
+                .from(m)
+                .innerJoin(mpSub)
+                .on(mpSub.id.eq(m.id).and(mpSub.id.in(meetingIdList)))
+                .fetch();
+    }
+
     private BooleanExpression myPageFilter(MyPageMeetingFilter filter) {
         if (filter == MyPageMeetingFilter.CREATE) {
-            return mp.type.eq(LEADER).and(m.state.ne(FINISH));
+            return mp.type.eq(LEADER).and(m.state.ne(MeetingState.FINISH));
         } else if (filter == MyPageMeetingFilter.PARTICIPANT) {
-            return (mp.type.eq(LEADER).or(mp.type.eq(PARTICIPANT))).and(m.state.ne(FINISH));
+            return (mp.type.eq(LEADER).or(mp.type.eq(PARTICIPANT)))
+                    .and(m.state.ne(MeetingState.FINISH));
         } else {
-            return (mp.type.eq(LEADER).or(mp.type.eq(PARTICIPANT))).and(m.state.eq(FINISH));
+            return (mp.type.eq(LEADER).or(mp.type.eq(PARTICIPANT)))
+                    .and(m.state.eq(MeetingState.FINISH));
         }
     }
 
@@ -239,11 +261,7 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                 .on(mgem.meetingId.eq(m.id))
                 .innerJoin(bgg)
                 .on(bgg.id.eq(mgem.boardGameGenreId))
-                .where(
-                        m.meetingDatetime
-                                .after(LocalDateTime.now())
-                                .and(m.state.ne(finishState))
-                                .and(filters))
+                .where(m.state.ne(finishState).and(filters))
                 .groupBy(m.id)
                 .orderBy(sortOrder)
                 .offset(offset)

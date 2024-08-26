@@ -4,6 +4,7 @@ import static com.boardgo.common.constant.HeaderConstant.*;
 
 import com.boardgo.domain.meeting.controller.request.MyPageMeetingFilterRequest;
 import com.boardgo.domain.meeting.service.MyPageMeetingQueryUseCase;
+import com.boardgo.domain.meeting.service.response.LikedMeetingMyPageResponse;
 import com.boardgo.domain.meeting.service.response.MeetingMyPageResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -22,6 +23,15 @@ public class MyPageMeetingController {
             @Valid MyPageMeetingFilterRequest filter) {
         List<MeetingMyPageResponse> result =
                 myPageMeetingQueryUseCase.findByFilter(filter.filter());
+        if (result.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(value = "/my/meeting/like", headers = API_VERSION_HEADER1)
+    public ResponseEntity<List<LikedMeetingMyPageResponse>> getLikeMeeting() {
+        List<LikedMeetingMyPageResponse> result = myPageMeetingQueryUseCase.findLikedMeeting();
         if (result.isEmpty()) {
             return ResponseEntity.noContent().build();
         }

@@ -4,6 +4,7 @@ import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityCo
 import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityProjection;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.entity.enums.MyPageMeetingFilter;
+import com.boardgo.domain.meeting.repository.projection.LikedMeetingMyPageProjection;
 import com.boardgo.domain.meeting.repository.projection.MyPageMeetingProjection;
 import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
@@ -21,4 +22,6 @@ public interface MeetingDslRepository {
     List<CumulativePopularityCountProjection> findCumulativePopularityBoardGameRank(int rank);
 
     List<CumulativePopularityProjection> findBoardGameOrderByRank(Set<Long> rankList);
+
+    List<LikedMeetingMyPageProjection> findLikedMeeting(List<Long> meetingIdList);
 }

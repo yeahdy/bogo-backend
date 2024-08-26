@@ -3,18 +3,22 @@ package com.boardgo.integration.meeting.service;
 import static org.assertj.core.api.Assertions.*;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
+import com.boardgo.domain.meeting.entity.MeetingLikeEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingType;
 import com.boardgo.domain.meeting.entity.enums.MyPageMeetingFilter;
+import com.boardgo.domain.meeting.repository.MeetingLikeRepository;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.service.MyPageMeetingQueryUseCase;
+import com.boardgo.domain.meeting.service.response.LikedMeetingMyPageResponse;
 import com.boardgo.domain.meeting.service.response.MeetingMyPageResponse;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.dto.CustomUserDetails;
 import com.boardgo.integration.fixture.MeetingFixture;
+import com.boardgo.integration.fixture.MeetingLikeFixture;
 import com.boardgo.integration.fixture.MeetingParticipantFixture;
 import com.boardgo.integration.fixture.UserInfoFixture;
 import com.boardgo.integration.support.IntegrationTestSupport;
@@ -32,6 +36,58 @@ public class MyPageMeetingQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private MeetingRepository meetingRepository;
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;
     @Autowired private MyPageMeetingQueryUseCase myPageMeetingQueryUseCase;
+    @Autowired private MeetingLikeRepository meetingLikeRepository;
+
+    @Test
+    @DisplayName("내가 찜한 모임들을 가져올 수 있다")
+    void 내가_찜한_모임들을_가져올_수_있다() {
+        // given
+        UserInfoEntity userInfoEntity = UserInfoFixture.localUserInfoEntity();
+        UserInfoEntity savedUser = userRepository.save(userInfoEntity);
+        setSecurityContext(savedUser.getId(), savedUser.getPassword());
+
+        MeetingEntity meetingEntity1 =
+                MeetingFixture.getProgressMeetingEntity(2L, MeetingType.FREE, 10);
+        MeetingEntity savedMeeting1 = meetingRepository.save(meetingEntity1);
+        MeetingEntity meetingEntity2 =
+                MeetingFixture.getProgressMeetingEntity(3L, MeetingType.FREE, 20);
+        MeetingEntity savedMeeting2 = meetingRepository.save(meetingEntity2);
+
+        MeetingLikeEntity meetingLike1 =
+                MeetingLikeFixture.getMeetingLike(savedUser.getId(), savedMeeting1.getId());
+        MeetingLikeEntity meetingLike2 =
+                MeetingLikeFixture.getMeetingLike(savedUser.getId(), savedMeeting2.getId());
+        MeetingLikeEntity savedMeetingLike1 = meetingLikeRepository.save(meetingLike1);
+        MeetingLikeEntity savedMeetingLike2 = meetingLikeRepository.save(meetingLike2);
+
+        MeetingParticipantEntity participantMeetingParticipantEntity1 =
+                MeetingParticipantFixture.getParticipantMeetingParticipantEntity(
+                        meetingLike1.getMeetingId(), 2L);
+        MeetingParticipantEntity participantMeetingParticipantEntity2 =
+                MeetingParticipantFixture.getParticipantMeetingParticipantEntity(
+                        meetingLike2.getMeetingId(), 2L);
+        MeetingParticipantEntity participantMeetingParticipantEntity3 =
+                MeetingParticipantFixture.getParticipantMeetingParticipantEntity(
+                        meetingLike2.getMeetingId(), 3L);
+        meetingParticipantRepository.save(participantMeetingParticipantEntity1);
+        meetingParticipantRepository.save(participantMeetingParticipantEntity2);
+        meetingParticipantRepository.save(participantMeetingParticipantEntity3);
+
+        // when
+        List<LikedMeetingMyPageResponse> likedMeeting =
+                myPageMeetingQueryUseCase.findLikedMeeting();
+        // then
+        assertThat(likedMeeting)
+                .extracting(LikedMeetingMyPageResponse::meetingId)
+                .containsExactlyInAnyOrder(
+                        savedMeetingLike1.getMeetingId(), savedMeetingLike2.getMeetingId());
+        assertThat(likedMeeting)
+                .extracting(LikedMeetingMyPageResponse::limitParticipant)
+                .containsExactlyInAnyOrder(10, 20);
+        assertThat(likedMeeting)
+                .extracting(LikedMeetingMyPageResponse::currentParticipant)
+                .containsExactlyInAnyOrder(1, 2);
+    }
 
     @Test
     @DisplayName("내가 만든 모임을 가져올 수 있다")
