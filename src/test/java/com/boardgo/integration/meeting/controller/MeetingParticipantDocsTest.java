@@ -7,10 +7,12 @@ import static com.boardgo.integration.fixture.UserInfoFixture.*;
 import static io.restassured.RestAssured.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import com.boardgo.domain.meeting.controller.request.MeetingParticipateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
+import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingType;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
@@ -65,6 +67,39 @@ public class MeetingParticipantDocsTest extends RestDocsTestSupport {
                 .log()
                 .ifError()
                 .statusCode(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    @DisplayName("사용자가 방장에 의해 강퇴된 사람인지 판별할 수 있다")
+    void 사용자가_방장에_의해_강퇴된_사람인지_판별할_수_있다() {
+        UserInfoEntity userInfoEntity = localUserInfoEntity();
+        UserInfoEntity savedUser = userRepository.save(userInfoEntity);
+        MeetingEntity meetingEntity =
+                getProgressMeetingEntity(savedUser.getId(), MeetingType.FREE, 10);
+        MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
+        MeetingParticipantEntity participantMeetingParticipantEntity =
+                getOutMeetingParticipantEntity(savedMeeting.getId(), savedUser.getId());
+        meetingParticipantRepository.save(participantMeetingParticipantEntity);
+
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParams("meetingId", 1)
+                .filter(
+                        document(
+                                "participant-out-check",
+                                pathParameters(parameterWithName("meetingId").description("모임 id")),
+                                responseFields(
+                                        fieldWithPath("outState")
+                                                .description("방장이 내보낸 사람이면 'OUT' / 아니면 null"))))
+                .when()
+                .get("/meeting-participant/out/{meetingId}")
+                .then()
+                .statusCode(HttpStatus.OK.value());
     }
 
     RequestFieldsSnippet getParticipationRequestFieldsSnippet() {

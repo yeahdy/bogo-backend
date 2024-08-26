@@ -304,6 +304,37 @@ include::{snippets}/meeting-detail/response-fields.adoc[]
 
 '''
 
+=== *모임에서 강퇴된 사람인지 조회*
+로그인한 사람만 요청할 수 있습니다. 비회원인 경우 요청 자체가 불필요합니다!
+
+==== *요청*
+
+include::{snippets}/participant-out-check/http-request.adoc[]
+include::{snippets}/participant-out-check/path-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/participant-out-check/http-response.adoc[]
+
+- Response Body
+
+include::{snippets}/participant-out-check/response-fields.adoc[]
+
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+| 모임이 존재하지 않습니다
+
+| 400
+|인증 정보가 존재하지 않습니다. +
+인증된 사용자가 아닙니다.
+|===
+
+'''
+
 === *모임 공유 횟수 증가*
 
 ==== *요청*

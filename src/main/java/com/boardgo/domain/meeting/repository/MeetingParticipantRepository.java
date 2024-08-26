@@ -4,6 +4,7 @@ import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
 import com.boardgo.domain.meeting.repository.projection.ParticipationCountProjection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Repository;
 public interface MeetingParticipantRepository
         extends JpaRepository<MeetingParticipantEntity, Long> {
     List<MeetingParticipantEntity> findByMeetingId(Long meetingId);
+
+    Optional<MeetingParticipantEntity> findByMeetingIdAndUserInfoIdAndType(
+            Long meetingId, Long userId, ParticipantType type);
 
     @Query(
             "SELECT COUNT(*) FROM MeetingParticipantEntity mp WHERE mp.type IN (:types) AND mp.userInfoId = :userId")
