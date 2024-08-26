@@ -1,9 +1,7 @@
 package com.boardgo.integration.support;
 
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyHeaders;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import com.boardgo.common.exception.CustomJsonProcessingException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,7 +35,7 @@ public abstract class RestDocsTestSupport {
 
     @LocalServerPort protected int port;
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     protected static Attribute constraints(final String value) {
         return new Attribute("constraints", value);
