@@ -54,7 +54,7 @@ public class UserQueryServiceV1 implements UserQueryUseCase {
         PersonalInfoDto personalInfoDto = userRepository.findByUserInfoId(userId);
         int meetingCount =
                 meetingParticipantRepository.countByTypeAndUserInfoId(
-                        List.of(LEADER.toString(), PARTICIPANT.toString()), userId);
+                        List.of(LEADER, PARTICIPANT), userId);
         return UserInfoMapper.toUserPersonalInfoResponse(personalInfoDto, 4.5, meetingCount);
     }
 }

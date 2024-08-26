@@ -43,7 +43,7 @@ public abstract class RestDocsTestSupport {
         return new Attribute("constraints", value);
     }
 
-    protected static String writeValueAsString(Object value) {
+    protected String writeValueAsString(Object value) {
         try {
             return objectMapper.writeValueAsString(value);
         } catch (JsonProcessingException je) {

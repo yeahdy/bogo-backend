@@ -21,10 +21,12 @@ import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.entity.enums.MyPageMeetingFilter;
 import com.boardgo.domain.meeting.repository.projection.LikedMeetingMyPageProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
+import com.boardgo.domain.meeting.repository.projection.MeetingReviewProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.projection.MyPageMeetingProjection;
 import com.boardgo.domain.meeting.repository.projection.QLikedMeetingMyPageProjection;
 import com.boardgo.domain.meeting.repository.projection.QMeetingDetailProjection;
+import com.boardgo.domain.meeting.repository.projection.QMeetingReviewProjection;
 import com.boardgo.domain.meeting.repository.projection.QMeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.projection.QMyPageMeetingProjection;
 import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
@@ -88,7 +90,7 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
     public Page<MeetingSearchResponse> findByFilters(
             MeetingSearchRequest searchRequest, Long userId) {
 
-        MeetingState finishState = MeetingState.valueOf("FINISH");
+        MeetingState finishState = FINISH;
 
         BooleanBuilder filters = getRequireFilters(searchRequest);
 
@@ -440,6 +442,25 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                 .where(m.state.eq(FINISH))
                 .groupBy(mgam.boardGameId)
                 .limit(rank)
+                .fetch();
+    }
+
+    @Override
+    public List<MeetingReviewProjection> findMeetingPreProgressReview(
+            Long reviewerId, List<Long> reviewFinishedMeetings) {
+        return queryFactory
+                .select(
+                        new QMeetingReviewProjection(
+                                m.id, m.title, m.thumbnail, m.city, m.county, m.meetingDatetime))
+                .from(mp)
+                .innerJoin(m)
+                .on(mp.meetingId.eq(m.id))
+                .where(
+                        mp.userInfoId
+                                .eq(reviewerId)
+                                .and(mp.type.in(List.of(PARTICIPANT, LEADER)))
+                                .and(m.state.eq(FINISH))
+                                .and(m.id.notIn(reviewFinishedMeetings)))
                 .fetch();
     }
 }

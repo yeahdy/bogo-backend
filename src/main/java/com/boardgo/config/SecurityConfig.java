@@ -1,6 +1,6 @@
 package com.boardgo.config;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
 
 import com.boardgo.domain.user.entity.enums.RoleType;
 import com.boardgo.jwt.JWTFilter;
@@ -69,7 +69,8 @@ public class SecurityConfig {
         AntPathRequestMatcher.antMatcher("/personal-info/**"),
         AntPathRequestMatcher.antMatcher("/meeting-participant/**"),
         AntPathRequestMatcher.antMatcher("/evaluationTags"),
-        AntPathRequestMatcher.antMatcher("/meeting/like")
+        AntPathRequestMatcher.antMatcher("/meeting/like"),
+        AntPathRequestMatcher.antMatcher("/my/review/**")
     };
 
     @Bean

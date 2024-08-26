@@ -130,6 +130,13 @@ public class MeetingEntity extends BaseEntity {
         return true;
     }
 
+    public boolean isFinishState() {
+        if (FINISH == this.state) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * @return 현재 시간이 모임날짜 보다 미래일 경우 true, 아닐 경우 false
      */

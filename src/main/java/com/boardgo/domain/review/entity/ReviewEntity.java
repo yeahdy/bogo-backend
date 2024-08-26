@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -51,4 +52,19 @@ public class ReviewEntity extends BaseEntity {
     @Convert(converter = BooleanConverter.class)
     @Column(columnDefinition = "varchar(1)")
     private boolean isDeleted;
+
+    @Builder
+    public ReviewEntity(
+            Long revieweeId,
+            Long reviewerId,
+            Long meetingId,
+            Integer rating,
+            List<String> evaluationTags) {
+        this.revieweeId = revieweeId;
+        this.reviewerId = reviewerId;
+        this.meetingId = meetingId;
+        this.rating = rating;
+        this.evaluationTags = evaluationTags;
+        this.isDeleted = false;
+    }
 }

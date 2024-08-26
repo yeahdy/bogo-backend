@@ -1,7 +1,7 @@
 package com.boardgo.domain.mapper;
 
-import com.boardgo.domain.review.controller.dto.EvaluationTagResponse;
 import com.boardgo.domain.review.entity.EvaluationTagEntity;
+import com.boardgo.domain.review.service.response.EvaluationTagResponse;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

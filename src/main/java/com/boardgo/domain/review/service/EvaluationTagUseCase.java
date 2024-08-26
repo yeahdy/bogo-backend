@@ -1,6 +1,6 @@
 package com.boardgo.domain.review.service;
 
-import com.boardgo.domain.review.controller.dto.EvaluationTagListResponse;
+import com.boardgo.domain.review.service.response.EvaluationTagListResponse;
 
 public interface EvaluationTagUseCase {
 
