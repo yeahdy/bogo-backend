@@ -1,7 +1,7 @@
 package com.boardgo.integration.fixture;
 
-import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.entity.enums.ProviderType;
 
 public abstract class UserInfoFixture {
 

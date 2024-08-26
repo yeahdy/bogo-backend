@@ -4,10 +4,10 @@ import static com.boardgo.domain.review.entity.EvaluationType.POSITIVE;
 import static com.boardgo.integration.fixture.EvaluationTagFixture.getEvaluationTagEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.boardgo.domain.review.controller.dto.EvaluationTagListResponse;
-import com.boardgo.domain.review.controller.dto.EvaluationTagResponse;
 import com.boardgo.domain.review.repository.EvaluationTagRepository;
 import com.boardgo.domain.review.service.EvaluationTagUseCase;
+import com.boardgo.domain.review.service.response.EvaluationTagListResponse;
+import com.boardgo.domain.review.service.response.EvaluationTagResponse;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

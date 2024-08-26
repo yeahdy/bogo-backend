@@ -2,8 +2,9 @@ package com.boardgo.domain.boardgame.controller;
 
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
 
-import com.boardgo.domain.boardgame.entity.SituationType;
+import com.boardgo.domain.boardgame.entity.enums.SituationType;
 import com.boardgo.domain.boardgame.service.HomeBoardGameQueryUseCase;
+import com.boardgo.domain.boardgame.service.response.CumulativePopularityResponse;
 import com.boardgo.domain.boardgame.service.response.SituationBoardGameResponse;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -28,8 +29,13 @@ public class HomeBoardGameController {
                 .body(homeBoardGameQueryUseCase.getSituationBoardGame(situationType));
     }
 
-    //    @GetMapping(value = "/cumulative-popularity", headers = API_VERSION_HEADER1)
-    //    public ResponseEntity<List<CumulativePopularityResponse>> getCumulativePopularity() {
-    //        return ResponseEntity.ok().body(homeQueryUseCase.getCumulativePopularity());
-    //    }
+    @GetMapping(value = "/cumulative-popularity", headers = API_VERSION_HEADER1)
+    public ResponseEntity<List<CumulativePopularityResponse>> getCumulativePopularity() {
+        List<CumulativePopularityResponse> cumulativePopularityResponseList =
+                homeBoardGameQueryUseCase.getCumulativePopularity();
+        if (cumulativePopularityResponseList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(cumulativePopularityResponseList);
+    }
 }

@@ -1,11 +1,11 @@
 package com.boardgo.domain.review.service;
 
 import com.boardgo.domain.mapper.EvaluationTagMapper;
-import com.boardgo.domain.review.controller.dto.EvaluationTagListResponse;
-import com.boardgo.domain.review.controller.dto.EvaluationTagResponse;
 import com.boardgo.domain.review.entity.EvaluationTagEntity;
 import com.boardgo.domain.review.entity.EvaluationType;
 import com.boardgo.domain.review.repository.EvaluationTagRepository;
+import com.boardgo.domain.review.service.response.EvaluationTagListResponse;
+import com.boardgo.domain.review.service.response.EvaluationTagResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

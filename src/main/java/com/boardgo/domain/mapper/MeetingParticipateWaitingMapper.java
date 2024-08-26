@@ -1,7 +1,7 @@
 package com.boardgo.domain.mapper;
 
-import com.boardgo.domain.meeting.entity.AcceptState;
 import com.boardgo.domain.meeting.entity.MeetingParticipateWaitingEntity;
+import com.boardgo.domain.meeting.entity.enums.AcceptState;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

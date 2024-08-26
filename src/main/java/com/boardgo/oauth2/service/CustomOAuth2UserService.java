@@ -1,8 +1,8 @@
 package com.boardgo.oauth2.service;
 
 import com.boardgo.domain.mapper.UserInfoMapper;
-import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.oauth2.dto.OAuth2CreateUserRequest;
 import com.boardgo.oauth2.dto.OAuth2Response;

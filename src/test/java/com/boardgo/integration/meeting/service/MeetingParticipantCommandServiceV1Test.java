@@ -1,24 +1,20 @@
 package com.boardgo.integration.meeting.service;
 
-import static com.boardgo.integration.fixture.MeetingFixture.getCompleteMeetingEntity;
-import static com.boardgo.integration.fixture.MeetingFixture.getProgressMeetingEntity;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.getLeaderMeetingParticipantEntity;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
-import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
-import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static com.boardgo.integration.fixture.MeetingFixture.*;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
+import static com.boardgo.integration.fixture.UserInfoFixture.*;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.domain.meeting.controller.request.MeetingParticipateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
-import com.boardgo.domain.meeting.entity.MeetingType;
+import com.boardgo.domain.meeting.entity.enums.MeetingType;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.service.MeetingParticipantCommandUseCase;
-import com.boardgo.domain.user.entity.ProviderType;
 import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import org.junit.jupiter.api.DisplayName;

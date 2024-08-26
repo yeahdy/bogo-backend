@@ -29,7 +29,7 @@ public class LayeredDependencyConventionTest {
                 .layer("Controller")
                 .definedBy("..controller")
                 .layer("Service")
-                .definedBy("..service..")
+                .definedBy("..service")
                 .layer("Repository")
                 .definedBy("..repository..")
                 .layer("Mapper")

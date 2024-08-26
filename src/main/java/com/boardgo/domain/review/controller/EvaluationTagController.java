@@ -2,8 +2,8 @@ package com.boardgo.domain.review.controller;
 
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
 
-import com.boardgo.domain.review.controller.dto.EvaluationTagListResponse;
 import com.boardgo.domain.review.service.EvaluationTagUseCase;
+import com.boardgo.domain.review.service.response.EvaluationTagListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

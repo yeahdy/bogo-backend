@@ -395,6 +395,27 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                 .statusCode(HttpStatus.OK.value());
     }
 
+    @Test
+    @DisplayName("공유하면 공유횟수가 증가한다")
+    void 공유하면_공유횟수가_증가한다() {
+        initEssentialData();
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParams("id", 10)
+                .filter(
+                        document(
+                                "meeting-share-increment",
+                                pathParameters(parameterWithName("id").description("모임 id"))))
+                .when()
+                .patch("/meeting/share/{id}")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
     private void initEssentialData() {
         testBoardGameInitializer.generateBoardGameData();
         testUserInfoInitializer.generateUserData();

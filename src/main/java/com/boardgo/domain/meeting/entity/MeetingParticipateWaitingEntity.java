@@ -1,6 +1,7 @@
 package com.boardgo.domain.meeting.entity;
 
 import com.boardgo.common.domain.BaseEntity;
+import com.boardgo.domain.meeting.entity.enums.AcceptState;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

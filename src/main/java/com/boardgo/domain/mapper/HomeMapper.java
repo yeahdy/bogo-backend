@@ -1,6 +1,8 @@
 package com.boardgo.domain.mapper;
 
+import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityProjection;
 import com.boardgo.domain.boardgame.repository.projection.SituationBoardGameProjection;
+import com.boardgo.domain.boardgame.service.response.CumulativePopularityResponse;
 import com.boardgo.domain.boardgame.service.response.SituationBoardGameResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,4 +27,7 @@ public interface HomeMapper {
         }
         return Collections.emptyList();
     }
+
+    CumulativePopularityResponse toCumulativePopularityResponse(
+            CumulativePopularityProjection projection, Long cumulativeCount);
 }

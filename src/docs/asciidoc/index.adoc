@@ -304,6 +304,60 @@ include::{snippets}/meeting-detail/response-fields.adoc[]
 
 '''
 
+=== *모임에서 강퇴된 사람인지 조회*
+로그인한 사람만 요청할 수 있습니다. 비회원인 경우 요청 자체가 불필요합니다!
+
+==== *요청*
+
+include::{snippets}/participant-out-check/http-request.adoc[]
+include::{snippets}/participant-out-check/path-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/participant-out-check/http-response.adoc[]
+
+- Response Body
+
+include::{snippets}/participant-out-check/response-fields.adoc[]
+
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+| 모임이 존재하지 않습니다
+
+| 400
+|인증 정보가 존재하지 않습니다. +
+인증된 사용자가 아닙니다.
+|===
+
+'''
+
+=== *모임 공유 횟수 증가*
+
+==== *요청*
+
+include::{snippets}/meeting-share-increment/http-request.adoc[]
+include::{snippets}/meeting-share-increment/path-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/meeting-share-increment/http-response.adoc[]
+
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+| 모임이 존재하지 않습니다
+
+|===
+
+'''
+
 === *모임 참가하기*
 
 ==== *요청*
@@ -442,3 +496,143 @@ include::{snippets}/get-home-situation/http-request.adoc[]
 
 include::{snippets}/get-home-situation/http-response.adoc[]
 include::{snippets}/get-home-situation/response-fields.adoc[]
+
+'''
+
+=== *마이페이지 모임 조회*
+
+==== *요청*
+
+include::{snippets}/my-meeting/http-request.adoc[]
+include::{snippets}/my-meeting/query-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/my-meeting/http-response.adoc[]
+
+
+- HTTP 상태 코드
+
+|===
+| code | messages
+
+| 200
+| 데이터 존재 시
+
+| 204
+| 데이터 존재하지 않을 시
+|===
+
+- HTTP 에러 상태 코드
+
+|===
+| errorCode | messages
+
+| 400
+|인증 정보가 존재하지 않습니다. +
+인증된 사용자가 아닙니다.
+|===
+
+'''
+
+=== *메인 홈 누적 인기 보드게임*
+
+==== *요청*
+
+include::{snippets}/get-home-cumulative-popularity/http-request.adoc[]
+
+==== *응답*
+
+include::{snippets}/get-home-cumulative-popularity/http-response.adoc[]
+include::{snippets}/get-home-cumulative-popularity/response-fields.adoc[]
+
+- HTTP 상태 코드
+
+|===
+| code | messages
+
+| 200
+| 데이터 존재 시
+
+| 204
+| 데이터 존재하지 않을 시
+|===
+
+'''
+
+=== *마이페이지 찜한 모임 조회*
+
+==== *요청*
+
+include::{snippets}/my-liked-meeting/http-request.adoc[]
+
+==== *응답*
+
+include::{snippets}/my-liked-meeting/http-response.adoc[]
+
+- HTTP 상태 코드
+
+|===
+| code | messages
+
+| 200
+| 데이터 존재 시
+
+| 204
+| 데이터 존재하지 않을 시
+|===
+
+- HTTP 에러 상태 코드
+
+|===
+| errorCode | messages
+
+| 400
+|인증 정보가 존재하지 않습니다. +
+인증된 사용자가 아닙니다.
+|===
+
+'''
+
+== 리뷰
+
+=== *(작성할/작성한) 리뷰 모임 목록 조회*
+
+==== *요청*
+
+include::{snippets}/get-review-meetings/http-request.adoc[]
+
+==== *응답*
+
+include::{snippets}/get-review-meetings/http-response.adoc[]
+include::{snippets}/get-review-meetings/response-fields.adoc[]
+
+=== *리뷰 작성하기*
+
+==== *요청*
+
+include::{snippets}/create-review/http-request.adoc[]
+include::{snippets}/create-review/request-fields.adoc[]
+
+==== *응답*
+
+include::{snippets}/create-review/http-response.adoc[]
+
+- HTTP 에러 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+|모임이 존재하지 않습니다 +
+회원이 존재하지 않습니다
+
+| 400
+|종료된 모임이 아닙니다 +
+모임을 함께 참여하지 않았습니다
+
+| 4002
+|이미 작성된 리뷰 입니다
+|===
+
+'''

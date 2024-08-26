@@ -1,15 +1,21 @@
 package com.boardgo.domain.boardgame.service;
 
-import com.boardgo.domain.boardgame.entity.SituationType;
+import com.boardgo.domain.boardgame.entity.enums.SituationType;
 import com.boardgo.domain.boardgame.repository.BoardGameRepository;
+import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityCountProjection;
+import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityProjection;
 import com.boardgo.domain.boardgame.repository.projection.SituationBoardGameProjection;
+import com.boardgo.domain.boardgame.service.response.CumulativePopularityResponse;
 import com.boardgo.domain.boardgame.service.response.SituationBoardGameResponse;
 import com.boardgo.domain.mapper.HomeMapper;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,29 +45,31 @@ public class HomeBoardGameBoardGameQueryServiceV1 implements HomeBoardGameQueryU
         return new ArrayList<>(boardGameMap.values());
     }
 
-    /*
-        public List<CumulativePopularityResponse> getCumulativePopularity() {
-            List<CumulativePopularityCountProjection> cumulativePopularityCount =
-                    meetingRepository.findCumulativePopularityBoardGameRank(7);
+    public List<CumulativePopularityResponse> getCumulativePopularity() {
+        final int LIMIT_RANK = 7;
+        List<CumulativePopularityCountProjection> cumulativePopularityCount =
+                meetingRepository.findCumulativePopularityBoardGameRank(LIMIT_RANK);
+        Map<Long, Long> rankMap =
+                cumulativePopularityCount.stream()
+                        .collect(
+                                Collectors.toMap(
+                                        CumulativePopularityCountProjection::boardGameId,
+                                        CumulativePopularityCountProjection::cumulativeCount));
 
-            List<Long> rankList = cumulativePopularityCount.stream()
-                    .map(CumulativePopularityCountProjection::cumulativeCount)
-                    .collect(Collectors.toList());
-    //        Map<Long, Long> rankMap = cumulativePopularityCount.stream()
-    //                .collect(Collectors.toMap(CumulativePopularityCountProjection::boardGameId
-    //                        , CumulativePopularityCountProjection::cumulativeCount,
-    //                        (existingValue, newValue) -> existingValue,
-    //                        LinkedHashMap::new));
+        List<CumulativePopularityProjection> boardGames =
+                meetingRepository.findBoardGameOrderByRank(rankMap.keySet());
+        List<CumulativePopularityResponse> cumulativePopularityList = new ArrayList<>();
 
-            List<CumulativePopularityResponse> boardGames =
-                    meetingRepository.findBoardGameOrderByRank(rankList);
-
-            for (CumulativePopularityResponse game : boardGames) {
-                CumulativePopularityCountProjection cumulativeCount = cumulativePopularityCount.get(game.getRank());
-                game.updateCumulativeCount(cumulativeCount.cumulativeCount());
-                game.updateRank();
-            }
-            return boardGames;
+        for (CumulativePopularityProjection game : boardGames) {
+            Long boardGameId = game.boardGameId();
+            CumulativePopularityResponse cumulativePopularity =
+                    homeMapper.toCumulativePopularityResponse(game, rankMap.get(boardGameId));
+            cumulativePopularityList.add(cumulativePopularity);
         }
-        */
+
+        Collections.sort(
+                cumulativePopularityList,
+                Comparator.comparingLong(CumulativePopularityResponse::cumulativeCount).reversed());
+        return cumulativePopularityList;
+    }
 }

@@ -1,4 +1,4 @@
-package com.boardgo.domain.review.controller.dto;
+package com.boardgo.domain.review.service.response;
 
 import java.util.List;
 

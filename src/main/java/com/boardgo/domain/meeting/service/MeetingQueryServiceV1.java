@@ -1,5 +1,6 @@
 package com.boardgo.domain.meeting.service;
 
+import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.common.utils.SecurityUtils;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
@@ -23,7 +24,19 @@ public class MeetingQueryServiceV1 implements MeetingQueryUseCase {
 
     @Override
     public MeetingDetailResponse getDetailById(Long meetingId) {
-        return meetingRepository.findDetailById(
-                meetingId, SecurityUtils.currentUserIdWithoutThrow());
+        checkNullMeeting(meetingId);
+        MeetingDetailResponse result =
+                meetingRepository.findDetailById(
+                        meetingId, SecurityUtils.currentUserIdWithoutThrow());
+
+        meetingRepository.incrementViewCount(meetingId);
+
+        return result;
+    }
+
+    private void checkNullMeeting(Long meetingId) {
+        meetingRepository
+                .findById(meetingId)
+                .orElseThrow(() -> new CustomNoSuchElementException("모임"));
     }
 }

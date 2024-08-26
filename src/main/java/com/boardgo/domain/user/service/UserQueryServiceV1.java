@@ -1,8 +1,7 @@
 package com.boardgo.domain.user.service;
 
-import static com.boardgo.common.exception.advice.dto.ErrorCode.DUPLICATE_DATA;
-import static com.boardgo.domain.meeting.entity.ParticipantType.LEADER;
-import static com.boardgo.domain.meeting.entity.ParticipantType.PARTICIPANT;
+import static com.boardgo.common.exception.advice.dto.ErrorCode.*;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.domain.mapper.UserInfoMapper;
@@ -11,7 +10,7 @@ import com.boardgo.domain.user.controller.dto.EmailRequest;
 import com.boardgo.domain.user.controller.dto.NickNameRequest;
 import com.boardgo.domain.user.controller.dto.OtherPersonalInfoResponse;
 import com.boardgo.domain.user.controller.dto.UserPersonalInfoResponse;
-import com.boardgo.domain.user.entity.ProviderType;
+import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserPrTagRepository;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.repository.response.PersonalInfoDto;
@@ -55,7 +54,7 @@ public class UserQueryServiceV1 implements UserQueryUseCase {
         PersonalInfoDto personalInfoDto = userRepository.findByUserInfoId(userId);
         int meetingCount =
                 meetingParticipantRepository.countByTypeAndUserInfoId(
-                        List.of(LEADER.toString(), PARTICIPANT.toString()), userId);
+                        List.of(LEADER, PARTICIPANT), userId);
         return UserInfoMapper.toUserPersonalInfoResponse(personalInfoDto, 4.5, meetingCount);
     }
 }

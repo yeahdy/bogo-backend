@@ -18,4 +18,8 @@ public abstract class CustomStringUtils {
                 .filter(s -> s != null && !s.trim().isEmpty())
                 .collect(Collectors.toList());
     }
+
+    public static List<String> longToStringList(List<Long> longList) {
+        return longList.stream().map(Object::toString).collect(Collectors.toList());
+    }
 }

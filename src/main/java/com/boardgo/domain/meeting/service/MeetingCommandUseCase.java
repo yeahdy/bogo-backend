@@ -6,4 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface MeetingCommandUseCase {
 
     Long create(MeetingCreateRequest meetingCreateRequest, MultipartFile imageFile);
+
+    void incrementShareCount(Long meetingId);
 }

@@ -1,7 +1,6 @@
 package com.boardgo.domain.user.repository;
 
-import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
+import static com.querydsl.core.group.GroupBy.*;
 
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.mapper.UserInfoMapper;
