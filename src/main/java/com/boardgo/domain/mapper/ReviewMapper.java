@@ -7,8 +7,10 @@ import com.boardgo.domain.meeting.repository.projection.MeetingReviewProjection;
 import com.boardgo.domain.meeting.repository.projection.ReviewMeetingParticipantsProjection;
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.entity.ReviewEntity;
+import com.boardgo.domain.review.repository.projection.ReviewMeetingReviewsProjection;
 import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
+import com.boardgo.domain.review.service.response.ReviewMeetingReviewsResponse;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -39,4 +41,9 @@ public interface ReviewMapper {
 
     List<ReviewMeetingParticipantsResponse> toReviewMeetingParticipantsList(
             List<ReviewMeetingParticipantsProjection> reviewMeetingParticipantsProjections);
+
+    ReviewMeetingReviewsResponse toReviewMeetingReviewsResponse(
+            ReviewMeetingReviewsProjection meetingReviewsProjection,
+            List<String> positiveTags,
+            List<String> negativeTags);
 }

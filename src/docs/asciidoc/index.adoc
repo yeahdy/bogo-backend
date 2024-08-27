@@ -442,6 +442,8 @@ include::{snippets}/meeting-like-delete/http-response.adoc[]
 
 '''
 
+== 보드게임
+
 === *보드게임 등록*
 
 ==== *요청*
@@ -475,18 +477,7 @@ include::{snippets}/boardgame-list/response-fields.adoc[]
 
 '''
 
-=== *평가태그 목록 조회*
-
-==== *요청*
-
-include::{snippets}/get-evaluation-tags/http-request.adoc[]
-
-==== *응답*
-
-include::{snippets}/get-evaluation-tags/http-response.adoc[]
-include::{snippets}/get-evaluation-tags/response-fields.adoc[]
-
-'''
+== 메인 홈
 
 == 메인 홈
 
@@ -604,6 +595,19 @@ include::{snippets}/my-liked-meeting/http-response.adoc[]
 
 == 리뷰
 
+=== *평가태그 목록 조회*
+
+==== *요청*
+
+include::{snippets}/get-evaluation-tags/http-request.adoc[]
+
+==== *응답*
+
+include::{snippets}/get-evaluation-tags/http-response.adoc[]
+include::{snippets}/get-evaluation-tags/response-fields.adoc[]
+
+'''
+
 === *(작성할/작성한) 리뷰 모임 목록 조회*
 
 ==== *요청*
@@ -649,13 +653,13 @@ include::{snippets}/create-review/http-response.adoc[]
 
 ==== *요청*
 
-include::{snippets}/get-review-meeting-Participants/http-request.adoc[]
-include::{snippets}/get-review-meeting-Participants/path-parameters.adoc[]
+include::{snippets}/get-review-meeting-participants/http-request.adoc[]
+include::{snippets}/get-review-meeting-participants/path-parameters.adoc[]
 
 ==== *응답*
 
-include::{snippets}/get-review-meeting-Participants/http-response.adoc[]
-include::{snippets}/get-review-meeting-Participants/response-fields.adoc[]
+include::{snippets}/get-review-meeting-participants/http-response.adoc[]
+include::{snippets}/get-review-meeting-participants/response-fields.adoc[]
 
 - HTTP 에러 상태 코드
 
@@ -664,4 +668,27 @@ include::{snippets}/get-review-meeting-Participants/response-fields.adoc[]
 
 | 4040
 |리뷰를 작성할 참여자 (이)가 존재하지 않습니다.
+|===
+
+'''
+
+=== *작성한 모임의 리뷰 목록 조회*
+
+==== *요청*
+
+include::{snippets}/get-review-meeting/http-request.adoc[]
+include::{snippets}/get-review-meeting/path-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/get-review-meeting/http-response.adoc[]
+include::{snippets}/get-review-meeting/response-fields.adoc[]
+
+- HTTP 에러 상태 코드
+
+|===
+| errorCode | messages
+
+| 4040
+|작성한 모임의 리뷰 (이)가 존재하지 않습니다.
 |===

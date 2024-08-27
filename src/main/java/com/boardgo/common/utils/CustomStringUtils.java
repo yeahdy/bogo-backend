@@ -22,4 +22,8 @@ public abstract class CustomStringUtils {
     public static List<String> longToStringList(List<Long> longList) {
         return longList.stream().map(Object::toString).collect(Collectors.toList());
     }
+
+    public static List<Long> stringToLongList(List<String> stringList) {
+        return stringList.stream().map(Long::valueOf).collect(Collectors.toList());
+    }
 }

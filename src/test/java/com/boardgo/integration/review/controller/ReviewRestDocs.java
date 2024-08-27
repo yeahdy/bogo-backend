@@ -2,6 +2,8 @@ package com.boardgo.integration.review.controller;
 
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
 import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static com.boardgo.integration.fixture.EvaluationTagFixture.getEvaluationTagEntity;
+import static com.boardgo.integration.fixture.ReviewFixture.getReview;
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
 import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
 import static io.restassured.RestAssured.given;
@@ -20,6 +22,9 @@ import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
+import com.boardgo.domain.review.repository.EvaluationTagRepository;
+import com.boardgo.domain.review.repository.ReviewRepository;
+import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.init.TestMeetingInitializer;
@@ -40,14 +45,17 @@ public class ReviewRestDocs extends RestDocsTestSupport {
 
     @Autowired private TestMeetingInitializer testMeetingInitializer;
     @Autowired private UserRepository userRepository;
-
     @Autowired private MeetingRepository meetingRepository;
+    @Autowired private EvaluationTagRepository evaluationTagRepository;
+    @Autowired private ReviewRepository reviewRepository;
 
     @Test
     @DisplayName("리뷰 모임 목록 조회하기")
     void 리뷰_모임_목록_조회하기() {
+        // init
         userRepository.save(socialUserInfoEntity(ProviderType.GOOGLE));
         List<Long> meetingIds = testMeetingInitializer.generateMeetingData();
+        // given
         List<MeetingEntity> meetingEntities = meetingRepository.findByIdIn(meetingIds);
         for (int i = 0; i < meetingEntities.size() / 10; i++) {
             MeetingEntity meeting = meetingEntities.get(i);
@@ -104,9 +112,11 @@ public class ReviewRestDocs extends RestDocsTestSupport {
     @Test
     @DisplayName("리뷰 작성하기")
     void 리뷰_작성하기() {
+        // init
         userRepository.save(socialUserInfoEntity(ProviderType.GOOGLE));
         userRepository.save(localUserInfoEntity());
         testMeetingInitializer.generateMeetingData();
+        // given
         MeetingEntity meeting = meetingRepository.findById(30L).get();
         meeting.updateMeetingState(MeetingState.FINISH);
         meetingRepository.save(meeting);
@@ -144,9 +154,11 @@ public class ReviewRestDocs extends RestDocsTestSupport {
     @Test
     @DisplayName("작성할 리뷰 참여자 목록 조회하기")
     void 작성할_리뷰_참여자_목록_조회하기() {
+        // init
         userRepository.save(socialUserInfoEntity(ProviderType.GOOGLE));
         userRepository.save(localUserInfoEntity());
         testMeetingInitializer.generateMeetingData();
+        // given
         Long meetingId = 2L;
         MeetingEntity meeting = meetingRepository.findById(meetingId).get();
         meeting.updateMeetingState(MeetingState.FINISH);
@@ -161,11 +173,11 @@ public class ReviewRestDocs extends RestDocsTestSupport {
                 .pathParam("meetingId", meetingId)
                 .filter(
                         document(
-                                "get-review-meeting-Participants",
+                                "get-review-meeting-participants",
                                 getPathParametersSnippet(),
                                 getParticipantsResponseFieldsSnippet()))
                 .when()
-                .get("/my/review/meetings/{meetingId}", meetingId)
+                .get("/my/review/meetings/{meetingId}/participants", meetingId)
                 .then()
                 .statusCode(HttpStatus.OK.value());
     }
@@ -183,5 +195,56 @@ public class ReviewRestDocs extends RestDocsTestSupport {
                         fieldWithPath("[].revieweeName")
                                 .type(JsonFieldType.STRING)
                                 .description("리뷰를 받는 참여자 닉네임")));
+    }
+
+    @Test
+    @DisplayName("작성한 모임의 리뷰 목록 조회하기")
+    void 작성한_모임의_리뷰_목록_조회하기() {
+        // init
+        UserInfoEntity reviewerId = userRepository.save(socialUserInfoEntity(ProviderType.GOOGLE));
+        UserInfoEntity revieweeId = userRepository.save(localUserInfoEntity());
+        testMeetingInitializer.generateMeetingData();
+        evaluationTagRepository.saveAll(getEvaluationTagEntity());
+        // given
+        Long meetingId = 2L;
+        MeetingEntity meeting = meetingRepository.findById(meetingId).get();
+        meeting.updateMeetingState(MeetingState.FINISH);
+        meetingRepository.save(meeting);
+        reviewRepository.save(getReview(reviewerId.getId(), revieweeId.getId(), meetingId));
+
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .pathParam("meetingId", meetingId)
+                .filter(
+                        document(
+                                "get-review-meeting",
+                                getPathParametersSnippet(),
+                                getReviewsResponseFieldsSnippet()))
+                .when()
+                .get("/my/review/meetings/{meetingId}", meetingId)
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    private ResponseFieldsSnippet getReviewsResponseFieldsSnippet() {
+        return responseFields(
+                List.of(
+                        fieldWithPath("[].reviewId")
+                                .type(JsonFieldType.NUMBER)
+                                .description("리뷰 고유Id"),
+                        fieldWithPath("[].revieweeName")
+                                .type(JsonFieldType.STRING)
+                                .description("리뷰를 받는 참여자 닉네임"),
+                        fieldWithPath("[].rating").type(JsonFieldType.NUMBER).description("평점"),
+                        fieldWithPath("[].positiveTags")
+                                .type(JsonFieldType.ARRAY)
+                                .description("긍정적 태그 목록"),
+                        fieldWithPath("[].negativeTags")
+                                .type(JsonFieldType.ARRAY)
+                                .description("부정적 태그 목록")));
     }
 }
