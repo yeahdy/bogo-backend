@@ -4,6 +4,7 @@ import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
 import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.common.exception.DuplicateException;
 import com.boardgo.domain.mapper.ReviewMapper;
@@ -12,11 +13,13 @@ import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.repository.projection.MeetingReviewProjection;
 import com.boardgo.domain.meeting.repository.projection.ParticipationCountProjection;
+import com.boardgo.domain.meeting.repository.projection.ReviewMeetingParticipantsProjection;
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.entity.ReviewEntity;
 import com.boardgo.domain.review.entity.enums.ReviewType;
 import com.boardgo.domain.review.repository.ReviewRepository;
 import com.boardgo.domain.review.repository.projection.ReviewCountProjection;
+import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
 import com.boardgo.domain.user.repository.UserRepository;
 import java.util.ArrayList;
@@ -124,5 +127,21 @@ public class ReviewQueryServiceV1 implements ReviewUseCase {
         if (meetingParticipantCount != TOGETHER) {
             throw new CustomIllegalArgumentException("모임을 함께 참여하지 않았습니다");
         }
+    }
+
+    @Override
+    public List<ReviewMeetingParticipantsResponse> getReviewMeetingParticipants(
+            Long meetingId, Long reviewerId) {
+        List<Long> revieweeIds = reviewRepository.findAllRevieweeId(reviewerId, meetingId);
+        revieweeIds.add(reviewerId); // 본인 리뷰 작성자 목록 표출 제외
+
+        List<ReviewMeetingParticipantsProjection> reviewMeetingParticipants =
+                meetingParticipantRepository.findReviewMeetingParticipants(revieweeIds, meetingId);
+        List<ReviewMeetingParticipantsResponse> reviewMeetingParticipantsResponseList =
+                reviewMapper.toReviewMeetingParticipantsList(reviewMeetingParticipants);
+        if (reviewMeetingParticipantsResponseList.isEmpty()) {
+            throw new CustomNoSuchElementException("리뷰를 작성할 참여자");
+        }
+        return reviewMeetingParticipantsResponseList;
     }
 }

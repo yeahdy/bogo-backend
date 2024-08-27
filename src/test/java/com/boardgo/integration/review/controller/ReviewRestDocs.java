@@ -10,7 +10,9 @@ import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
@@ -31,6 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.restdocs.request.PathParametersSnippet;
 import org.springframework.restdocs.request.RequestPartsSnippet;
 
 public class ReviewRestDocs extends RestDocsTestSupport {
@@ -136,5 +139,49 @@ public class ReviewRestDocs extends RestDocsTestSupport {
                 fieldWithPath("meetingId").type(NUMBER).description("모임 고유Id"),
                 fieldWithPath("rating").type(NUMBER).description("평점"),
                 fieldWithPath("evaluationTagList").type(ARRAY).description("평가태그 목록"));
+    }
+
+    @Test
+    @DisplayName("작성할 리뷰 참여자 목록 조회하기")
+    void 작성할_리뷰_참여자_목록_조회하기() {
+        userRepository.save(socialUserInfoEntity(ProviderType.GOOGLE));
+        userRepository.save(localUserInfoEntity());
+        testMeetingInitializer.generateMeetingData();
+        Long meetingId = 2L;
+        MeetingEntity meeting = meetingRepository.findById(meetingId).get();
+        meeting.updateMeetingState(MeetingState.FINISH);
+        meetingRepository.save(meeting);
+
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .pathParam("meetingId", meetingId)
+                .filter(
+                        document(
+                                "get-review-meeting-Participants",
+                                getPathParametersSnippet(),
+                                getParticipantsResponseFieldsSnippet()))
+                .when()
+                .get("/my/review/meetings/{meetingId}", meetingId)
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    private PathParametersSnippet getPathParametersSnippet() {
+        return pathParameters(parameterWithName("meetingId").description("모임 고유Id"));
+    }
+
+    private ResponseFieldsSnippet getParticipantsResponseFieldsSnippet() {
+        return responseFields(
+                List.of(
+                        fieldWithPath("[].revieweeId")
+                                .type(JsonFieldType.NUMBER)
+                                .description("리뷰를 받는 참여자 Id"),
+                        fieldWithPath("[].revieweeName")
+                                .type(JsonFieldType.STRING)
+                                .description("리뷰를 받는 참여자 닉네임")));
     }
 }

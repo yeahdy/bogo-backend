@@ -8,11 +8,11 @@ import com.boardgo.domain.user.controller.dto.UserPersonalInfoResponse;
 import com.boardgo.domain.user.controller.dto.UserPersonalInfoUpdateRequest;
 import com.boardgo.domain.user.service.UserCommandUseCase;
 import com.boardgo.domain.user.service.UserQueryUseCase;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/personal-info")
+@Validated
 public class PersonalInfoController {
     private final UserQueryUseCase userQueryUseCase;
     private final UserCommandUseCase userCommandUseCase;
@@ -37,7 +38,7 @@ public class PersonalInfoController {
 
     @GetMapping(value = "/{userId}", headers = API_VERSION_HEADER1)
     public ResponseEntity<OtherPersonalInfoResponse> getOtherPersonalInfo(
-            @PathVariable("userId") @Positive @NotNull long userId) {
+            @PathVariable("userId") @Positive Long userId) {
         return ResponseEntity.ok(userQueryUseCase.getOtherPersonalInfo(userId));
     }
 

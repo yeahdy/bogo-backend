@@ -32,12 +32,11 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class CommonControllerAdvice {
     /** Entity Validation Error HTTP Method Type Error */
     @ExceptionHandler({
-        ConstraintViolationException.class,
         HandlerMethodValidationException.class,
         MethodArgumentTypeMismatchException.class
     })
-    public ResponseEntity<ErrorResponse> ConstraintViolationException(Exception exception) {
-        OutputLog.logError(getPrintStackTrace(exception));
+    public ResponseEntity<ErrorResponse> ConstraintViolationException(Exception e) {
+        OutputLog.logError(getPrintStackTrace(e));
         return ResponseEntity.badRequest()
                 .body(
                         ErrorResponse.builder()
@@ -63,6 +62,16 @@ public class CommonControllerAdvice {
                         ErrorResponse.builder()
                                 .errorCode(ErrorCode.BAD_REQUEST.getCode())
                                 .messages(FieldErrorResponse.listToString(fieldErrorResponses))
+                                .build());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> constraintValidExHandler(ConstraintViolationException e) {
+        return ResponseEntity.badRequest()
+                .body(
+                        ErrorResponse.builder()
+                                .errorCode(ErrorCode.BAD_REQUEST.getCode())
+                                .messages(e.getMessage())
                                 .build());
     }
 

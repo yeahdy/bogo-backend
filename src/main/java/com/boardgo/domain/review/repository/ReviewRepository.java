@@ -27,4 +27,11 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
     boolean existsByReviewerIdAndMeetingIdAndRevieweeId(
             Long reviewerId, Long meetingId, Long revieweeId);
+
+    @Query(
+            "SELECT r.revieweeId "
+                    + "FROM ReviewEntity r "
+                    + "WHERE r.reviewerId = :reviewerId AND r.meetingId = :meetingId ")
+    List<Long> findAllRevieweeId(
+            @Param("reviewerId") Long reviewerId, @Param("meetingId") Long meetingId);
 }
