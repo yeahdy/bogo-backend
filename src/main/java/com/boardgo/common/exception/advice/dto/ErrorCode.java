@@ -14,6 +14,8 @@ public enum ErrorCode {
     S3_ERROR(4007, "Amazon S3 요청 중 예외가 발생했습니다"),
     BAD_REQUEST(400, "유효하지 않는 데이터 입니다."),
     UNAUTHORIZED(401, "권한이 존재하지 않습니다"),
+    EXPIRED_TOKEN(4010, "토큰이 만료되었습니다"),
+    INVALID_TOKEN(4011, "토큰이 유효하지 않습니다"),
     FORBIDDEN(403, "권한이 적절하지 않습니다"),
     NOT_FOUND(404, "존재하지 않는 URI 입니다"),
     ELEMENT_NOT_FOUND(4040, "존재하지 않는 리소스입니다."),

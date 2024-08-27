@@ -32,6 +32,10 @@ public interface BoardGameMapper {
                 boardGameSearchProjection.id(),
                 boardGameSearchProjection.title(),
                 boardGameSearchProjection.thumbnail(),
+                boardGameSearchProjection.minPeople(),
+                boardGameSearchProjection.maxPeople(),
+                boardGameSearchProjection.minPlaytime(),
+                boardGameSearchProjection.maxPlaytime(),
                 genreSearchResponseList);
     }
 

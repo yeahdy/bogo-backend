@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
+public interface ReviewRepository extends JpaRepository<ReviewEntity, Long>, ReviewDslRepository {
 
     @Query(
             "SELECT r.meetingId "
@@ -27,4 +27,14 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
     boolean existsByReviewerIdAndMeetingIdAndRevieweeId(
             Long reviewerId, Long meetingId, Long revieweeId);
+
+    @Query(
+            "SELECT r.revieweeId "
+                    + "FROM ReviewEntity r "
+                    + "WHERE r.reviewerId = :reviewerId AND r.meetingId = :meetingId ")
+    List<Long> findAllRevieweeId(
+            @Param("reviewerId") Long reviewerId, @Param("meetingId") Long meetingId);
+
+    @Query("SELECT AVG(r.rating) " + "FROM ReviewEntity r " + "WHERE r.revieweeId = :revieweeId")
+    Double findRatingAvgByRevieweeId(@Param("revieweeId") Long revieweeId);
 }

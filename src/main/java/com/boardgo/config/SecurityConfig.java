@@ -1,10 +1,11 @@
 package com.boardgo.config;
 
-import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static com.boardgo.common.constant.HeaderConstant.*;
 
 import com.boardgo.domain.user.entity.enums.RoleType;
 import com.boardgo.jwt.JWTFilter;
 import com.boardgo.jwt.JWTUtil;
+import com.boardgo.jwt.JwtExceptionHandlerFilter;
 import com.boardgo.jwt.LoginFilter;
 import com.boardgo.oauth2.handler.OAuth2SuccessHandler;
 import com.boardgo.oauth2.service.CustomOAuth2UserService;
@@ -113,6 +114,7 @@ public class SecurityConfig {
                                 authenticationManager(authenticationConfiguration), jwtUtil),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
+                .addFilterBefore(new JwtExceptionHandlerFilter(), JWTFilter.class)
                 .authorizeHttpRequests(
                         authorize ->
                                 authorize

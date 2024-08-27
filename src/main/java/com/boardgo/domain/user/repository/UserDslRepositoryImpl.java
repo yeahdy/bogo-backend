@@ -1,11 +1,11 @@
 package com.boardgo.domain.user.repository;
 
-import static com.querydsl.core.group.GroupBy.*;
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
 
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.mapper.UserInfoMapper;
 import com.boardgo.domain.meeting.entity.QMeetingParticipantEntity;
-import com.boardgo.domain.review.entity.QReviewEntity;
 import com.boardgo.domain.user.entity.QUserInfoEntity;
 import com.boardgo.domain.user.entity.QUserPrTagEntity;
 import com.boardgo.domain.user.repository.projection.QUserParticipantProjection;
@@ -25,7 +25,6 @@ public class UserDslRepositoryImpl implements UserDslRepository {
     private final JPAQueryFactory queryFactory;
     private final QUserInfoEntity u = QUserInfoEntity.userInfoEntity;
     private final QUserPrTagEntity up = QUserPrTagEntity.userPrTagEntity;
-    private final QReviewEntity r = QReviewEntity.reviewEntity;
     private final QMeetingParticipantEntity mp = QMeetingParticipantEntity.meetingParticipantEntity;
     private final UserInfoMapper userInfoMapper;
 
@@ -57,14 +56,11 @@ public class UserDslRepositoryImpl implements UserDslRepository {
                         .selectFrom(u)
                         .leftJoin(up)
                         .on(u.id.eq(up.userInfoId))
-                        //                        .leftJoin(r)
-                        //                        .on(u.id.eq(r.userInfoId))
                         .where(u.id.eq(userId))
                         .transform(
                                 groupBy(u.id)
                                         .as(
                                                 new QPersonalInfoDto(
-                                                        // FIXME. 리뷰 기능 구현 필요: 평균별점
                                                         u.email,
                                                         u.nickName,
                                                         u.profileImage,

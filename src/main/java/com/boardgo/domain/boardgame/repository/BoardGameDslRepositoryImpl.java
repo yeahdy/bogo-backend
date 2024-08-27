@@ -125,7 +125,15 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
     private List<BoardGameSearchProjection> findBoardGameBySearchWord(
             BoardGameSearchRequest request, int size, int offset) {
         return queryFactory
-                .select(new QBoardGameSearchProjection(b.id, b.title, b.thumbnail))
+                .select(
+                        new QBoardGameSearchProjection(
+                                b.id,
+                                b.title,
+                                b.thumbnail,
+                                b.minPeople,
+                                b.maxPeople,
+                                b.minPeople,
+                                b.maxPeople))
                 .from(b)
                 .where(searchKeyword(request.searchWord()))
                 .offset(offset)

@@ -1,9 +1,11 @@
 package com.boardgo.domain.review.service;
 
+import static com.boardgo.common.utils.CustomStringUtils.stringToLongList;
 import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
 import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.common.exception.DuplicateException;
 import com.boardgo.domain.mapper.ReviewMapper;
@@ -12,12 +14,18 @@ import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.repository.projection.MeetingReviewProjection;
 import com.boardgo.domain.meeting.repository.projection.ParticipationCountProjection;
+import com.boardgo.domain.meeting.repository.projection.ReviewMeetingParticipantsProjection;
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
+import com.boardgo.domain.review.entity.EvaluationTagEntity;
 import com.boardgo.domain.review.entity.ReviewEntity;
 import com.boardgo.domain.review.entity.enums.ReviewType;
+import com.boardgo.domain.review.repository.EvaluationTagRepository;
 import com.boardgo.domain.review.repository.ReviewRepository;
 import com.boardgo.domain.review.repository.projection.ReviewCountProjection;
+import com.boardgo.domain.review.repository.projection.ReviewMeetingReviewsProjection;
+import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
+import com.boardgo.domain.review.service.response.ReviewMeetingReviewsResponse;
 import com.boardgo.domain.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +43,7 @@ public class ReviewQueryServiceV1 implements ReviewUseCase {
     private final MeetingParticipantRepository meetingParticipantRepository;
     private final UserRepository userRepository;
     private final ReviewMapper reviewMapper;
+    private final EvaluationTagRepository evaluationTagRepository;
 
     @Override
     public List<ReviewMeetingResponse> getReviewMeetings(ReviewType reviewType, Long userId) {
@@ -124,5 +133,64 @@ public class ReviewQueryServiceV1 implements ReviewUseCase {
         if (meetingParticipantCount != TOGETHER) {
             throw new CustomIllegalArgumentException("모임을 함께 참여하지 않았습니다");
         }
+    }
+
+    @Override
+    public List<ReviewMeetingParticipantsResponse> getReviewMeetingParticipants(
+            Long meetingId, Long reviewerId) {
+        List<Long> revieweeIds = reviewRepository.findAllRevieweeId(reviewerId, meetingId);
+        revieweeIds.add(reviewerId); // 본인 리뷰 작성자 목록 표출 제외
+
+        List<ReviewMeetingParticipantsProjection> reviewMeetingParticipants =
+                meetingParticipantRepository.findReviewMeetingParticipants(revieweeIds, meetingId);
+        if (reviewMeetingParticipants.isEmpty()) {
+            throw new CustomNoSuchElementException("리뷰를 작성할 참여자");
+        }
+
+        List<ReviewMeetingParticipantsResponse> reviewMeetingParticipantsResponseList =
+                reviewMapper.toReviewMeetingParticipantsList(reviewMeetingParticipants);
+        return reviewMeetingParticipantsResponseList;
+    }
+
+    @Override
+    public List<ReviewMeetingReviewsResponse> getReviewMeetingReviews(
+            Long meetingId, Long reviewerId) {
+        List<ReviewMeetingReviewsProjection> meetingReviews =
+                reviewRepository.findMeetingReviews(meetingId, reviewerId);
+        if (meetingReviews.isEmpty()) {
+            throw new CustomNoSuchElementException("작성한 모임의 리뷰");
+        }
+
+        List<ReviewMeetingReviewsResponse> reviewMeetingReviewsResponses = new ArrayList<>();
+        List<List<String>> collect =
+                meetingReviews.stream()
+                        .map(ReviewMeetingReviewsProjection::evaluationTagIds)
+                        .collect(Collectors.toList());
+        int i = 0;
+        for (ReviewMeetingReviewsProjection meetingReviewsProjection : meetingReviews) {
+            ReviewMeetingReviewsResponse reviewMeetingReviewsResponse =
+                    getMeetingReviews(collect.get(i), meetingReviewsProjection);
+            reviewMeetingReviewsResponses.add(reviewMeetingReviewsResponse);
+            i++;
+        }
+        return reviewMeetingReviewsResponses;
+    }
+
+    private ReviewMeetingReviewsResponse getMeetingReviews(
+            List<String> strings, ReviewMeetingReviewsProjection meetingReviewsProjection) {
+        List<Long> longs = stringToLongList(strings);
+        List<EvaluationTagEntity> evaluationTagEntities =
+                evaluationTagRepository.findAllById(longs);
+
+        List<String> positiveTags = new ArrayList<>();
+        List<String> negativeTags = new ArrayList<>();
+        for (EvaluationTagEntity evaluationTag : evaluationTagEntities) {
+            switch (evaluationTag.getEvaluationType()) {
+                case POSITIVE -> positiveTags.add(evaluationTag.getTagPhrase());
+                case NEGATIVE -> negativeTags.add(evaluationTag.getTagPhrase());
+            }
+        }
+        return reviewMapper.toReviewMeetingReviewsResponse(
+                meetingReviewsProjection, positiveTags, negativeTags);
     }
 }

@@ -1,13 +1,16 @@
 package com.boardgo.integration.user.service;
 
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
-import static com.boardgo.integration.fixture.UserInfoFixture.*;
-import static com.boardgo.integration.fixture.UserPrTagFixture.*;
-import static org.assertj.core.api.Assertions.*;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
+import static com.boardgo.integration.fixture.ReviewFixture.getReview;
+import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
+import static com.boardgo.integration.fixture.UserPrTagFixture.userPrTagEntity;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
+import com.boardgo.domain.review.repository.ReviewRepository;
 import com.boardgo.domain.user.controller.dto.EmailRequest;
 import com.boardgo.domain.user.controller.dto.NickNameRequest;
 import com.boardgo.domain.user.controller.dto.OtherPersonalInfoResponse;
@@ -39,6 +42,7 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private UserRepository userRepository;
     @Autowired private UserPrTagRepository userPrTagRepository;
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;
+    @Autowired private ReviewRepository reviewRepository;
     @Autowired private UserQueryUseCase userQueryUseCase;
     @Autowired private TestUserInfoInitializer testUserInfoInitializer;
 
@@ -125,6 +129,7 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
                 userPrTagRepository.save(userPrTagEntity(userId, "반모환영"));
         UserPrTagEntity userPrTagEntity3 =
                 userPrTagRepository.save(userPrTagEntity(userId, "보드게임신"));
+        reviewRepository.save(getReview(2L, userInfo.getId(), 1L));
 
         // when
         UserPersonalInfoResponse personalInfo = userQueryUseCase.getPersonalInfo(userId);
@@ -133,7 +138,7 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
         assertThat(personalInfo.email()).isEqualTo(userInfo.getEmail());
         assertThat(personalInfo.nickName()).isEqualTo(userInfo.getNickName());
         assertThat(personalInfo.profileImage()).isEqualTo(userInfo.getProfileImage());
-        assertThat(personalInfo.averageRating()).isEqualTo(4.3); // TODO 리뷰 기능 구현 필요
+        assertThat(personalInfo.averageRating()).isEqualTo(4.0);
         assertThat(personalInfo.prTags())
                 .containsAll(
                         List.of(
@@ -205,7 +210,6 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
                                 .build()));
     }
 
-    // TODO 회원 리뷰 Entity 매개변수
     private void setSecurityContext() {
         testUserInfoInitializer.generateUserData();
         SecurityContext context = SecurityContextHolder.createEmptyContext();
