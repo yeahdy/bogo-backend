@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +15,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "board_game")
+@Table(
+        name = "board_game",
+        uniqueConstraints = @UniqueConstraint(name = "title_unique", columnNames = "title"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardGameEntity extends BaseEntity {
     @Id

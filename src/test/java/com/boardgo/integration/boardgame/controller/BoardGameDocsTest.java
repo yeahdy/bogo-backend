@@ -121,6 +121,18 @@ public class BoardGameDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("content[].thumbnail")
                                                 .type(JsonFieldType.STRING)
                                                 .description("보드게임 썸네일 URI"),
+                                        fieldWithPath("content[].minPeople")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("보드게임 최소 인원"),
+                                        fieldWithPath("content[].maxPeople")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("보드게임 최대 인원"),
+                                        fieldWithPath("content[].minPlaytime")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("보드게임 최대 플레이시간"),
+                                        fieldWithPath("content[].maxPlaytime")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("보드게임 최대 플레이시간"),
                                         fieldWithPath("content[].genres[]")
                                                 .type(JsonFieldType.ARRAY)
                                                 .description("genre 데이터 배열"),

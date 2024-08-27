@@ -50,4 +50,22 @@ public class BoardGameQueryServiceV1Test extends IntegrationTestSupport {
         assertThat(result.getNumberOfElements()).isEqualTo(5);
         assertThat(result.getNumber()).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName("보드게임 타이틀로 검색할 수 있다")
+    void 보드게임_타이틀로_검색할_수_있다() {
+        // given
+        testBoardGameInitializer.generateBoardGameDataMany();
+        String boardGameTitle10 = "boardTitle10";
+        BoardGameSearchRequest boardGameSearchRequest =
+                new BoardGameSearchRequest(null, boardGameTitle10, null, null);
+
+        // when
+        Page<BoardGameSearchResponse> result = boardGameQueryUseCase.search(boardGameSearchRequest);
+        // then
+        assertThat(result.getTotalPages()).isEqualTo(1);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getNumberOfElements()).isEqualTo(1);
+        assertThat(result.getNumber()).isEqualTo(0);
+    }
 }
