@@ -486,6 +486,7 @@ include::{snippets}/boardgame-list/response-fields.adoc[]
 ==== *요청*
 
 include::{snippets}/get-home-situation/http-request.adoc[]
+include::{snippets}/get-home-situation/request-parts.adoc[]
 
 ==== *응답*
 

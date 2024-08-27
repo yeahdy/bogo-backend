@@ -34,4 +34,7 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long>, Rev
                     + "WHERE r.reviewerId = :reviewerId AND r.meetingId = :meetingId ")
     List<Long> findAllRevieweeId(
             @Param("reviewerId") Long reviewerId, @Param("meetingId") Long meetingId);
+
+    @Query("SELECT AVG(r.rating) " + "FROM ReviewEntity r " + "WHERE r.revieweeId = :revieweeId")
+    Double findRatingAvgByRevieweeId(@Param("revieweeId") Long revieweeId);
 }
