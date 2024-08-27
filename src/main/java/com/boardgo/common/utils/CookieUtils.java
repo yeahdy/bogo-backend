@@ -42,7 +42,6 @@ public abstract class CookieUtils {
                         .secure(true)
                         .httpOnly(true)
                         .domain(domain)
-                        .sameSite("None")
                         .build();
         return cookie;
     }
