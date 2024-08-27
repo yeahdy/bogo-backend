@@ -1,11 +1,11 @@
 package com.boardgo.domain.user.repository;
 
-import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
+import static com.querydsl.core.group.GroupBy.*;
 
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.mapper.UserInfoMapper;
 import com.boardgo.domain.meeting.entity.QMeetingParticipantEntity;
+import com.boardgo.domain.meeting.entity.enums.ParticipantType;
 import com.boardgo.domain.user.entity.QUserInfoEntity;
 import com.boardgo.domain.user.entity.QUserPrTagEntity;
 import com.boardgo.domain.user.repository.projection.QUserParticipantProjection;
@@ -43,7 +43,7 @@ public class UserDslRepositoryImpl implements UserDslRepository {
                         .from(u)
                         .innerJoin(mp)
                         .on(mp.userInfoId.eq(u.id))
-                        .where(mp.meetingId.eq(meetingId))
+                        .where(mp.type.ne(ParticipantType.OUT).and(mp.meetingId.eq(meetingId)))
                         .fetch();
 
         return projectionList.stream().map(userInfoMapper::toUserParticipantResponse).toList();
