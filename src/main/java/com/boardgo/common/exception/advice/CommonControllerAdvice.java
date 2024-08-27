@@ -1,7 +1,6 @@
 package com.boardgo.common.exception.advice;
 
-import static com.boardgo.common.exception.advice.dto.ErrorCode.INTERNAL_SERVER_ERROR;
-import static com.boardgo.common.exception.advice.dto.ErrorCode.UNSUPPORTED_HTTP_METHOD;
+import static com.boardgo.common.exception.advice.dto.ErrorCode.*;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNoSuchElementException;

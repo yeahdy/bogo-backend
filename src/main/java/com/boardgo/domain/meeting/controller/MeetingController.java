@@ -9,11 +9,14 @@ import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
 import com.boardgo.domain.meeting.service.MeetingCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 public class MeetingController {
     private final MeetingCommandUseCase meetingCommandUseCase;
@@ -38,7 +42,7 @@ public class MeetingController {
 
     @GetMapping(value = "/meeting", headers = API_VERSION_HEADER1)
     public ResponseEntity<Page<MeetingSearchResponse>> search(
-            MeetingSearchRequest meetingSearchRequest) {
+            @ModelAttribute @Valid MeetingSearchRequest meetingSearchRequest) {
         Page<MeetingSearchResponse> searchResult = meetingQueryUseCase.search(meetingSearchRequest);
         if (searchResult.getSize() == 0) {
             return ResponseEntity.noContent().build();
@@ -47,12 +51,12 @@ public class MeetingController {
     }
 
     @GetMapping(value = "/meeting/{id}", headers = API_VERSION_HEADER1)
-    public ResponseEntity<MeetingDetailResponse> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<MeetingDetailResponse> getById(@PathVariable("id") @Positive Long id) {
         return ResponseEntity.ok(meetingQueryUseCase.getDetailById(id));
     }
 
     @PatchMapping(value = "/meeting/share/{id}", headers = API_VERSION_HEADER1)
-    public ResponseEntity<Void> incrementShareCount(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> incrementShareCount(@PathVariable("id") @Positive Long id) {
         meetingCommandUseCase.incrementShareCount(id);
         return ResponseEntity.ok().build();
     }

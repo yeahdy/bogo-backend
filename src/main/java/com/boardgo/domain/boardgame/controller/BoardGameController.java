@@ -7,6 +7,7 @@ import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
 import com.boardgo.domain.boardgame.repository.response.BoardGameSearchResponse;
 import com.boardgo.domain.boardgame.service.BoardGameCommandUseCase;
 import com.boardgo.domain.boardgame.service.BoardGameQueryUseCase;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,7 +40,7 @@ public class BoardGameController {
             headers = API_VERSION_HEADER1,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> create(
-            @ModelAttribute BoardGameCreateRequest boardGameCreateRequest) {
+            @ModelAttribute @Valid BoardGameCreateRequest boardGameCreateRequest) {
         log.info(
                 "boardGame.minPlayTime : {}, boardGame.maxPlayTime: {}",
                 boardGameCreateRequest.minPlaytime(),
