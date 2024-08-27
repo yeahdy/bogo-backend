@@ -5,6 +5,7 @@ import static com.boardgo.common.constant.TimeConstant.ACCESS_TOKEN_DURATION;
 import static com.boardgo.common.utils.CookieUtils.createCookies;
 import static com.boardgo.common.utils.CustomStringUtils.existString;
 
+import com.boardgo.config.log.OutputLog;
 import com.boardgo.jwt.JWTUtil;
 import com.boardgo.oauth2.dto.OAuthLoginProperties;
 import com.boardgo.oauth2.entity.CustomOAuth2User;
@@ -36,9 +37,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken =
                 jwtUtil.createJwt(
                         oAuth2User.getId(), oAuth2User.getRoleType(), ACCESS_TOKEN_DURATION);
-        //        Cookie cookies = createCookies(AUTHORIZATION, accessToken);
-        //        cookies.setDomain(properties.domain());
-        //        response.addCookie(cookies);
 
         ResponseCookie responseCookie =
                 createCookies(AUTHORIZATION, accessToken, properties.domain());
@@ -52,8 +50,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                             .build()
                             .toUriString();
         }
-
-        log.info("OAuth2 :: {} redirectUrl :: {} ", oAuth2User.getAttributes(), redirectUrl);
+        OutputLog.logInfo("OAuth2 redirectUrl :: " + redirectUrl);
+        OutputLog.logInfo(oAuth2User.getAttributes().toString());
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 }
