@@ -1,8 +1,7 @@
 package com.boardgo.domain.review.service;
 
-import static com.boardgo.common.utils.CustomStringUtils.stringToLongList;
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
+import static com.boardgo.common.utils.CustomStringUtils.*;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNoSuchElementException;
@@ -91,7 +90,7 @@ public class ReviewQueryServiceV1 implements ReviewUseCase {
             Long meetingId = participationCount.getMeetingId();
             Integer reviewCount = reviewCountMap.get(meetingId);
             Integer participantCount = participationCount.getParticipationCount() - 1; // 본인 제외
-            if (reviewCount == participantCount) {
+            if (reviewCount.equals(participantCount)) {
                 reviewFinished.add(meetingId);
             }
         }

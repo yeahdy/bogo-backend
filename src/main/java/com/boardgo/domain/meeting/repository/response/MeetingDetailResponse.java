@@ -9,6 +9,8 @@ import java.util.List;
 public record MeetingDetailResponse(
         Long meetingId,
         String userNickName,
+        Double rating,
+        Long userWritingCount,
         LocalDateTime meetingDatetime,
         String likeStatus,
         String thumbnail,

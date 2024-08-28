@@ -31,6 +31,7 @@ import com.boardgo.domain.meeting.repository.projection.QMeetingSearchProjection
 import com.boardgo.domain.meeting.repository.projection.QMyPageMeetingProjection;
 import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
+import com.boardgo.domain.review.repository.ReviewRepository;
 import com.boardgo.domain.user.entity.QUserInfoEntity;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.repository.response.UserParticipantResponse;
@@ -50,6 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -62,6 +64,7 @@ import org.springframework.stereotype.Repository;
 public class MeetingDslRepositoryImpl implements MeetingDslRepository {
     private final JPAQueryFactory queryFactory;
     private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
     private final MeetingMapper meetingMapper;
     private final BoardGameRepository boardGameRepository;
     private final QMeetingEntity m = QMeetingEntity.meetingEntity;
@@ -78,10 +81,12 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
     public MeetingDslRepositoryImpl(
             EntityManager entityManager,
             UserRepository userRepository,
+            ReviewRepository reviewRepository,
             MeetingMapper meetingMapper,
             BoardGameRepository boardGameRepository) {
         this.queryFactory = new JPAQueryFactory(entityManager);
         this.userRepository = userRepository;
+        this.reviewRepository = reviewRepository;
         this.meetingMapper = meetingMapper;
         this.boardGameRepository = boardGameRepository;
     }
@@ -162,12 +167,25 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                         .where(m.id.eq(meetingId))
                         .fetchOne();
         Long createMeetingCount = getCreateMeetingCount(meetingDetailProjection.userId());
+        Double rating =
+                Optional.ofNullable(
+                                reviewRepository.findRatingAvgByRevieweeId(
+                                        meetingDetailProjection.userId()))
+                        .orElse(0.0);
+        Long writingCount =
+                queryFactory
+                        .select(m.id.count())
+                        .from(m)
+                        .where(m.userId.eq(meetingDetailProjection.userId()))
+                        .fetchOne();
 
         return meetingMapper.toMeetingDetailResponse(
                 meetingDetailProjection,
                 userParticipantResponseList,
                 boardGameByMeetingIdResponseList,
-                createMeetingCount);
+                createMeetingCount,
+                rating,
+                writingCount);
     }
 
     @Override
@@ -263,7 +281,11 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                 .on(mgem.meetingId.eq(m.id))
                 .innerJoin(bgg)
                 .on(bgg.id.eq(mgem.boardGameGenreId))
-                .where(m.state.ne(finishState).and(filters))
+                .where(
+                        m.meetingDatetime
+                                .after(LocalDateTime.now())
+                                .and(m.state.ne(finishState))
+                                .and(filters))
                 .groupBy(m.id)
                 .orderBy(sortOrder)
                 .offset(offset)
