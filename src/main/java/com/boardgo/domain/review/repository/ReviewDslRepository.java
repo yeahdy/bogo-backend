@@ -6,4 +6,6 @@ import java.util.List;
 public interface ReviewDslRepository {
 
     List<ReviewMeetingReviewsProjection> findMeetingReviews(Long meetingId, Long reviewerId);
+
+    List<List<String>> findMyEvaluationTags(Long revieweeId);
 }

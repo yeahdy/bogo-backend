@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EvaluationTagRepository extends JpaRepository<EvaluationTagEntity, Long> {
+public interface EvaluationTagRepository
+        extends JpaRepository<EvaluationTagEntity, Long>, EvaluationTagDslRepository {
 
     List<EvaluationTagEntity> findAllByOrderById();
 }

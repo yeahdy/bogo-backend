@@ -47,4 +47,13 @@ public class ReviewDslRepositoryImpl implements ReviewDslRepository {
                 .map(meetingReviewsMap::get)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<List<String>> findMyEvaluationTags(Long revieweeId) {
+        return queryFactory
+                .select(r.evaluationTags)
+                .from(r)
+                .where(r.revieweeId.eq(revieweeId))
+                .fetch();
+    }
 }

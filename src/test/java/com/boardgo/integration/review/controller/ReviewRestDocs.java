@@ -9,6 +9,7 @@ import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEnti
 import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
+import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -246,5 +247,50 @@ public class ReviewRestDocs extends RestDocsTestSupport {
                         fieldWithPath("[].negativeTags")
                                 .type(JsonFieldType.ARRAY)
                                 .description("부정적 태그 목록")));
+    }
+
+    @Test
+    @DisplayName("내 리뷰 조회하기")
+    void 내_리뷰_조회하기() {
+        // init
+        UserInfoEntity userId = userRepository.save(socialUserInfoEntity(ProviderType.GOOGLE));
+        testMeetingInitializer.generateMeetingData();
+        evaluationTagRepository.saveAll(getEvaluationTagEntity());
+        // given
+        Long meetingId = 2L;
+        MeetingEntity meeting = meetingRepository.findById(meetingId).get();
+        meeting.updateMeetingState(MeetingState.FINISH);
+        meetingRepository.save(meeting);
+        reviewRepository.save(getReview(2L, userId.getId(), meetingId));
+        reviewRepository.save(getReview(3L, userId.getId(), meetingId));
+
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .filter(document("get-my-review", getMyReviewsResponseFieldsSnippet()))
+                .when()
+                .get("/my/review")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    private ResponseFieldsSnippet getMyReviewsResponseFieldsSnippet() {
+        return responseFields(
+                fieldWithPath("averageRating")
+                        .type(JsonFieldType.NUMBER)
+                        .description("내 평균 평점")
+                        .optional(),
+                fieldWithPath("positiveTags[]").type(ARRAY).description("긍정적 태그").optional(),
+                fieldWithPath("positiveTags[].count").type(NUMBER).description("태그 갯수"),
+                fieldWithPath("positiveTags[].tagPhrase").type(STRING).description("긍정적 태그 문구"),
+                fieldWithPath("negativeTags[]")
+                        .type(JsonFieldType.ARRAY)
+                        .description("부정적 태그")
+                        .optional(),
+                fieldWithPath("negativeTags[].count").type(NUMBER).description("태그 갯수"),
+                fieldWithPath("negativeTags[].tagPhrase").type(STRING).description("부정적 태그 문구"));
     }
 }

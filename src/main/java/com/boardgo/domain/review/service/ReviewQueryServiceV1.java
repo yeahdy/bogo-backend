@@ -17,12 +17,16 @@ import com.boardgo.domain.meeting.repository.projection.ParticipationCountProjec
 import com.boardgo.domain.meeting.repository.projection.ReviewMeetingParticipantsProjection;
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.entity.EvaluationTagEntity;
+import com.boardgo.domain.review.entity.EvaluationType;
 import com.boardgo.domain.review.entity.ReviewEntity;
 import com.boardgo.domain.review.entity.enums.ReviewType;
 import com.boardgo.domain.review.repository.EvaluationTagRepository;
 import com.boardgo.domain.review.repository.ReviewRepository;
+import com.boardgo.domain.review.repository.projection.MyEvaluationTagProjection;
 import com.boardgo.domain.review.repository.projection.ReviewCountProjection;
 import com.boardgo.domain.review.repository.projection.ReviewMeetingReviewsProjection;
+import com.boardgo.domain.review.service.response.MyEvaluationTagResponse;
+import com.boardgo.domain.review.service.response.MyReviewsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingReviewsResponse;
@@ -107,6 +111,13 @@ public class ReviewQueryServiceV1 implements ReviewUseCase {
         reviewRepository.save(reviewEntity);
     }
 
+    /***
+     * 모임 참가하기 유효성 검증
+     * @param meetingId 모임 고유 id
+     * @param revieweeId 리뷰 받는 참여자 id
+     * @param reviewerId 리뷰 작성자 id
+     */
+
     private void validateCreateReview(Long meetingId, Long revieweeId, Long reviewerId) {
         MeetingEntity meetingEntity =
                 meetingRepository
@@ -176,11 +187,16 @@ public class ReviewQueryServiceV1 implements ReviewUseCase {
         return reviewMeetingReviewsResponses;
     }
 
+    /***
+     * 리뷰 별 평가태그 긍정적/부정적 문구 데이터 정제
+     * @param strings 평가태그 고유 id 목록
+     * @param meetingReviewsProjection 리뷰 정보를 담은 데이터
+     */
     private ReviewMeetingReviewsResponse getMeetingReviews(
             List<String> strings, ReviewMeetingReviewsProjection meetingReviewsProjection) {
-        List<Long> longs = stringToLongList(strings);
+        List<Long> evaluationIds = stringToLongList(strings);
         List<EvaluationTagEntity> evaluationTagEntities =
-                evaluationTagRepository.findAllById(longs);
+                evaluationTagRepository.findAllById(evaluationIds);
 
         List<String> positiveTags = new ArrayList<>();
         List<String> negativeTags = new ArrayList<>();
@@ -192,5 +208,56 @@ public class ReviewQueryServiceV1 implements ReviewUseCase {
         }
         return reviewMapper.toReviewMeetingReviewsResponse(
                 meetingReviewsProjection, positiveTags, negativeTags);
+    }
+
+    @Override
+    public MyReviewsResponse getMyReviews(Long userId) {
+        Double averageRating = reviewRepository.findRatingAvgByRevieweeId(userId);
+        List<List<String>> evaluationTags = reviewRepository.findMyEvaluationTags(userId);
+        // FIXME 스케줄러를 통해 카운팅 누적 카운팅 계산하도록 기능 개선 필요
+        Map<Long, Integer> evaluationTagsMap = calculateEvaluationTags(evaluationTags);
+
+        // 긍정적 태그
+        List<MyEvaluationTagProjection> myPositiveEvaluationTags =
+                evaluationTagRepository.findEvaluationTagsById(
+                        EvaluationType.POSITIVE, evaluationTagsMap.keySet());
+        List<MyEvaluationTagResponse> positiveTags =
+                refineEvaluationTag(myPositiveEvaluationTags, evaluationTagsMap);
+        // 부정적 태그
+        List<MyEvaluationTagProjection> myNegativeEvaluationTags =
+                evaluationTagRepository.findEvaluationTagsById(
+                        EvaluationType.NEGATIVE, evaluationTagsMap.keySet());
+        List<MyEvaluationTagResponse> negativeTags =
+                refineEvaluationTag(myNegativeEvaluationTags, evaluationTagsMap);
+        return new MyReviewsResponse(averageRating, positiveTags, negativeTags);
+    }
+
+    /***
+     * 평가 태그 중복 갯수 세기
+     * @param evaluationTags 리뷰어별 평가태그 리스트
+     * @return key-평가태그 id, value-중복갯수
+     */
+    private Map<Long, Integer> calculateEvaluationTags(List<List<String>> evaluationTags) {
+        return evaluationTags.stream()
+                .flatMap(List::stream)
+                .map(Long::valueOf)
+                .collect(Collectors.toMap(tag -> tag, tag -> 1, Integer::sum));
+    }
+
+    /***
+     * 평가태그 문구와 중복갯수 데이터 정제하기
+     * @param myEvaluationTags 평가태그 문구
+     * @param evaluationTagsMap 평가태그 중복갯수
+     */
+    private List<MyEvaluationTagResponse> refineEvaluationTag(
+            List<MyEvaluationTagProjection> myEvaluationTags,
+            Map<Long, Integer> evaluationTagsMap) {
+        List<MyEvaluationTagResponse> evaluationTags = new ArrayList<>();
+
+        for (MyEvaluationTagProjection myTag : myEvaluationTags) {
+            Integer count = evaluationTagsMap.get(myTag.evaluationTagId());
+            evaluationTags.add(new MyEvaluationTagResponse(count, myTag.tagPhrase()));
+        }
+        return evaluationTags;
     }
 }
