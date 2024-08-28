@@ -6,6 +6,7 @@ import static com.boardgo.common.utils.SecurityUtils.currentUserId;
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.entity.enums.ReviewType;
 import com.boardgo.domain.review.service.ReviewUseCase;
+import com.boardgo.domain.review.service.response.MyReviewsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingReviewsResponse;
@@ -47,6 +48,17 @@ public class ReviewController {
     public ResponseEntity<Void> create(@RequestBody @Valid ReviewCreateRequest createRequest) {
         reviewUseCase.create(createRequest, currentUserId());
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "", headers = API_VERSION_HEADER1)
+    public ResponseEntity<MyReviewsResponse> getMyReviews() {
+        MyReviewsResponse myReviews = reviewUseCase.getMyReviews(currentUserId());
+        if (myReviews.averageRating() == null
+                && myReviews.positiveTags().isEmpty()
+                && myReviews.negativeTags().isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(myReviews);
     }
 
     @GetMapping(value = "/meetings/{meetingId}/participants", headers = API_VERSION_HEADER1)

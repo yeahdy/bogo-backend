@@ -2,6 +2,7 @@ package com.boardgo.domain.review.service;
 
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.entity.enums.ReviewType;
+import com.boardgo.domain.review.service.response.MyReviewsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingReviewsResponse;
@@ -17,4 +18,6 @@ public interface ReviewUseCase {
             Long meetingId, Long reviewerId);
 
     List<ReviewMeetingReviewsResponse> getReviewMeetingReviews(Long meetingId, Long reviewerId);
+
+    MyReviewsResponse getMyReviews(Long userId);
 }
