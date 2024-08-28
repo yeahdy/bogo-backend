@@ -3,6 +3,7 @@ package com.boardgo.domain.user.service;
 import static com.boardgo.common.constant.S3BucketConstant.USER;
 import static com.boardgo.common.utils.CustomStringUtils.existString;
 import static com.boardgo.common.utils.ValidateUtils.validateNickname;
+import static com.boardgo.common.utils.ValidateUtils.validatePassword;
 import static com.boardgo.common.utils.ValidateUtils.validatePrTag;
 
 import com.boardgo.common.exception.CustomNullPointException;
@@ -93,7 +94,7 @@ public class UserCommandServiceV1 implements UserCommandUseCase {
         if (existString(updateRequest.nickName()) && validateNickname(updateRequest.nickName())) {
             userInfoEntity.updateNickname(updateRequest.nickName());
         }
-        if (existString(updateRequest.password())) {
+        if (existString(updateRequest.password()) && validatePassword(updateRequest.password())) {
             userInfoEntity.updatePassword(updateRequest.password(), passwordEncoder);
         }
     }

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class ValidateUtilsTest {
 
@@ -57,13 +58,10 @@ public class ValidateUtilsTest {
         assertTrue(validateNickname);
     }
 
-    // 닉네임이 8자를 초과할 경우 예외를 발생한다
-    @Test
-    @DisplayName("닉네임이 8자를 초과할 경우 예외를 발생한다")
-    void 닉네임이_8자를_초과할_경우_예외를_발생한다() {
-        // given
-        String nickname = "ILikeBread";
-
+    @ParameterizedTest
+    @ValueSource(strings = {"응", "ㅇ", "d"})
+    @DisplayName("닉네임이 2자 미만 ~ 8자를 초과할 경우 예외를 발생한다")
+    void 닉네임이_2자_미만_8자를_초과할_경우_예외를_발생한다(String nickname) {
         // when
         CustomIllegalArgumentException illegalArgumentException =
                 assertThrows(
@@ -72,7 +70,7 @@ public class ValidateUtilsTest {
 
         // then
         String message = illegalArgumentException.getMessage();
-        assertThat(message).isEqualTo("글자 수는 8자 까지 가능합니다.");
+        assertThat(message).isEqualTo("글자 수는 2~8자 까지 가능합니다.");
     }
 
     @Test
@@ -181,5 +179,20 @@ public class ValidateUtilsTest {
 
         // then
         assertThat(exception.getMessage()).isEqualTo("한글,영문,숫자,스페이스만 입력 가능합니다.");
+    }
+
+    @ParameterizedTest
+    @DisplayName("비밀번호는 8자 미만, 50자 초과하면 예외를 발생한다")
+    @ValueSource(strings = {"                 ", "        4", "fsd", "sg1"})
+    void 비밀번호는_8자_미만_50자_초과하면_예외를_발생한다(String password) {
+        // when
+        CustomIllegalArgumentException illegalArgumentException =
+                assertThrows(
+                        CustomIllegalArgumentException.class,
+                        () -> ValidateUtils.validatePassword(password));
+
+        // then
+        String message = illegalArgumentException.getMessage();
+        assertThat(message).containsAnyOf("비밀번호는 8~50자", "문자열에 공백");
     }
 }

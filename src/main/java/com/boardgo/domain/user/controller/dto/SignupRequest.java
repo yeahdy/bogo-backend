@@ -10,7 +10,7 @@ import java.util.List;
 public record SignupRequest(
         @Email(message = "email") String email,
         @NotEmpty(message = "nickName") String nickName,
-        @Size(min = 8, max = 50, message = "message") String password,
+        @Size(min = 8, max = 50, message = "password") String password,
         @ListInStringNotEmpty(message = "prTags") List<String> prTags,
         ProviderType providerType) {
     public SignupRequest(String email, String nickName, String password, List<String> prTags) {
