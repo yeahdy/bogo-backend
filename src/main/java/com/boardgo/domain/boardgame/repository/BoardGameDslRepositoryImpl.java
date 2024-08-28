@@ -172,7 +172,13 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
         return queryFactory
                 .select(
                         new QSituationBoardGameProjection(
-                                b.title, b.thumbnail, b.minPlaytime, b.maxPlaytime, bgg.genre))
+                                b.title,
+                                b.thumbnail,
+                                b.minPlaytime,
+                                b.maxPlaytime,
+                                bgg.genre,
+                                b.minPeople,
+                                b.maxPeople))
                 .from(ggm)
                 .innerJoin(b)
                 .on(ggm.boardGameId.eq(b.id))
