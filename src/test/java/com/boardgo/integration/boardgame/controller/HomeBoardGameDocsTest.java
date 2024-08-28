@@ -1,10 +1,12 @@
 package com.boardgo.integration.boardgame.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
-import static io.restassured.RestAssured.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
+import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
+import static io.restassured.RestAssured.given;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
@@ -72,7 +74,13 @@ public class HomeBoardGameDocsTest extends RestDocsTestSupport {
                         fieldWithPath("[].maxPlaytime")
                                 .type(JsonFieldType.NUMBER)
                                 .description("최대 시간"),
-                        fieldWithPath("[].genres").type(JsonFieldType.ARRAY).description("장르 목록")));
+                        fieldWithPath("[].genres").type(JsonFieldType.ARRAY).description("장르 목록"),
+                        fieldWithPath("[].minPeople")
+                                .type(JsonFieldType.NUMBER)
+                                .description("최소 인원"),
+                        fieldWithPath("[].maxPeople")
+                                .type(JsonFieldType.NUMBER)
+                                .description("최대 인원")));
     }
 
     @Test
