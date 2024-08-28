@@ -115,9 +115,9 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
                 .select(new QGenreSearchProjection(ggm.boardGameId, bgg.id, bgg.genre))
                 .from(bgg)
                 .innerJoin(ggm)
-                .on(bgg.id.eq(ggm.boardGameId))
+                .on(bgg.id.eq(ggm.boardGameGenreId))
                 .where(
-                        bgg.id.in(
+                        ggm.boardGameId.in(
                                 boardGameList.stream().map(BoardGameSearchProjection::id).toList()))
                 .fetch();
     }
