@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
 import com.boardgo.domain.boardgame.repository.response.BoardGameSearchResponse;
+import com.boardgo.domain.boardgame.repository.response.GenreSearchResponse;
 import com.boardgo.domain.boardgame.service.BoardGameQueryUseCase;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestMeetingInitializer;
@@ -55,10 +56,10 @@ public class BoardGameQueryServiceV1Test extends IntegrationTestSupport {
     @DisplayName("보드게임 타이틀로 검색할 수 있다")
     void 보드게임_타이틀로_검색할_수_있다() {
         // given
-        testBoardGameInitializer.generateBoardGameDataMany();
-        String boardGameTitle10 = "boardTitle10";
+        testBoardGameInitializer.generateBoardGameData();
+        String boardGameTitle1 = "boardTitle1";
         BoardGameSearchRequest boardGameSearchRequest =
-                new BoardGameSearchRequest(null, boardGameTitle10, null, null);
+                new BoardGameSearchRequest(null, boardGameTitle1, null, null);
 
         // when
         Page<BoardGameSearchResponse> result = boardGameQueryUseCase.search(boardGameSearchRequest);
@@ -67,5 +68,8 @@ public class BoardGameQueryServiceV1Test extends IntegrationTestSupport {
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getNumberOfElements()).isEqualTo(1);
         assertThat(result.getNumber()).isEqualTo(0);
+        assertThat(result.getContent().getFirst().genres())
+                .extracting(GenreSearchResponse::genre)
+                .containsExactlyInAnyOrder("genre0", "genre1");
     }
 }
