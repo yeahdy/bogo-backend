@@ -302,8 +302,13 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                 responseFields(
                                         fieldWithPath("meetingId")
                                                 .type(JsonFieldType.NUMBER)
-                                                .description("모임 id")
-                                                .optional(),
+                                                .description("모임 id"),
+                                        fieldWithPath("rating")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("모임 개설자의 평균 점수"),
+                                        fieldWithPath("userWritingCount")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("모임 개설자의 모임 개설 횟수"),
                                         fieldWithPath("title")
                                                 .type(JsonFieldType.STRING)
                                                 .description("모임 제목"),
