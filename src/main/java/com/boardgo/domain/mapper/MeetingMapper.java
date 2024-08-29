@@ -53,6 +53,7 @@ public interface MeetingMapper {
             List<UserParticipantResponse> userParticipantResponseList,
             List<BoardGameByMeetingIdResponse> boardGameByMeetingIdResponseList,
             Long createMeetingCount,
+            String likeStatus,
             Double rating,
             Long userWritingCount) {
         Set<String> genres =
@@ -65,7 +66,7 @@ public interface MeetingMapper {
                 rating,
                 userWritingCount,
                 meetingDetailProjection.meetingDatetime(),
-                meetingDetailProjection.likeStatus(),
+                likeStatus,
                 meetingDetailProjection.thumbnail(),
                 meetingDetailProjection.title(),
                 meetingDetailProjection.content(),

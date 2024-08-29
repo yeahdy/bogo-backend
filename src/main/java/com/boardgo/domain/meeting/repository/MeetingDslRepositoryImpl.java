@@ -64,6 +64,7 @@ import org.springframework.stereotype.Repository;
 public class MeetingDslRepositoryImpl implements MeetingDslRepository {
     private final JPAQueryFactory queryFactory;
     private final UserRepository userRepository;
+    private final MeetingLikeRepository meetingLikeRepository;
     private final ReviewRepository reviewRepository;
     private final MeetingMapper meetingMapper;
     private final BoardGameRepository boardGameRepository;
@@ -81,11 +82,13 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
     public MeetingDslRepositoryImpl(
             EntityManager entityManager,
             UserRepository userRepository,
+            MeetingLikeRepository meetingLikeRepository,
             ReviewRepository reviewRepository,
             MeetingMapper meetingMapper,
             BoardGameRepository boardGameRepository) {
         this.queryFactory = new JPAQueryFactory(entityManager);
         this.userRepository = userRepository;
+        this.meetingLikeRepository = meetingLikeRepository;
         this.reviewRepository = reviewRepository;
         this.meetingMapper = meetingMapper;
         this.boardGameRepository = boardGameRepository;
@@ -145,7 +148,6 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                                         u.nickName,
                                         u.id,
                                         m.meetingDatetime,
-                                        getLikeStatus(),
                                         m.thumbnail,
                                         m.title,
                                         m.content,
@@ -162,8 +164,6 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                         .from(m)
                         .innerJoin(u)
                         .on(m.userId.eq(u.id))
-                        .leftJoin(ml)
-                        .on(m.id.eq(ml.meetingId).and(userIdEqualsFilter(userId)))
                         .where(m.id.eq(meetingId))
                         .fetchOne();
         Long createMeetingCount = getCreateMeetingCount(meetingDetailProjection.userId());
@@ -184,8 +184,17 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                 userParticipantResponseList,
                 boardGameByMeetingIdResponseList,
                 createMeetingCount,
+                getLikeStatus(meetingId, userId),
                 rating,
                 writingCount);
+    }
+
+    private String getLikeStatus(Long meetingId, Long userId) {
+        return Objects.nonNull(userId)
+                ? meetingLikeRepository.findByUserIdAndMeetingId(userId, meetingId).isPresent()
+                        ? "Y"
+                        : "N"
+                : "N";
     }
 
     @Override

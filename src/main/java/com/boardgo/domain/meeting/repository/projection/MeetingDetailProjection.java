@@ -9,7 +9,6 @@ public record MeetingDetailProjection(
         String userNickName,
         Long userId,
         LocalDateTime meetingDatetime,
-        String likeStatus,
         String thumbnail,
         String title,
         String content,
