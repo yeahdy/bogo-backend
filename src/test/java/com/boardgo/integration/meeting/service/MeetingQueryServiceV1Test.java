@@ -320,7 +320,7 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
         setSecurityContext();
 
         LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
-        long userId = 2L;
+        long userId = 1L;
         MeetingEntity meetingEntity =
                 MeetingEntity.builder()
                         .viewCount(0L)
@@ -344,7 +344,7 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
         Long meetingId =
                 meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
 
-        long anotherUserId = 1L;
+        long anotherUserId = 2L;
         meetingLikeRepository.save(
                 MeetingLikeEntity.builder()
                         .meetingId(meetingEntity.getId())
@@ -355,7 +355,7 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
                 meetingParticipantRepository.save(
                         MeetingParticipantEntity.builder()
                                 .meetingId(meetingId)
-                                .userInfoId(1L)
+                                .userInfoId(anotherUserId)
                                 .type(ParticipantType.PARTICIPANT)
                                 .build());
 
