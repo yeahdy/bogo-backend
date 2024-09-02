@@ -11,5 +11,7 @@ public interface MeetingLikeRepository
 
     Optional<MeetingLikeEntity> findByUserIdAndMeetingId(Long userId, Long meetingId);
 
+    boolean existsByUserIdAndMeetingId(Long userId, Long meetingId);
+
     Long deleteByUserIdAndMeetingId(Long userId, Long meetingId);
 }

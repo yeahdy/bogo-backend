@@ -191,9 +191,7 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
 
     private String getLikeStatus(Long meetingId, Long userId) {
         return Objects.nonNull(userId)
-                ? meetingLikeRepository.findByUserIdAndMeetingId(userId, meetingId).isPresent()
-                        ? "Y"
-                        : "N"
+                ? meetingLikeRepository.existsByUserIdAndMeetingId(userId, meetingId) ? "Y" : "N"
                 : "N";
     }
 
