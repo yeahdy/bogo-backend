@@ -6,15 +6,14 @@ import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.entity.enums.MyPageMeetingFilter;
 import com.boardgo.domain.meeting.repository.projection.LikedMeetingMyPageProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingReviewProjection;
+import com.boardgo.domain.meeting.repository.projection.MeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.projection.MyPageMeetingProjection;
 import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
-import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import org.springframework.data.domain.Page;
 
 public interface MeetingDslRepository {
-    Page<MeetingSearchResponse> findByFilters(MeetingSearchRequest searchRequest, Long userId);
 
     MeetingDetailResponse findDetailById(Long meetingId, Long userId);
 
@@ -28,4 +27,13 @@ public interface MeetingDslRepository {
 
     List<MeetingReviewProjection> findMeetingPreProgressReview(
             Long reviewer, List<Long> reviewFinishedMeetings);
+
+    long getSearchTotalCount(MeetingSearchRequest searchRequest);
+
+    Map<Long, String> findLikeStatusForMeetings(List<Long> meetingIds, Long userId);
+
+    Map<Long, List<String>> findGamesForMeetings(List<Long> meetingIds);
+
+    List<MeetingSearchProjection> getMeetingSearchDtoList(
+            MeetingSearchRequest searchRequest, int offset, int size);
 }

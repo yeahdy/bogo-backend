@@ -131,4 +131,18 @@ public interface MeetingMapper {
                 .map(this::toLikedMeetingMyPageResponse)
                 .toList();
     }
+
+    default List<MeetingSearchResponse> toMeetingSearchResponseList(
+            List<MeetingSearchProjection> meetingSearchProjectionList,
+            Map<Long, List<String>> gamesMap,
+            Map<Long, String> likeStatusMap) {
+        return meetingSearchProjectionList.stream()
+                .map(
+                        item ->
+                                toMeetingSearchResponse(
+                                        item,
+                                        gamesMap.get(item.id()),
+                                        likeStatusMap.get(item.id())))
+                .toList();
+    }
 }

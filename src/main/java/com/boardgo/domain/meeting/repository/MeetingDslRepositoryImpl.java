@@ -30,7 +30,6 @@ import com.boardgo.domain.meeting.repository.projection.QMeetingReviewProjection
 import com.boardgo.domain.meeting.repository.projection.QMeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.projection.QMyPageMeetingProjection;
 import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
-import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
 import com.boardgo.domain.review.repository.ReviewRepository;
 import com.boardgo.domain.user.entity.QUserInfoEntity;
 import com.boardgo.domain.user.repository.UserRepository;
@@ -47,7 +46,6 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,9 +53,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -92,46 +87,6 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
         this.reviewRepository = reviewRepository;
         this.meetingMapper = meetingMapper;
         this.boardGameRepository = boardGameRepository;
-    }
-
-    @Override
-    public Page<MeetingSearchResponse> findByFilters(
-            MeetingSearchRequest searchRequest, Long userId) {
-
-        MeetingState finishState = FINISH;
-
-        BooleanBuilder filters = getRequireFilters(searchRequest);
-
-        // 페이지네이션 처리
-        int size = getSize(searchRequest.size());
-        int page = getPage(searchRequest.page());
-        int offset = page * size;
-
-        // 동적 정렬 조건 설정
-        OrderSpecifier<?> sortOrder = getSortOrder(searchRequest.sortBy());
-
-        List<MeetingSearchProjection> meetingSearchProjectionList =
-                getMeetingSearchDtoList(finishState, filters, sortOrder, offset, size);
-        List<Long> meetingIdList =
-                meetingSearchProjectionList.stream().map(MeetingSearchProjection::id).toList();
-
-        Map<Long, List<String>> gamesMap = findGamesForMeetings(meetingIdList);
-        Map<Long, String> likeStatusForMeetings = findLikeStatusForMeetings(meetingIdList, userId);
-        List<MeetingSearchResponse> results = new ArrayList<>();
-
-        for (MeetingSearchProjection meetingSearchProjection : meetingSearchProjectionList) {
-            Long meetingId = meetingSearchProjection.id();
-            results.add(
-                    meetingMapper.toMeetingSearchResponse(
-                            meetingSearchProjection,
-                            gamesMap.get(meetingId),
-                            likeStatusForMeetings.get(meetingId)));
-        }
-
-        long total = getTotalCount(searchRequest, finishState, filters);
-
-        Pageable pageable = Pageable.ofSize(size).withPage(page);
-        return new PageImpl<>(results, pageable, total);
     }
 
     @Override
@@ -257,12 +212,10 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                 .as("likeStatus");
     }
 
-    private List<MeetingSearchProjection> getMeetingSearchDtoList(
-            MeetingState finishState,
-            BooleanBuilder filters,
-            OrderSpecifier<?> sortOrder,
-            int offset,
-            int size) {
+    public List<MeetingSearchProjection> getMeetingSearchDtoList(
+            MeetingSearchRequest searchRequest, int offset, int size) {
+        BooleanBuilder filters = getRequireFilters(searchRequest);
+        OrderSpecifier<?> sortOrder = getSortOrder(searchRequest.sortBy());
 
         return queryFactory
                 .select(
@@ -291,7 +244,7 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                 .where(
                         m.meetingDatetime
                                 .after(LocalDateTime.now())
-                                .and(m.state.ne(finishState))
+                                .and(m.state.ne(MeetingState.FINISH))
                                 .and(filters))
                 .groupBy(m.id)
                 .orderBy(sortOrder)
@@ -304,7 +257,8 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
         return queryFactory.select(m.id.count()).from(m).where(m.userId.eq(userId)).fetchOne();
     }
 
-    private Map<Long, List<String>> findGamesForMeetings(List<Long> meetingIds) {
+    @Override
+    public Map<Long, List<String>> findGamesForMeetings(List<Long> meetingIds) {
         List<Tuple> queryResults =
                 queryFactory
                         .select(
@@ -325,7 +279,8 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                                 tuple -> List.of(tuple.get(1, String.class).split(","))));
     }
 
-    private Map<Long, String> findLikeStatusForMeetings(List<Long> meetingIds, Long userId) {
+    @Override
+    public Map<Long, String> findLikeStatusForMeetings(List<Long> meetingIds, Long userId) {
         if (Objects.isNull(userId)) {
             return meetingIds.stream().collect(Collectors.toMap(Function.identity(), id -> "N"));
         }
@@ -345,31 +300,28 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                                 tuple -> tuple.get(m.id), tuple -> tuple.get(1, String.class)));
     }
 
-    private long getTotalCount(
-            MeetingSearchRequest searchRequest, MeetingState finishState, BooleanBuilder filters) {
-        long total;
+    @Override
+    public long getSearchTotalCount(MeetingSearchRequest searchRequest) {
+        BooleanBuilder filters = getRequireFilters(searchRequest);
         // 총 결과 수 계산
         if (Objects.isNull(searchRequest.count())) {
-            total =
-                    queryFactory
-                            .select(m.id.count())
-                            .from(m)
-                            .innerJoin(mgem)
-                            .on(mgem.meetingId.eq(m.id))
-                            .innerJoin(bgg)
-                            .on(bgg.id.eq(mgem.boardGameGenreId))
-                            .where(
-                                    m.meetingDatetime
-                                            .after(LocalDateTime.now())
-                                            .and(m.state.ne(finishState))
-                                            .and(filters))
-                            .groupBy(m.id)
-                            .fetch()
-                            .size();
-        } else {
-            total = searchRequest.count();
+            return queryFactory
+                    .select(m.id.count())
+                    .from(m)
+                    .innerJoin(mgem)
+                    .on(mgem.meetingId.eq(m.id))
+                    .innerJoin(bgg)
+                    .on(bgg.id.eq(mgem.boardGameGenreId))
+                    .where(
+                            m.meetingDatetime
+                                    .after(LocalDateTime.now())
+                                    .and(m.state.ne(FINISH))
+                                    .and(filters))
+                    .groupBy(m.id)
+                    .fetch()
+                    .size();
         }
-        return total;
+        return searchRequest.count();
     }
 
     private BooleanBuilder getRequireFilters(MeetingSearchRequest searchRequest) {
