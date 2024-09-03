@@ -24,7 +24,7 @@ public class S3Service {
 
     public String upload(String folderName, String fileName, MultipartFile multipartFile) {
         String extensionFromFile = FileUtils.getExtensionFromFile(multipartFile);
-        log.info("{}", fileName);
+
         return upload(folderName, fileName, multipartFile, extensionFromFile);
     }
 
