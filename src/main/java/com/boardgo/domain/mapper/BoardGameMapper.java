@@ -9,6 +9,7 @@ import com.boardgo.domain.boardgame.repository.response.BoardGameListResponse;
 import com.boardgo.domain.boardgame.repository.response.BoardGameSearchResponse;
 import com.boardgo.domain.boardgame.repository.response.GenreSearchResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -46,5 +47,13 @@ public interface BoardGameMapper {
                 boardGameByMeetingIdProjection.title(),
                 boardGameByMeetingIdProjection.thumbnail(),
                 Set.of(boardGameByMeetingIdProjection.genres().split(",")));
+    }
+
+    default List<BoardGameSearchResponse> toBoardGameSearchResponseList(
+            List<BoardGameSearchProjection> boardGameSearchProjectionList,
+            Map<Long, List<GenreSearchResponse>> genreSearchResponseMap) {
+        return boardGameSearchProjectionList.stream()
+                .map(item -> toBoardGameSearchResponse(item, genreSearchResponseMap.get(item.id())))
+                .toList();
     }
 }

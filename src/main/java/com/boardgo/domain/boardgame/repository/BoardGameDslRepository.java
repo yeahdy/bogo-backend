@@ -1,17 +1,24 @@
 package com.boardgo.domain.boardgame.repository;
 
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
+import com.boardgo.domain.boardgame.repository.projection.BoardGameSearchProjection;
 import com.boardgo.domain.boardgame.repository.projection.SituationBoardGameProjection;
 import com.boardgo.domain.boardgame.repository.response.BoardGameByMeetingIdResponse;
-import com.boardgo.domain.boardgame.repository.response.BoardGameSearchResponse;
+import com.boardgo.domain.boardgame.repository.response.GenreSearchResponse;
 import java.util.List;
-import org.springframework.data.domain.Page;
+import java.util.Map;
 
 public interface BoardGameDslRepository {
-
-    Page<BoardGameSearchResponse> findBySearchWord(BoardGameSearchRequest boardGameSearchRequest);
 
     List<BoardGameByMeetingIdResponse> findMeetingDetailByMeetingId(Long meetingId);
 
     List<SituationBoardGameProjection> findByMaxPeopleBetween(int maxPeople);
+
+    List<BoardGameSearchProjection> findBoardGameBySearchWord(
+            BoardGameSearchRequest request, int size, int offset);
+
+    Map<Long, List<GenreSearchResponse>> findGenreByBoardGameId(
+            List<BoardGameSearchProjection> boardGameList);
+
+    long countBySearchResult(BoardGameSearchRequest request);
 }
