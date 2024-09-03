@@ -52,7 +52,9 @@ public class MeetingController {
 
     @GetMapping(value = "/meeting/{id}", headers = API_VERSION_HEADER1)
     public ResponseEntity<MeetingDetailResponse> getById(@PathVariable("id") @Positive Long id) {
-        return ResponseEntity.ok(meetingQueryUseCase.getDetailById(id));
+        MeetingDetailResponse meetingDetail = meetingQueryUseCase.getDetailById(id);
+        meetingCommandUseCase.incrementViewCount(meetingDetail.meetingId());
+        return ResponseEntity.ok(meetingDetail);
     }
 
     @PatchMapping(value = "/meeting/share/{id}", headers = API_VERSION_HEADER1)

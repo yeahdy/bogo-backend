@@ -54,53 +54,6 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private TestMeetingInitializer testMeetingInitializer;
 
     @Test
-    @DisplayName("모임 상세 조회 시 조회수가 오른다")
-    void 모임_상세_조회_시_조회수가_오른다() {
-        // given
-        testBoardGameInitializer.generateBoardGameData();
-        setSecurityContext();
-
-        LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
-        MeetingEntity meetingEntity =
-                MeetingEntity.builder()
-                        .viewCount(0L)
-                        .userId(1L)
-                        .latitude("12312312")
-                        .longitude("12321")
-                        .thumbnail("thumbnail")
-                        .state(MeetingState.COMPLETE)
-                        .meetingDatetime(meetingDatetime)
-                        .type(MeetingType.FREE)
-                        .content("content")
-                        .city("city")
-                        .county("county")
-                        .title("title")
-                        .locationName("location")
-                        .detailAddress("detailAddress")
-                        .limitParticipant(5)
-                        .build();
-        List<Long> boardGameIdList = List.of(1L, 2L);
-        List<Long> boardGameGenreIdList = List.of(1L, 2L);
-        Long meetingId =
-                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
-
-        MeetingParticipantEntity savedParticipant =
-                meetingParticipantRepository.save(
-                        MeetingParticipantEntity.builder()
-                                .meetingId(meetingId)
-                                .userInfoId(2L)
-                                .type(ParticipantType.PARTICIPANT)
-                                .build());
-
-        // when
-        MeetingDetailResponse result = meetingQueryUseCase.getDetailById(meetingId);
-        MeetingDetailResponse result2 = meetingQueryUseCase.getDetailById(meetingId);
-        // then
-        assertThat(result.viewCount()).isEqualTo(0L);
-        assertThat(result2.viewCount()).isEqualTo(1L);
-    }
-
-    @Test
     @DisplayName("모임 상세조회를 할 수 있다 (찜 X)")
     void 모임_상세조회를_할_수_있다_찜_X() {
         // given

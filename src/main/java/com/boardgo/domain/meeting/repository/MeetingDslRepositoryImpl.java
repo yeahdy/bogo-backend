@@ -5,11 +5,8 @@ import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
 
 import com.boardgo.domain.boardgame.entity.QBoardGameEntity;
 import com.boardgo.domain.boardgame.entity.QBoardGameGenreEntity;
-import com.boardgo.domain.boardgame.repository.BoardGameRepository;
 import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityCountProjection;
 import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityProjection;
-import com.boardgo.domain.boardgame.repository.response.BoardGameByMeetingIdResponse;
-import com.boardgo.domain.mapper.MeetingMapper;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.entity.QMeetingEntity;
 import com.boardgo.domain.meeting.entity.QMeetingGameMatchEntity;
@@ -29,11 +26,7 @@ import com.boardgo.domain.meeting.repository.projection.QMeetingDetailProjection
 import com.boardgo.domain.meeting.repository.projection.QMeetingReviewProjection;
 import com.boardgo.domain.meeting.repository.projection.QMeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.projection.QMyPageMeetingProjection;
-import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
-import com.boardgo.domain.review.repository.ReviewRepository;
 import com.boardgo.domain.user.entity.QUserInfoEntity;
-import com.boardgo.domain.user.repository.UserRepository;
-import com.boardgo.domain.user.repository.response.UserParticipantResponse;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
@@ -49,7 +42,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -58,11 +50,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class MeetingDslRepositoryImpl implements MeetingDslRepository {
     private final JPAQueryFactory queryFactory;
-    private final UserRepository userRepository;
-    private final MeetingLikeRepository meetingLikeRepository;
-    private final ReviewRepository reviewRepository;
-    private final MeetingMapper meetingMapper;
-    private final BoardGameRepository boardGameRepository;
+
     private final QMeetingEntity m = QMeetingEntity.meetingEntity;
     private final QUserInfoEntity u = QUserInfoEntity.userInfoEntity;
     private final QMeetingGameMatchEntity mgam = QMeetingGameMatchEntity.meetingGameMatchEntity;
@@ -74,80 +62,38 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
     private final QMeetingLikeEntity ml = QMeetingLikeEntity.meetingLikeEntity;
     private final QMeetingParticipantEntity mp = QMeetingParticipantEntity.meetingParticipantEntity;
 
-    public MeetingDslRepositoryImpl(
-            EntityManager entityManager,
-            UserRepository userRepository,
-            MeetingLikeRepository meetingLikeRepository,
-            ReviewRepository reviewRepository,
-            MeetingMapper meetingMapper,
-            BoardGameRepository boardGameRepository) {
+    public MeetingDslRepositoryImpl(EntityManager entityManager) {
         this.queryFactory = new JPAQueryFactory(entityManager);
-        this.userRepository = userRepository;
-        this.meetingLikeRepository = meetingLikeRepository;
-        this.reviewRepository = reviewRepository;
-        this.meetingMapper = meetingMapper;
-        this.boardGameRepository = boardGameRepository;
     }
 
     @Override
-    public MeetingDetailResponse findDetailById(Long meetingId, Long userId) {
-        List<UserParticipantResponse> userParticipantResponseList =
-                userRepository.findByMeetingId(meetingId);
-        List<BoardGameByMeetingIdResponse> boardGameByMeetingIdResponseList =
-                boardGameRepository.findMeetingDetailByMeetingId(meetingId);
-        MeetingDetailProjection meetingDetailProjection =
-                queryFactory
-                        .select(
-                                new QMeetingDetailProjection(
-                                        m.id,
-                                        u.nickName,
-                                        u.id,
-                                        m.meetingDatetime,
-                                        m.thumbnail,
-                                        m.title,
-                                        m.content,
-                                        m.longitude,
-                                        m.latitude,
-                                        m.city,
-                                        m.county,
-                                        m.locationName,
-                                        m.detailAddress,
-                                        m.limitParticipant,
-                                        m.state,
-                                        m.shareCount,
-                                        m.viewCount))
-                        .from(m)
-                        .innerJoin(u)
-                        .on(m.userId.eq(u.id))
-                        .where(m.id.eq(meetingId))
-                        .fetchOne();
-        Long createMeetingCount = getCreateMeetingCount(meetingDetailProjection.userId());
-        Double rating =
-                Optional.ofNullable(
-                                reviewRepository.findRatingAvgByRevieweeId(
-                                        meetingDetailProjection.userId()))
-                        .orElse(0.0);
-        Long writingCount =
-                queryFactory
-                        .select(m.id.count())
-                        .from(m)
-                        .where(m.userId.eq(meetingDetailProjection.userId()))
-                        .fetchOne();
+    public MeetingDetailProjection findDetailById(Long meetingId, Long userId) {
 
-        return meetingMapper.toMeetingDetailResponse(
-                meetingDetailProjection,
-                userParticipantResponseList,
-                boardGameByMeetingIdResponseList,
-                createMeetingCount,
-                getLikeStatus(meetingId, userId),
-                rating,
-                writingCount);
-    }
-
-    private String getLikeStatus(Long meetingId, Long userId) {
-        return Objects.nonNull(userId)
-                ? meetingLikeRepository.existsByUserIdAndMeetingId(userId, meetingId) ? "Y" : "N"
-                : "N";
+        return queryFactory
+                .select(
+                        new QMeetingDetailProjection(
+                                m.id,
+                                u.nickName,
+                                u.id,
+                                m.meetingDatetime,
+                                m.thumbnail,
+                                m.title,
+                                m.content,
+                                m.longitude,
+                                m.latitude,
+                                m.city,
+                                m.county,
+                                m.locationName,
+                                m.detailAddress,
+                                m.limitParticipant,
+                                m.state,
+                                m.shareCount,
+                                m.viewCount))
+                .from(m)
+                .innerJoin(u)
+                .on(m.userId.eq(u.id))
+                .where(m.id.eq(meetingId))
+                .fetchOne();
     }
 
     @Override
@@ -253,7 +199,8 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                 .fetch();
     }
 
-    private Long getCreateMeetingCount(Long userId) {
+    @Override
+    public Long getCreateMeetingCount(Long userId) {
         return queryFactory.select(m.id.count()).from(m).where(m.userId.eq(userId)).fetchOne();
     }
 

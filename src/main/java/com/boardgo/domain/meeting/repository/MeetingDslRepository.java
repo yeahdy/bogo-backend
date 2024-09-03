@@ -5,17 +5,17 @@ import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityPr
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.entity.enums.MyPageMeetingFilter;
 import com.boardgo.domain.meeting.repository.projection.LikedMeetingMyPageProjection;
+import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingReviewProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.projection.MyPageMeetingProjection;
-import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public interface MeetingDslRepository {
 
-    MeetingDetailResponse findDetailById(Long meetingId, Long userId);
+    MeetingDetailProjection findDetailById(Long meetingId, Long userId);
 
     List<MyPageMeetingProjection> findMyPageByFilter(MyPageMeetingFilter filter, Long userId);
 
@@ -36,4 +36,6 @@ public interface MeetingDslRepository {
 
     List<MeetingSearchProjection> getMeetingSearchDtoList(
             MeetingSearchRequest searchRequest, int offset, int size);
+
+    Long getCreateMeetingCount(Long userId);
 }
