@@ -48,9 +48,17 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
                 meetingRepository
                         .findById(meetingId)
                         .orElseThrow(() -> new CustomNoSuchElementException("모임"));
-        log.info("meeting.getId() : {}", meeting.getId());
-        log.info("shareCount : {}", meeting.getShareCount());
+
         meeting.incrementShareCount();
+    }
+
+    @Override
+    public void incrementViewCount(Long meetingId) {
+        MeetingEntity meeting =
+                meetingRepository
+                        .findById(meetingId)
+                        .orElseThrow(() -> new CustomNoSuchElementException("모임"));
+        meeting.incrementViewCount();
     }
 
     private String registerImage(

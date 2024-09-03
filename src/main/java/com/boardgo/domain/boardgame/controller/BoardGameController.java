@@ -41,10 +41,6 @@ public class BoardGameController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> create(
             @ModelAttribute @Valid BoardGameCreateRequest boardGameCreateRequest) {
-        log.info(
-                "boardGame.minPlayTime : {}, boardGame.maxPlayTime: {}",
-                boardGameCreateRequest.minPlaytime(),
-                boardGameCreateRequest.maxPlaytime());
         boardGameCommandUseCase.create(boardGameCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

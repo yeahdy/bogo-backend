@@ -25,11 +25,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class MeetingLikeCommandServiceV1Test extends IntegrationTestSupport {
     @Autowired private MeetingLikeCommandUseCase meetingLikeCommandUseCase;
     @Autowired private MeetingLikeRepository meetingLikeRepository;
+    @Autowired private UserRepository userRepository;
 
     @Autowired private TestUserInfoInitializer testUserInfoInitializer;
     @Autowired private TestBoardGameInitializer testBoardGameInitializer;
     @Autowired private TestMeetingInitializer testMeetingInitializer;
-    @Autowired private UserRepository userRepository;
 
     @Test
     @DisplayName("찜 목록들을 저장할 수 있다")

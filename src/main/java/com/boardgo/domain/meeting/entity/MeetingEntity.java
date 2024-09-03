@@ -151,6 +151,10 @@ public class MeetingEntity extends BaseEntity {
         this.shareCount++;
     }
 
+    public void incrementViewCount() {
+        this.viewCount++;
+    }
+
     public void updateMeetingState(MeetingState meetingState) {
         this.state = meetingState;
     }

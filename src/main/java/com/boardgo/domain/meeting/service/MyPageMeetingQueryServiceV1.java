@@ -59,7 +59,7 @@ public class MyPageMeetingQueryServiceV1 implements MyPageMeetingQueryUseCase {
 
         List<Long> meetingIdList =
                 meetingLikeEntityList.stream().map(MeetingLikeEntity::getMeetingId).toList();
-        log.info("meetingIdList : {}", meetingIdList);
+
         return meetingMapper.toLikedMeetingMyPageResponseList(
                 meetingRepository.findLikedMeeting(meetingIdList));
     }

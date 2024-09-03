@@ -13,7 +13,6 @@ import com.boardgo.domain.boardgame.repository.projection.QGenreSearchProjection
 import com.boardgo.domain.boardgame.repository.projection.QSituationBoardGameProjection;
 import com.boardgo.domain.boardgame.repository.projection.SituationBoardGameProjection;
 import com.boardgo.domain.boardgame.repository.response.BoardGameByMeetingIdResponse;
-import com.boardgo.domain.boardgame.repository.response.BoardGameSearchResponse;
 import com.boardgo.domain.boardgame.repository.response.GenreSearchResponse;
 import com.boardgo.domain.mapper.BoardGameGenreMapper;
 import com.boardgo.domain.mapper.BoardGameMapper;
@@ -22,14 +21,10 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -50,39 +45,6 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
         this.queryFactory = new JPAQueryFactory(entityManager);
         this.boardGameMapper = boardGameMapper;
         this.boardGameGenreMapper = boardGameGenreMapper;
-    }
-
-    @Override
-    public Page<BoardGameSearchResponse> findBySearchWord(BoardGameSearchRequest request) {
-        int size = getSize(request.size());
-        int page = getPage(request.page());
-        int offset = page * size;
-
-        List<BoardGameSearchProjection> boardGameList =
-                findBoardGameBySearchWord(request, size, offset);
-        List<GenreSearchProjection> genreList = findGenreByBoardGameId(boardGameList);
-
-        Map<Long, List<GenreSearchResponse>> genreGroupingBy =
-                genreList.stream()
-                        .collect(
-                                Collectors.groupingBy(
-                                        GenreSearchProjection::boardGameId,
-                                        Collectors.mapping(
-                                                boardGameGenreMapper::toGenreSearchResponse,
-                                                Collectors.toList())));
-
-        List<BoardGameSearchResponse> boardGameSearchResponseList = new ArrayList<>();
-        for (BoardGameSearchProjection boardGameSearchProjection : boardGameList) {
-            Long boardGameId = boardGameSearchProjection.id();
-            boardGameSearchResponseList.add(
-                    boardGameMapper.toBoardGameSearchResponse(
-                            boardGameSearchProjection, genreGroupingBy.get(boardGameId)));
-        }
-
-        long total = countBySearchResult(request);
-
-        Pageable pageable = Pageable.ofSize(size).withPage(page);
-        return new PageImpl<>(boardGameSearchResponseList, pageable, total);
     }
 
     @Override
@@ -109,20 +71,33 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
         return queryResults.stream().map(boardGameMapper::toBoardGameByMeetingIdResponse).toList();
     }
 
-    private List<GenreSearchProjection> findGenreByBoardGameId(
+    @Override
+    public Map<Long, List<GenreSearchResponse>> findGenreByBoardGameId(
             List<BoardGameSearchProjection> boardGameList) {
-        return queryFactory
-                .select(new QGenreSearchProjection(ggm.boardGameId, bgg.id, bgg.genre))
-                .from(bgg)
-                .innerJoin(ggm)
-                .on(bgg.id.eq(ggm.boardGameGenreId))
-                .where(
-                        ggm.boardGameId.in(
-                                boardGameList.stream().map(BoardGameSearchProjection::id).toList()))
-                .fetch();
+        List<GenreSearchProjection> genreList =
+                queryFactory
+                        .select(new QGenreSearchProjection(ggm.boardGameId, bgg.id, bgg.genre))
+                        .from(bgg)
+                        .innerJoin(ggm)
+                        .on(bgg.id.eq(ggm.boardGameGenreId))
+                        .where(
+                                ggm.boardGameId.in(
+                                        boardGameList.stream()
+                                                .map(BoardGameSearchProjection::id)
+                                                .toList()))
+                        .fetch();
+
+        return genreList.stream()
+                .collect(
+                        Collectors.groupingBy(
+                                GenreSearchProjection::boardGameId,
+                                Collectors.mapping(
+                                        boardGameGenreMapper::toGenreSearchResponse,
+                                        Collectors.toList())));
     }
 
-    private List<BoardGameSearchProjection> findBoardGameBySearchWord(
+    @Override
+    public List<BoardGameSearchProjection> findBoardGameBySearchWord(
             BoardGameSearchRequest request, int size, int offset) {
         return queryFactory
                 .select(
@@ -141,7 +116,8 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
                 .fetch();
     }
 
-    private long countBySearchResult(BoardGameSearchRequest request) {
+    @Override
+    public long countBySearchResult(BoardGameSearchRequest request) {
         if (Objects.nonNull(request.count())) {
             return request.count();
         } else {
@@ -151,14 +127,6 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
                     .where(searchKeyword(request.searchWord()))
                     .fetchOne();
         }
-    }
-
-    private int getPage(Integer page) {
-        return Objects.nonNull(page) ? page : 0;
-    }
-
-    private int getSize(Integer size) {
-        return Objects.nonNull(size) ? size : 5;
     }
 
     private BooleanExpression searchKeyword(String searchWord) {

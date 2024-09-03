@@ -8,6 +8,8 @@ import com.boardgo.domain.boardgame.entity.BoardGameGenreEntity;
 import com.boardgo.domain.boardgame.repository.BoardGameGenreRepository;
 import com.boardgo.domain.boardgame.repository.BoardGameRepository;
 import com.boardgo.domain.boardgame.service.BoardGameCommandUseCase;
+import com.boardgo.domain.user.repository.UserRepository;
+import com.boardgo.integration.init.TestUserInfoInitializer;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +26,9 @@ public class BoardGameCommandServiceV1Test extends IntegrationTestSupport {
     @Autowired private BoardGameRepository boardGameRepository;
 
     @Autowired private BoardGameGenreRepository boardGameGenreRepository;
+    @Autowired private UserRepository userRepository;
+
+    @Autowired private TestUserInfoInitializer testUserInfoInitializer;
 
     @Test
     @DisplayName("보드게임 데이터를 데이터베이스에 적재할 수 있다")
