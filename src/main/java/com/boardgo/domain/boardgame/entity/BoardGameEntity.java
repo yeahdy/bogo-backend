@@ -17,7 +17,16 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(
         name = "board_game",
-        uniqueConstraints = @UniqueConstraint(name = "title_unique", columnNames = "title"))
+        uniqueConstraints =
+                @UniqueConstraint(
+                        name = "board_game_unique",
+                        columnNames = {
+                            "title",
+                            "min_people",
+                            "max_people",
+                            "max_playtime",
+                            "min_playtime"
+                        }))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardGameEntity extends BaseEntity {
     @Id

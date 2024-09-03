@@ -241,14 +241,13 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("모임 상세 조회에서 다른 사람이 찜한 것은 찜한 것으로 표시되지 않는다")
-    void 모임_상세_조회에서_다른_사람이_찜한_것은_찜한_것으로_표시되지_않는다() {
-        // given
+    @DisplayName("모임상세 조회 시 찜 데이터가 여러개 있고 비회원이 조회할 수 있다")
+    void 모임상세_조회_시_찜_데이터가_여러개_있고_비회원이_조회할_수_있다() {
         testBoardGameInitializer.generateBoardGameData();
-        setSecurityContext();
+        testUserInfoInitializer.generateUserData();
 
         LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
-        long userId = 2L;
+        long userId = 1L;
         MeetingEntity meetingEntity =
                 MeetingEntity.builder()
                         .viewCount(0L)
@@ -272,7 +271,80 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
         Long meetingId =
                 meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
 
-        long anotherUserId = 1L;
+        meetingLikeRepository.save(
+                MeetingLikeEntity.builder().meetingId(meetingEntity.getId()).userId(4L).build());
+
+        meetingLikeRepository.save(
+                MeetingLikeEntity.builder().meetingId(meetingEntity.getId()).userId(3L).build());
+
+        MeetingParticipantEntity savedParticipant =
+                meetingParticipantRepository.save(
+                        MeetingParticipantEntity.builder()
+                                .meetingId(meetingId)
+                                .userInfoId(2L)
+                                .type(ParticipantType.PARTICIPANT)
+                                .build());
+
+        // when
+        MeetingDetailResponse result = meetingQueryUseCase.getDetailById(meetingId);
+        // then
+        assertThat(result.content()).isEqualTo(meetingEntity.getContent());
+        assertThat(result.title()).isEqualTo(meetingEntity.getTitle());
+        assertThat(result.meetingId()).isEqualTo(meetingId);
+        assertThat(result.genres()).contains("genre0", "genre1");
+        assertThat(result.city()).isEqualTo(meetingEntity.getCity());
+        assertThat(result.county()).isEqualTo(meetingEntity.getCounty());
+        assertThat(result.longitude()).isEqualTo(meetingEntity.getLongitude());
+        assertThat(result.latitude()).isEqualTo(meetingEntity.getLatitude());
+        assertThat(result.limitParticipant()).isEqualTo(meetingEntity.getLimitParticipant());
+        assertThat(result.state()).isEqualTo(meetingEntity.getState());
+        assertThat(result.shareCount()).isEqualTo(0L);
+        assertThat(result.createMeetingCount()).isEqualTo(1L);
+        assertThat(result.likeStatus()).isEqualTo("N");
+        assertThat(result.userParticipantResponseList())
+                .extracting(UserParticipantResponse::userId)
+                .containsExactlyInAnyOrder(1L, 2L);
+        assertThat(result.userParticipantResponseList())
+                .extracting(UserParticipantResponse::nickname)
+                .containsExactlyInAnyOrder("nickName0", "nickName1");
+        assertThat(result.boardGameListResponseList())
+                .extracting(BoardGameListResponse::boardGameId)
+                .containsExactlyInAnyOrderElementsOf(boardGameGenreIdList);
+    }
+
+    @Test
+    @DisplayName("모임 상세 조회에서 다른 사람이 찜한 것은 찜한 것으로 표시되지 않는다")
+    void 모임_상세_조회에서_다른_사람이_찜한_것은_찜한_것으로_표시되지_않는다() {
+        // given
+        testBoardGameInitializer.generateBoardGameData();
+        setSecurityContext();
+
+        LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
+        long userId = 1L;
+        MeetingEntity meetingEntity =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(userId)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(MeetingState.COMPLETE)
+                        .meetingDatetime(meetingDatetime)
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList = List.of(1L, 2L);
+        List<Long> boardGameGenreIdList = List.of(1L, 2L);
+        Long meetingId =
+                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
+
+        long anotherUserId = 2L;
         meetingLikeRepository.save(
                 MeetingLikeEntity.builder()
                         .meetingId(meetingEntity.getId())
@@ -283,7 +355,7 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
                 meetingParticipantRepository.save(
                         MeetingParticipantEntity.builder()
                                 .meetingId(meetingId)
-                                .userInfoId(1L)
+                                .userInfoId(anotherUserId)
                                 .type(ParticipantType.PARTICIPANT)
                                 .build());
 
