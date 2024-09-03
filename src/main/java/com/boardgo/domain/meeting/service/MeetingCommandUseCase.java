@@ -10,4 +10,6 @@ public interface MeetingCommandUseCase {
     void incrementShareCount(Long meetingId);
 
     void incrementViewCount(Long meetingId);
+
+    void updateCompleteMeetingState();
 }

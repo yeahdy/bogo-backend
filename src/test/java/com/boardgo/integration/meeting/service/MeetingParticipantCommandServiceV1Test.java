@@ -1,10 +1,14 @@
 package com.boardgo.integration.meeting.service;
 
-import static com.boardgo.integration.fixture.MeetingFixture.*;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
-import static com.boardgo.integration.fixture.UserInfoFixture.*;
-import static org.assertj.core.api.AssertionsForClassTypes.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
+import static com.boardgo.integration.fixture.MeetingFixture.getProgressMeetingEntity;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getLeaderMeetingParticipantEntity;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
+import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
+import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.domain.meeting.controller.request.MeetingParticipateRequest;
@@ -17,6 +21,7 @@ import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.support.IntegrationTestSupport;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +90,11 @@ public class MeetingParticipantCommandServiceV1Test extends IntegrationTestSuppo
         UserInfoEntity leader = userRepository.save(localUserInfoEntity());
         MeetingEntity meeting =
                 meetingRepository.save(
-                        getCompleteMeetingEntity(leader.getId(), MeetingType.FREE, 3));
+                        getMeetingEntityData(leader.getId())
+                                .type(MeetingType.FREE)
+                                .limitParticipant(3)
+                                .meetingDatetime(LocalDateTime.now().minusDays(3))
+                                .build());
         meetingParticipantRepository.save(
                 getLeaderMeetingParticipantEntity(meeting.getId(), leader.getId()));
 

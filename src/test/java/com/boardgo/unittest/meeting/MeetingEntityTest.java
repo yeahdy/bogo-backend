@@ -1,7 +1,8 @@
 package com.boardgo.unittest.meeting;
 
-import static com.boardgo.domain.meeting.entity.enums.MeetingType.*;
-import static com.boardgo.integration.fixture.MeetingFixture.*;
+import static com.boardgo.domain.meeting.entity.enums.MeetingType.FREE;
+import static com.boardgo.integration.fixture.MeetingFixture.getCompleteMeetingEntity;
+import static com.boardgo.integration.fixture.MeetingFixture.getFinishMeetingEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -75,7 +76,7 @@ public class MeetingEntityTest {
     @DisplayName("현재 시간보다 날짜가 지나면 예외를 발생한다")
     void 현재_시간보다_날짜가_지나면_예외를_발생한다() {
         // given
-        MeetingEntity meetingEntity = getCompleteMeetingEntity(1L, FREE, 5);
+        MeetingEntity meetingEntity = getFinishMeetingEntity(1L, FREE, 5);
 
         // when
         // then

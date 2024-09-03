@@ -42,7 +42,7 @@ public abstract class MeetingFixture {
                 .longitude("434.5785")
                 .detailAddress("detailAddress")
                 .locationName("locationName")
-                .meetingDatetime(LocalDateTime.now().minusDays(5))
+                .meetingDatetime(LocalDateTime.now().plusDays(2))
                 .state(MeetingState.COMPLETE)
                 .build();
     }
