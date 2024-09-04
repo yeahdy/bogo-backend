@@ -1,16 +1,21 @@
 package com.boardgo.integration.meeting.service;
 
-import static com.boardgo.domain.meeting.entity.enums.MeetingState.COMPLETE;
-import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
-import static com.boardgo.integration.data.UserInfoData.userInfoEntityData;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.getLeaderMeetingParticipantEntity;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
+import static com.boardgo.integration.data.MeetingData.*;
+import static com.boardgo.integration.data.UserInfoData.*;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
+import com.boardgo.domain.meeting.entity.MeetingGameMatchEntity;
+import com.boardgo.domain.meeting.entity.MeetingGenreMatchEntity;
+import com.boardgo.domain.meeting.entity.MeetingLikeEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingType;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
+import com.boardgo.domain.meeting.repository.MeetingGameMatchRepository;
+import com.boardgo.domain.meeting.repository.MeetingGenreMatchRepository;
+import com.boardgo.domain.meeting.repository.MeetingLikeRepository;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.service.MeetingCommandUseCase;
@@ -27,6 +32,7 @@ import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,10 +47,62 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
     @Autowired private UserRepository userRepository;
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;
     @Autowired private MeetingCommandUseCase meetingCommandUseCase;
+    @Autowired private MeetingLikeRepository meetingLikeRepository;
+    @Autowired private MeetingGenreMatchRepository meetingGenreMatchRepository;
+    @Autowired private MeetingGameMatchRepository meetingGameMatchRepository;
     @Autowired private EntityManager entityManager;
     @Autowired private MeetingCreateFactory meetingCreateFactory;
     @Autowired private TestUserInfoInitializer testUserInfoInitializer;
     @Autowired private TestBoardGameInitializer testBoardGameInitializer;
+
+    @Test
+    @DisplayName("모임을 삭제할 수 있다")
+    void 모임을_삭제할_수_있다() {
+        // given
+        LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
+        long userId = 1L;
+        MeetingEntity meetingEntity =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(userId)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(COMPLETE)
+                        .meetingDatetime(meetingDatetime)
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList = List.of(userId, 2L);
+        List<Long> boardGameGenreIdList = List.of(userId, 2L);
+        Long meetingId =
+                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
+
+        // when
+        meetingCommandUseCase.deleteMeeting(meetingId, userId);
+        // then
+        Optional<MeetingEntity> meetingOptional = meetingRepository.findById(meetingId);
+        List<MeetingParticipantEntity> meetingParticipantList =
+                meetingParticipantRepository.findByMeetingId(meetingId);
+        List<MeetingLikeEntity> meetingLikeEntityList =
+                meetingLikeRepository.findByMeetingId(meetingId);
+        List<MeetingGenreMatchEntity> genreMatchList =
+                meetingGenreMatchRepository.findByMeetingId(meetingId);
+        List<MeetingGameMatchEntity> gameMatchEntityList =
+                meetingGameMatchRepository.findByMeetingId(meetingId);
+
+        assertThat(meetingOptional).isEmpty();
+        assertThat(meetingParticipantList.isEmpty()).isTrue();
+        assertThat(meetingLikeEntityList.isEmpty()).isTrue();
+        assertThat(genreMatchList.isEmpty()).isTrue();
+        assertThat(gameMatchEntityList.isEmpty()).isTrue();
+    }
 
     @Test
     @DisplayName("모임 상세 조회 시 조회수가 오른다")

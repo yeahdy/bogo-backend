@@ -9,9 +9,13 @@ public interface MeetingLikeRepository
         extends JpaRepository<MeetingLikeEntity, Long>, MeetingLikeJdbcRepository {
     List<MeetingLikeEntity> findByUserId(Long userId);
 
+    List<MeetingLikeEntity> findByMeetingId(Long meetingId);
+
     Optional<MeetingLikeEntity> findByUserIdAndMeetingId(Long userId, Long meetingId);
 
     boolean existsByUserIdAndMeetingId(Long userId, Long meetingId);
 
     Long deleteByUserIdAndMeetingId(Long userId, Long meetingId);
+
+    Long deleteAllByMeetingId(Long meetingId);
 }

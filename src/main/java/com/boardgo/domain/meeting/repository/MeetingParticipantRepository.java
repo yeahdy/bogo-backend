@@ -19,6 +19,8 @@ public interface MeetingParticipantRepository
     Optional<MeetingParticipantEntity> findByMeetingIdAndUserInfoIdAndType(
             Long meetingId, Long userId, ParticipantType type);
 
+    Long deleteAllByMeetingId(Long meetingId);
+
     @Query(
             "SELECT COUNT(*) FROM MeetingParticipantEntity mp WHERE mp.type IN (:types) AND mp.userInfoId = :userId")
     Integer countByTypeAndUserInfoId(

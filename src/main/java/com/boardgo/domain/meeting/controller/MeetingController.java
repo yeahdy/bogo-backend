@@ -1,7 +1,8 @@
 package com.boardgo.domain.meeting.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
+import static com.boardgo.common.constant.HeaderConstant.*;
 
+import com.boardgo.common.utils.SecurityUtils;
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -66,6 +68,12 @@ public class MeetingController {
     @PatchMapping(value = "/meeting/complete/{id}", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> updateCompleteMeetingState(@PathVariable("id") @Positive Long id) {
         meetingCommandUseCase.updateCompleteMeetingState(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/meeting/{id}", headers = API_VERSION_HEADER1)
+    public ResponseEntity<Void> deleteMeeting(@PathVariable("id") @Positive Long id) {
+        meetingCommandUseCase.deleteMeeting(id, SecurityUtils.currentUserId());
         return ResponseEntity.ok().build();
     }
 }

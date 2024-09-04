@@ -18,4 +18,6 @@ public interface MeetingGenreMatchRepository
                     + "WHERE mg.meetingId = :meetingId "
                     + "GROUP BY mg.meetingId")
     String findGenresByMeetingId(@Param("meetingId") Long meetingId);
+
+    Long deleteAllByMeetingId(Long meetingId);
 }

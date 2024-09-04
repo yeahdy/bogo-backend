@@ -19,4 +19,6 @@ public interface MeetingGameMatchRepository
         GROUP BY mg.meetingId
         """)
     String findTitleByMeetingId(@Param("meetingId") Long meetingId);
+
+    Long deleteAllByMeetingId(Long meetingId);
 }

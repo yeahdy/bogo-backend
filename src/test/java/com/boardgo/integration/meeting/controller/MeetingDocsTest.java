@@ -1,22 +1,18 @@
 package com.boardgo.integration.meeting.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
-import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.matchesPattern;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
+import com.boardgo.domain.meeting.entity.MeetingEntity;
+import com.boardgo.domain.meeting.entity.enums.MeetingType;
+import com.boardgo.domain.meeting.service.MeetingCreateFactory;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestMeetingInitializer;
@@ -27,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +36,7 @@ public class MeetingDocsTest extends RestDocsTestSupport {
     @Autowired private TestUserInfoInitializer testUserInfoInitializer;
     @Autowired private TestBoardGameInitializer testBoardGameInitializer;
     @Autowired private TestMeetingInitializer testMeetingInitializer;
+    @Autowired private MeetingCreateFactory meetingCreateFactory;
     @Autowired private UserRepository userRepository;
 
     @Test
@@ -422,6 +420,54 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                 pathParameters(parameterWithName("id").description("모임 id"))))
                 .when()
                 .patch("/meeting/share/{id}")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("모임을 삭제할 수 있다")
+    void 모임을_삭제할_수_있다() {
+        // given
+        LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
+        long userId = 1L;
+        MeetingEntity meetingEntity =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(userId)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(COMPLETE)
+                        .meetingDatetime(meetingDatetime)
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList = List.of(userId, 2L);
+        List<Long> boardGameGenreIdList = List.of(userId, 2L);
+        Long meetingId =
+                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
+        // when
+        // then
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParams("id", meetingId)
+                .filter(
+                        document(
+                                "meeting-delete",
+                                pathParameters(parameterWithName("id").description("모임 id"))))
+                .when()
+                .delete("/meeting/{id}")
                 .then()
                 .statusCode(HttpStatus.OK.value());
     }
