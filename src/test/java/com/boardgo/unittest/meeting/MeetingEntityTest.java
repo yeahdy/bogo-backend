@@ -2,8 +2,6 @@ package com.boardgo.unittest.meeting;
 
 import static com.boardgo.domain.meeting.entity.enums.MeetingType.FREE;
 import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
-import static com.boardgo.integration.fixture.MeetingFixture.getCompleteMeetingEntity;
-import static com.boardgo.integration.fixture.MeetingFixture.getFinishMeetingEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -66,7 +64,7 @@ public class MeetingEntityTest {
     @DisplayName("참가 완료된 모임일 경우 예외가 발생한다")
     void 참가_완료된_모임일_경우_예외가_발생한다() {
         // given
-        MeetingEntity meetingEntity = getCompleteMeetingEntity(1L, FREE, 5);
+        MeetingEntity meetingEntity = getMeetingEntityData(1L).state(MeetingState.COMPLETE).build();
 
         // when
         // then
@@ -79,7 +77,11 @@ public class MeetingEntityTest {
     @DisplayName("현재 시간보다 날짜가 지나면 예외를 발생한다")
     void 현재_시간보다_날짜가_지나면_예외를_발생한다() {
         // given
-        MeetingEntity meetingEntity = getFinishMeetingEntity(1L, FREE, 5);
+        MeetingEntity meetingEntity =
+                getMeetingEntityData(1L)
+                        .meetingDatetime(LocalDateTime.now().minusDays(5))
+                        .state(MeetingState.FINISH)
+                        .build();
 
         // when
         // then

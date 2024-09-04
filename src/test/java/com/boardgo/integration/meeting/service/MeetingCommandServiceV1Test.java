@@ -24,7 +24,6 @@ import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.response.CustomUserDetails;
-import com.boardgo.integration.fixture.MeetingFixture;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestUserInfoInitializer;
 import com.boardgo.integration.support.IntegrationTestSupport;
@@ -157,8 +156,7 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
     @DisplayName("공유하면 공유 횟수를 증가시킬 수 있다")
     void 공유하면_공유_횟수를_증가시킬_수_있다() {
         // given
-        MeetingEntity meetingEntity =
-                MeetingFixture.getProgressMeetingEntity(1L, MeetingType.FREE, 10);
+        MeetingEntity meetingEntity = getMeetingEntityData(1L).limitParticipant(10).build();
         MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
         entityManager.clear();
         // when

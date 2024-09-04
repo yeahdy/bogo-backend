@@ -1,7 +1,6 @@
 package com.boardgo.integration.meeting.service;
 
 import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
-import static com.boardgo.integration.fixture.MeetingFixture.getProgressMeetingEntity;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.getLeaderMeetingParticipantEntity;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
@@ -58,7 +57,7 @@ public class MeetingParticipantCommandServiceV1Test extends IntegrationTestSuppo
         UserInfoEntity leader = userRepository.save(localUserInfoEntity());
         MeetingEntity meeting =
                 meetingRepository.save(
-                        getProgressMeetingEntity(leader.getId(), MeetingType.FREE, 3));
+                        getMeetingEntityData(leader.getId()).limitParticipant(3).build());
         meetingParticipantRepository.save(
                 getLeaderMeetingParticipantEntity(
                         meeting.getId(), leader.getId())); // meeting.getId = 1L
@@ -123,7 +122,7 @@ public class MeetingParticipantCommandServiceV1Test extends IntegrationTestSuppo
         UserInfoEntity leader = userRepository.save(localUserInfoEntity());
         MeetingEntity meeting =
                 meetingRepository.save(
-                        getProgressMeetingEntity(leader.getId(), MeetingType.FREE, 1));
+                        getMeetingEntityData(leader.getId()).limitParticipant(1).build());
         meetingParticipantRepository.save(
                 getLeaderMeetingParticipantEntity(meeting.getId(), leader.getId()));
 
@@ -152,7 +151,7 @@ public class MeetingParticipantCommandServiceV1Test extends IntegrationTestSuppo
         UserInfoEntity leader = userRepository.save(localUserInfoEntity());
         MeetingEntity meeting =
                 meetingRepository.save(
-                        getProgressMeetingEntity(leader.getId(), MeetingType.ACCEPT, 5));
+                        getMeetingEntityData(leader.getId()).type(MeetingType.ACCEPT).build());
         meetingParticipantRepository.save(
                 getLeaderMeetingParticipantEntity(meeting.getId(), leader.getId()));
 
