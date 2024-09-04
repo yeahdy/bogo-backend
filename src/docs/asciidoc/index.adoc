@@ -387,6 +387,27 @@ include::{snippets}/meeting-participation/http-response.adoc[]
 
 '''
 
+=== *모임 모집완료 상태 변경하기*
+
+==== *요청*
+
+include::{snippets}/meeting-complete/http-request.adoc[]
+include::{snippets}/meeting-complete/path-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/meeting-complete/http-response.adoc[]
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+| 모임이 존재하지 않습니다
+|===
+
+'''
+
 === *모임 찜하기*
 
 ==== *요청*

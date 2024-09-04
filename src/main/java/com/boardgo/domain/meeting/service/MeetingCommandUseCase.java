@@ -11,5 +11,5 @@ public interface MeetingCommandUseCase {
 
     void incrementViewCount(Long meetingId);
 
-    void updateCompleteMeetingState();
+    void updateCompleteMeetingState(Long meetingId);
 }

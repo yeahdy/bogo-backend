@@ -147,16 +147,15 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
             meetingParticipantRepository.save(
                     getLeaderMeetingParticipantEntity(meeting.getId(), leader));
         }
-        // 모임정원
+
+        // when: 모임정원
         for (int i = 1; i < limit; i++) {
             for (int j = i; j < limit; j++) {
                 meetingParticipantRepository.save(
                         getParticipantMeetingParticipantEntity((long) i, (long) j + 1));
             }
+            meetingCommandUseCase.updateCompleteMeetingState((long) i);
         }
-
-        // when
-        meetingCommandUseCase.updateCompleteMeetingState();
 
         // then
         List<MeetingEntity> meetingEntities = meetingRepository.findByIdIn(meetingIds);

@@ -1,6 +1,7 @@
 package com.boardgo.unittest.meeting;
 
 import static com.boardgo.domain.meeting.entity.enums.MeetingType.FREE;
+import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
 import static com.boardgo.integration.fixture.MeetingFixture.getCompleteMeetingEntity;
 import static com.boardgo.integration.fixture.MeetingFixture.getFinishMeetingEntity;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 public class MeetingEntityTest {
 
@@ -83,5 +86,20 @@ public class MeetingEntityTest {
         assertThatThrownBy(() -> meetingEntity.isAfterMeeting())
                 .isInstanceOf(CustomIllegalArgumentException.class)
                 .hasMessageContaining("모임 날짜가 지난 모임");
+    }
+
+    @ParameterizedTest
+    @DisplayName("모임 상태를 변경할 수 있다")
+    @EnumSource(MeetingState.class)
+    void 모임_상태를_변경할_수_있다(MeetingState meetingState) {
+        // given
+        Long userId = 1L;
+        MeetingEntity meetingEntity = getMeetingEntityData(userId).build();
+
+        // when
+        meetingEntity.updateMeetingState(meetingState);
+
+        // then
+        assertThat(meetingEntity.getState()).isEqualTo(meetingState);
     }
 }

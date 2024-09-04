@@ -1,9 +1,11 @@
 package com.boardgo.schedule.service;
 
+import static com.boardgo.schedule.service.enums.ScheduleJobs.FINISHED_MEETING;
+
 import com.boardgo.schedule.job.FinishedMeetingStateJob;
+import com.boardgo.schedule.service.enums.ScheduleJobs;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
@@ -18,6 +20,7 @@ public class FinishedMeetingStateService {
 
     private final Scheduler scheduler;
     private final TriggerService triggerService;
+    private final JobDetailService jobDetailService;
 
     @PostConstruct
     private void jobProgress() throws SchedulerException {
@@ -25,20 +28,14 @@ public class FinishedMeetingStateService {
     }
 
     public void updateFinishMeetingState() {
-        String description = "[모임 종료] 상태 변경 Job";
-        JobKey jobKey = JobKey.jobKey("finishedMeeting", "MeetingState");
+        ScheduleJobs job = FINISHED_MEETING;
+        JobKey jobKey = JobKey.jobKey(job.name(), job.getJobGroup());
         final int intervalInMinutes = 30;
 
-        JobDetail jobDetail = finishedMeetingStateBuild(jobKey, description);
+        JobDetail jobDetail =
+                jobDetailService.jobDetailBuilder(jobKey, FinishedMeetingStateJob.class);
         Trigger simpleTrigger = triggerService.simpleTrigger(jobKey, intervalInMinutes);
         schedule(jobDetail, simpleTrigger);
-    }
-
-    private JobDetail finishedMeetingStateBuild(JobKey jobKey, final String description) {
-        return JobBuilder.newJob(FinishedMeetingStateJob.class)
-                .withIdentity(jobKey.getName(), jobKey.getGroup())
-                .withDescription(description)
-                .build();
     }
 
     private void schedule(JobDetail jobDetail, Trigger lastTrigger) {

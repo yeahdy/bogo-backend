@@ -1,12 +1,20 @@
 package com.boardgo.integration.meeting.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
-import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
-import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
+import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
+import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.user.repository.UserRepository;
@@ -414,6 +422,27 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                 pathParameters(parameterWithName("id").description("모임 id"))))
                 .when()
                 .patch("/meeting/share/{id}")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("모임 정원일 경우 모집완료 상태로 변경된다")
+    void 모임_정원일_경우_모집완료_상태로_변경된다() {
+        initEssentialData();
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParams("id", 10)
+                .filter(
+                        document(
+                                "meeting-complete",
+                                pathParameters(parameterWithName("id").description("모임 id"))))
+                .when()
+                .patch("/meeting/complete/{id}")
                 .then()
                 .statusCode(HttpStatus.OK.value());
     }

@@ -66,7 +66,9 @@ public class MeetingParticipantCommandServiceV1 implements MeetingParticipantCom
                 meetingParticipantSubRepository
                         .findById(meetingEntity.getId())
                         .orElseThrow(() -> new CustomNullPointException("모임이 존재하지 않습니다"));
-        participantCount.checkParticipant(meetingEntity.getLimitParticipant());
+        if (!participantCount.isParticipated(meetingEntity.getLimitParticipant())) {
+            throw new CustomIllegalArgumentException("모임 정원으로 참가 불가능 합니다");
+        }
         meetingEntity.checkCompleteState();
     }
 }

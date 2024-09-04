@@ -1,6 +1,6 @@
 package com.boardgo.domain.meeting.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
 
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
@@ -60,6 +60,12 @@ public class MeetingController {
     @PatchMapping(value = "/meeting/share/{id}", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> incrementShareCount(@PathVariable("id") @Positive Long id) {
         meetingCommandUseCase.incrementShareCount(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping(value = "/meeting/complete/{id}", headers = API_VERSION_HEADER1)
+    public ResponseEntity<Void> updateCompleteMeetingState(@PathVariable("id") @Positive Long id) {
+        meetingCommandUseCase.updateCompleteMeetingState(id);
         return ResponseEntity.ok().build();
     }
 }

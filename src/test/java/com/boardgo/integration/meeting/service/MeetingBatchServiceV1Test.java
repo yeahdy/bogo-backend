@@ -6,7 +6,6 @@ import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEnti
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
-import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.service.MeetingBatchServiceV1;
 import com.boardgo.domain.user.entity.UserInfoEntity;
@@ -25,7 +24,6 @@ public class MeetingBatchServiceV1Test extends IntegrationTestSupport {
     @Autowired private MeetingBatchServiceV1 meetingBatchService;
     @Autowired private MeetingRepository meetingRepository;
     @Autowired private UserRepository userRepository;
-    @Autowired private MeetingParticipantRepository meetingParticipantRepository;
 
     @Test
     @DisplayName("현재 보다 모임날짜가 지난 모임은 모임 종료 처리 된다")

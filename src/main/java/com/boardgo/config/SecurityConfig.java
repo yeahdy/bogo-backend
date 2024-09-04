@@ -1,6 +1,6 @@
 package com.boardgo.config;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
 
 import com.boardgo.domain.user.entity.enums.RoleType;
 import com.boardgo.jwt.JWTFilter;
@@ -61,6 +61,7 @@ public class SecurityConfig {
         AntPathRequestMatcher.antMatcher("/actuator/**"),
         AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/meeting/**"),
         AntPathRequestMatcher.antMatcher(HttpMethod.PATCH, "/meeting/share/{id}"),
+        AntPathRequestMatcher.antMatcher(HttpMethod.PATCH, "/meeting/complete/{id}"),
         AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/boardgame"),
         AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/personal-info/{userId}"),
         AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/home/**")

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TriggerService {
-    public Trigger simpleTrigger(JobKey jobKey, int intervalInMinutes) {
+    public Trigger simpleTrigger(final JobKey jobKey, final int intervalInMinutes) {
         return TriggerBuilder.newTrigger()
                 .forJob(jobKey)
                 .withIdentity(jobKey.getName())
