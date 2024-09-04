@@ -1,12 +1,11 @@
 package com.boardgo.integration.meeting.service;
 
-import static com.boardgo.integration.fixture.MeetingFixture.getProgressMeetingEntity;
+import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.getOutMeetingParticipantEntity;
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
-import com.boardgo.domain.meeting.entity.enums.MeetingType;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.service.MeetingParticipantQueryUseCase;
@@ -39,7 +38,7 @@ public class MeetingParticipantQueryServiceV1Test extends IntegrationTestSupport
         UserInfoEntity savedUser = userRepository.save(userInfoEntity);
         setSecurityContext(savedUser.getId(), savedUser.getPassword());
         MeetingEntity meetingEntity =
-                getProgressMeetingEntity(savedUser.getId(), MeetingType.FREE, 10);
+                getMeetingEntityData(savedUser.getId()).limitParticipant(10).build();
         MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
         MeetingParticipantEntity participantMeetingParticipantEntity =
                 getOutMeetingParticipantEntity(savedMeeting.getId(), savedUser.getId());
