@@ -1,6 +1,6 @@
 package com.boardgo.integration.meeting.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.boardgo.domain.boardgame.repository.response.BoardGameListResponse;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
@@ -22,7 +22,7 @@ import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.repository.response.UserParticipantResponse;
-import com.boardgo.domain.user.service.dto.CustomUserDetails;
+import com.boardgo.domain.user.service.response.CustomUserDetails;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestMeetingInitializer;
 import com.boardgo.integration.init.TestUserInfoInitializer;

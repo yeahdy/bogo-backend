@@ -3,11 +3,11 @@ package com.boardgo.domain.user.controller;
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
 import static com.boardgo.common.utils.SecurityUtils.currentUserId;
 
-import com.boardgo.domain.user.controller.dto.OtherPersonalInfoResponse;
-import com.boardgo.domain.user.controller.dto.UserPersonalInfoResponse;
-import com.boardgo.domain.user.controller.dto.UserPersonalInfoUpdateRequest;
+import com.boardgo.domain.user.controller.request.UserPersonalInfoUpdateRequest;
 import com.boardgo.domain.user.service.UserCommandUseCase;
 import com.boardgo.domain.user.service.UserQueryUseCase;
+import com.boardgo.domain.user.service.response.OtherPersonalInfoResponse;
+import com.boardgo.domain.user.service.response.UserPersonalInfoResponse;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

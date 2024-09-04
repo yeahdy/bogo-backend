@@ -1,4 +1,4 @@
-package com.boardgo.domain.user.controller.dto;
+package com.boardgo.domain.user.controller.request;
 
 import jakarta.validation.constraints.NotEmpty;
 

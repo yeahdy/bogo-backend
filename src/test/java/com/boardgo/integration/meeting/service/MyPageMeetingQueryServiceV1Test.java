@@ -1,6 +1,6 @@
 package com.boardgo.integration.meeting.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingLikeEntity;
@@ -16,7 +16,7 @@ import com.boardgo.domain.meeting.service.response.MeetingMyPageResponse;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
-import com.boardgo.domain.user.service.dto.CustomUserDetails;
+import com.boardgo.domain.user.service.response.CustomUserDetails;
 import com.boardgo.integration.fixture.MeetingFixture;
 import com.boardgo.integration.fixture.MeetingLikeFixture;
 import com.boardgo.integration.fixture.MeetingParticipantFixture;

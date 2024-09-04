@@ -8,14 +8,14 @@ import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.domain.mapper.UserInfoMapper;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.review.repository.ReviewRepository;
-import com.boardgo.domain.user.controller.dto.EmailRequest;
-import com.boardgo.domain.user.controller.dto.NickNameRequest;
-import com.boardgo.domain.user.controller.dto.OtherPersonalInfoResponse;
-import com.boardgo.domain.user.controller.dto.UserPersonalInfoResponse;
+import com.boardgo.domain.user.controller.request.EmailRequest;
+import com.boardgo.domain.user.controller.request.NickNameRequest;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserPrTagRepository;
 import com.boardgo.domain.user.repository.UserRepository;
-import com.boardgo.domain.user.repository.response.PersonalInfoDto;
+import com.boardgo.domain.user.repository.projection.PersonalInfoProjection;
+import com.boardgo.domain.user.service.response.OtherPersonalInfoResponse;
+import com.boardgo.domain.user.service.response.UserPersonalInfoResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,10 +47,10 @@ public class UserQueryServiceV1 implements UserQueryUseCase {
 
     @Override
     public UserPersonalInfoResponse getPersonalInfo(Long userId) {
-        PersonalInfoDto personalInfoDto = userRepository.findByUserInfoId(userId);
+        PersonalInfoProjection personalInfoProjection = userRepository.findByUserInfoId(userId);
         Double averageRating = reviewRepository.findRatingAvgByRevieweeId(userId);
         averageRating = averageRating == null ? 0.0 : averageRating;
-        return UserInfoMapper.toUserPersonalInfoResponse(personalInfoDto, averageRating);
+        return UserInfoMapper.toUserPersonalInfoResponse(personalInfoProjection, averageRating);
     }
 
     @Override

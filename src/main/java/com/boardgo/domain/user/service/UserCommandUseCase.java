@@ -1,8 +1,8 @@
 package com.boardgo.domain.user.service;
 
-import com.boardgo.domain.user.controller.dto.SignupRequest;
-import com.boardgo.domain.user.controller.dto.SocialSignupRequest;
-import com.boardgo.domain.user.controller.dto.UserPersonalInfoUpdateRequest;
+import com.boardgo.domain.user.controller.request.SignupRequest;
+import com.boardgo.domain.user.controller.request.SocialSignupRequest;
+import com.boardgo.domain.user.controller.request.UserPersonalInfoUpdateRequest;
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 

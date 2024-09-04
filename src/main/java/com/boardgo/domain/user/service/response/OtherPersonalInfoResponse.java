@@ -1,4 +1,4 @@
-package com.boardgo.domain.user.controller.dto;
+package com.boardgo.domain.user.service.response;
 
 import java.util.List;
 

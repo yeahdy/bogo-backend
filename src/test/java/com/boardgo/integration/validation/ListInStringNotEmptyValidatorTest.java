@@ -2,7 +2,7 @@ package com.boardgo.integration.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.boardgo.domain.user.controller.dto.SocialSignupRequest;
+import com.boardgo.domain.user.controller.request.SocialSignupRequest;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;

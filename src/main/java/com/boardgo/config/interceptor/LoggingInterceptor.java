@@ -1,7 +1,7 @@
 package com.boardgo.config.interceptor;
 
 import com.boardgo.config.log.LoggingMessage;
-import com.boardgo.domain.user.service.dto.CustomUserDetails;
+import com.boardgo.domain.user.service.response.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

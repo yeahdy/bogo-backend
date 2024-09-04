@@ -39,15 +39,13 @@ public class NamingConventionTest {
     }
 
     @Test
-    @DisplayName("controller.dto 패키지의 클래스는 Request 또는 Reponse 이름을 포함한다")
-    void controller_dto_패지키의_클래스는_Request_또는_Reponse_이름을_포함한다() {
+    @DisplayName("controller.request 패키지의 클래스는 Request 이름을 포함한다")
+    void controller_request_패키지의_클래스는_Request_이름을_포함한다() {
         classes()
                 .that()
-                .resideInAPackage("..controller.dto..")
+                .resideInAPackage("..controller.request..")
                 .should()
                 .haveSimpleNameEndingWith("Request")
-                .orShould()
-                .haveSimpleNameEndingWith("Response")
                 .check(javaClasses);
     }
 

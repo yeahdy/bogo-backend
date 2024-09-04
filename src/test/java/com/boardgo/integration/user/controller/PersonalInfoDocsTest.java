@@ -1,14 +1,21 @@
 package com.boardgo.integration.user.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
-import static com.boardgo.integration.fixture.UserInfoFixture.*;
-import static com.boardgo.integration.fixture.UserPrTagFixture.*;
-import static io.restassured.RestAssured.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
+import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
+import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
+import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
+import static com.boardgo.integration.fixture.UserPrTagFixture.userPrTagEntity;
+import static io.restassured.RestAssured.given;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
-import com.boardgo.domain.user.controller.dto.UserPersonalInfoUpdateRequest;
+import com.boardgo.domain.user.controller.request.UserPersonalInfoUpdateRequest;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserPrTagRepository;

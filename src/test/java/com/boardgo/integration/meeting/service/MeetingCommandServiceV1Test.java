@@ -18,7 +18,7 @@ import com.boardgo.domain.meeting.service.MeetingCreateFactory;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
-import com.boardgo.domain.user.service.dto.CustomUserDetails;
+import com.boardgo.domain.user.service.response.CustomUserDetails;
 import com.boardgo.integration.fixture.MeetingFixture;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestUserInfoInitializer;

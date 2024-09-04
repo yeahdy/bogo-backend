@@ -1,8 +1,8 @@
 package com.boardgo.integration.meeting.service;
 
-import static com.boardgo.integration.fixture.MeetingFixture.*;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
-import static com.boardgo.integration.fixture.UserInfoFixture.*;
+import static com.boardgo.integration.fixture.MeetingFixture.getProgressMeetingEntity;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getOutMeetingParticipantEntity;
+import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
@@ -13,7 +13,7 @@ import com.boardgo.domain.meeting.service.MeetingParticipantQueryUseCase;
 import com.boardgo.domain.meeting.service.response.ParticipantOutResponse;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.repository.UserRepository;
-import com.boardgo.domain.user.service.dto.CustomUserDetails;
+import com.boardgo.domain.user.service.response.CustomUserDetails;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

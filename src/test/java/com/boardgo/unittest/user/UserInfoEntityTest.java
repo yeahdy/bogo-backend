@@ -1,10 +1,10 @@
 package com.boardgo.unittest.user;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.boardgo.domain.mapper.UserInfoMapper;
-import com.boardgo.domain.user.controller.dto.SignupRequest;
-import com.boardgo.domain.user.controller.dto.SocialSignupRequest;
+import com.boardgo.domain.user.controller.request.SignupRequest;
+import com.boardgo.domain.user.controller.request.SocialSignupRequest;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.unittest.user.fake.FakePasswordEncoder;

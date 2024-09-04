@@ -1,4 +1,4 @@
-package com.boardgo.domain.user.service.dto;
+package com.boardgo.domain.user.service.response;
 
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.RoleType;

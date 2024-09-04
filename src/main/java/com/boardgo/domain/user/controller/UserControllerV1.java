@@ -2,8 +2,8 @@ package com.boardgo.domain.user.controller;
 
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
 
-import com.boardgo.domain.user.controller.dto.EmailRequest;
-import com.boardgo.domain.user.controller.dto.NickNameRequest;
+import com.boardgo.domain.user.controller.request.EmailRequest;
+import com.boardgo.domain.user.controller.request.NickNameRequest;
 import com.boardgo.domain.user.service.UserQueryUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

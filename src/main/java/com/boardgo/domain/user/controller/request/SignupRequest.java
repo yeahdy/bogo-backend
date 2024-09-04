@@ -1,4 +1,4 @@
-package com.boardgo.domain.user.controller.dto;
+package com.boardgo.domain.user.controller.request;
 
 import com.boardgo.common.validator.annotation.ListInStringNotEmpty;
 import com.boardgo.domain.user.entity.enums.ProviderType;

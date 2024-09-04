@@ -1,7 +1,7 @@
 package com.boardgo.common.utils;
 
 import com.boardgo.common.exception.OAuth2Exception;
-import com.boardgo.domain.user.service.dto.CustomUserDetails;
+import com.boardgo.domain.user.service.response.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

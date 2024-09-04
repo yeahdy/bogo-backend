@@ -1,6 +1,7 @@
 package com.boardgo.domain.user.repository;
 
-import static com.querydsl.core.group.GroupBy.*;
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
 
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.mapper.UserInfoMapper;
@@ -8,10 +9,10 @@ import com.boardgo.domain.meeting.entity.QMeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
 import com.boardgo.domain.user.entity.QUserInfoEntity;
 import com.boardgo.domain.user.entity.QUserPrTagEntity;
+import com.boardgo.domain.user.repository.projection.PersonalInfoProjection;
+import com.boardgo.domain.user.repository.projection.QPersonalInfoProjection;
 import com.boardgo.domain.user.repository.projection.QUserParticipantProjection;
 import com.boardgo.domain.user.repository.projection.UserParticipantProjection;
-import com.boardgo.domain.user.repository.response.PersonalInfoDto;
-import com.boardgo.domain.user.repository.response.QPersonalInfoDto;
 import com.boardgo.domain.user.repository.response.UserParticipantResponse;
 import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -50,8 +51,8 @@ public class UserDslRepositoryImpl implements UserDslRepository {
     }
 
     @Override
-    public PersonalInfoDto findByUserInfoId(Long userId) {
-        Map<Long, PersonalInfoDto> personalInfoMap =
+    public PersonalInfoProjection findByUserInfoId(Long userId) {
+        Map<Long, PersonalInfoProjection> personalInfoMap =
                 queryFactory
                         .selectFrom(u)
                         .leftJoin(up)
@@ -60,7 +61,7 @@ public class UserDslRepositoryImpl implements UserDslRepository {
                         .transform(
                                 groupBy(u.id)
                                         .as(
-                                                new QPersonalInfoDto(
+                                                new QPersonalInfoProjection(
                                                         u.email,
                                                         u.nickName,
                                                         u.profileImage,

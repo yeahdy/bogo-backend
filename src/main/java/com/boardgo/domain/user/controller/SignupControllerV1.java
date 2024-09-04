@@ -3,8 +3,8 @@ package com.boardgo.domain.user.controller;
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
 import static com.boardgo.common.utils.SecurityUtils.currentUserId;
 
-import com.boardgo.domain.user.controller.dto.SignupRequest;
-import com.boardgo.domain.user.controller.dto.SocialSignupRequest;
+import com.boardgo.domain.user.controller.request.SignupRequest;
+import com.boardgo.domain.user.controller.request.SocialSignupRequest;
 import com.boardgo.domain.user.service.UserCommandUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
