@@ -14,7 +14,7 @@ public class MeetingParticipantSubEntityTest {
         MeetingParticipantSubEntity entity =
                 MeetingParticipantSubEntity.builder().id(1L).participantCount(1).build();
         // when
-        boolean result = entity.isAnyOneParticipated();
+        boolean result = entity.isBiggerParticipantCount(1);
         // then
         assertThat(result).isFalse();
     }
@@ -26,7 +26,7 @@ public class MeetingParticipantSubEntityTest {
         MeetingParticipantSubEntity entity =
                 MeetingParticipantSubEntity.builder().id(1L).participantCount(2).build();
         // when
-        boolean result = entity.isAnyOneParticipated();
+        boolean result = entity.isBiggerParticipantCount(1);
         // then
         assertThat(result).isTrue();
     }
