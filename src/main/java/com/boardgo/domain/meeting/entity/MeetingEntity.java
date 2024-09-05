@@ -151,6 +151,10 @@ public class MeetingEntity extends BaseEntity {
         return this.getUserId().equals(userId);
     }
 
+    public boolean isSameState(MeetingState state) {
+        return this.state.equals(state);
+    }
+
     public void incrementShareCount() {
         this.shareCount++;
     }

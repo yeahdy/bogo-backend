@@ -94,12 +94,14 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
     @Override
     public void deleteMeeting(Long meetingId, Long userId) {
         MeetingEntity meeting = getMeetingEntity(meetingId);
+
+        validateUserIsWriter(userId, meeting);
+        validateNotProgressState(meeting);
         MeetingParticipantSubEntity meetingParticipantEntity =
                 meetingParticipantSubRepository
                         .findById(meetingId)
                         .orElseThrow(() -> new CustomNoSuchElementException("모임"));
         validateExistParticipant(meetingParticipantEntity);
-        validateUserIsWriter(userId, meeting);
 
         meetingLikeRepository.deleteAllByMeetingId(meetingId);
         meetingGenreMatchRepository.deleteAllByMeetingId(meetingId);
@@ -109,6 +111,12 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
             meetingParticipateWaitingRepository.deleteAllByMeetingId(meetingId);
         }
         meetingRepository.deleteById(meetingId);
+    }
+
+    private static void validateNotProgressState(MeetingEntity meeting) {
+        if (!meeting.isSameState(PROGRESS)) {
+            throw new IllegalArgumentException("모집 중인 상태만 삭제할 수 있습니다.");
+        }
     }
 
     private static void validateUserIsWriter(Long userId, MeetingEntity meeting) {
