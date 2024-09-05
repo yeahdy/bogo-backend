@@ -67,7 +67,7 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
                         .latitude("12312312")
                         .longitude("12321")
                         .thumbnail("thumbnail")
-                        .state(COMPLETE)
+                        .state(PROGRESS)
                         .meetingDatetime(meetingDatetime)
                         .type(MeetingType.FREE)
                         .content("content")

@@ -103,12 +103,12 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
                         .orElseThrow(() -> new CustomNoSuchElementException("모임"));
         validateExistParticipant(meetingParticipantEntity);
 
-        meetingLikeRepository.deleteAllByMeetingId(meetingId);
-        meetingGenreMatchRepository.deleteAllByMeetingId(meetingId);
-        meetingGameMatchRepository.deleteAllByMeetingId(meetingId);
-        meetingParticipantRepository.deleteAllByMeetingId(meetingId);
+        meetingLikeRepository.deleteAllInBatchByMeetingId(meetingId);
+        meetingGenreMatchRepository.deleteAllInBatchByMeetingId(meetingId);
+        meetingGameMatchRepository.deleteAllInBatchByMeetingId(meetingId);
+        meetingParticipantRepository.deleteAllInBatchByMeetingId(meetingId);
         if (meeting.getType() == MeetingType.ACCEPT) {
-            meetingParticipateWaitingRepository.deleteAllByMeetingId(meetingId);
+            meetingParticipateWaitingRepository.deleteAllInBatchByMeetingId(meetingId);
         }
         meetingRepository.deleteById(meetingId);
     }

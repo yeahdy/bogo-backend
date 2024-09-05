@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,7 +20,9 @@ public interface MeetingParticipantRepository
     Optional<MeetingParticipantEntity> findByMeetingIdAndUserInfoIdAndType(
             Long meetingId, Long userId, ParticipantType type);
 
-    Long deleteAllByMeetingId(Long meetingId);
+    @Modifying
+    @Query("DELETE FROM MeetingParticipantEntity mp " + "WHERE mp.meetingId = :meetingId")
+    int deleteAllInBatchByMeetingId(@Param("meetingId") Long meetingId);
 
     @Query(
             "SELECT COUNT(*) FROM MeetingParticipantEntity mp WHERE mp.type IN (:types) AND mp.userInfoId = :userId")

@@ -437,7 +437,7 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                         .latitude("12312312")
                         .longitude("12321")
                         .thumbnail("thumbnail")
-                        .state(COMPLETE)
+                        .state(PROGRESS)
                         .meetingDatetime(meetingDatetime)
                         .type(MeetingType.FREE)
                         .content("content")
