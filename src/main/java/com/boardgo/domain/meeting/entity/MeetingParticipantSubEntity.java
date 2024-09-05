@@ -40,7 +40,7 @@ public class MeetingParticipantSubEntity {
         return this.participantCount < limitCount;
     }
 
-    public boolean isAnyOneParticipated() {
-        return this.participantCount > 1;
+    public boolean isBiggerParticipantCount(int participantCount) {
+        return this.participantCount > participantCount;
     }
 }

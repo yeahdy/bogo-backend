@@ -94,14 +94,8 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
     @Override
     public void deleteMeeting(Long meetingId, Long userId) {
         MeetingEntity meeting = getMeetingEntity(meetingId);
-
-        validateUserIsWriter(userId, meeting);
-        validateNotProgressState(meeting);
-        MeetingParticipantSubEntity meetingParticipantEntity =
-                meetingParticipantSubRepository
-                        .findById(meetingId)
-                        .orElseThrow(() -> new CustomNoSuchElementException("모임"));
-        validateExistParticipant(meetingParticipantEntity);
+        validateMeetingOnDelete(userId, meeting);
+        validateParticipantCount(meetingId);
 
         meetingLikeRepository.deleteAllInBatchByMeetingId(meetingId);
         meetingGenreMatchRepository.deleteAllInBatchByMeetingId(meetingId);
@@ -113,6 +107,21 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
         meetingRepository.deleteById(meetingId);
     }
 
+    private void validateParticipantCount(Long meetingId) {
+        MeetingParticipantSubEntity meetingParticipantEntity =
+                meetingParticipantSubRepository
+                        .findById(meetingId)
+                        .orElseThrow(() -> new CustomNoSuchElementException("모임"));
+        if (meetingParticipantEntity.isBiggerParticipantCount(1)) {
+            throw new CustomIllegalArgumentException("참가 인원이 존재합니다.");
+        }
+    }
+
+    private static void validateMeetingOnDelete(Long userId, MeetingEntity meeting) {
+        validateUserIsWriter(userId, meeting);
+        validateNotProgressState(meeting);
+    }
+
     private static void validateNotProgressState(MeetingEntity meeting) {
         if (!meeting.isSameState(PROGRESS)) {
             throw new IllegalArgumentException("모집 중인 상태만 삭제할 수 있습니다.");
@@ -122,13 +131,6 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
     private static void validateUserIsWriter(Long userId, MeetingEntity meeting) {
         if (!meeting.isWriter(userId)) {
             throw new CustomIllegalArgumentException("다른 사람의 모임 글을 지울 수 없습니다.");
-        }
-    }
-
-    private static void validateExistParticipant(
-            MeetingParticipantSubEntity meetingParticipantEntity) {
-        if (meetingParticipantEntity.isAnyOneParticipated()) {
-            throw new CustomIllegalArgumentException("참가 인원이 존재합니다.");
         }
     }
 
