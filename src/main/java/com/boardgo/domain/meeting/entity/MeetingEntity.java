@@ -147,6 +147,14 @@ public class MeetingEntity extends BaseEntity {
         return false;
     }
 
+    public boolean isWriter(Long userId) {
+        return this.getUserId().equals(userId);
+    }
+
+    public boolean isSameState(MeetingState state) {
+        return this.state.equals(state);
+    }
+
     public void incrementShareCount() {
         this.shareCount++;
     }

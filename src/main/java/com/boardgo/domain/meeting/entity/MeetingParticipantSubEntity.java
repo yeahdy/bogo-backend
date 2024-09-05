@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
@@ -29,7 +30,17 @@ public class MeetingParticipantSubEntity {
     @Column(name = "participantCount")
     private Integer participantCount;
 
+    @Builder
+    private MeetingParticipantSubEntity(Long id, Integer participantCount) {
+        this.id = id;
+        this.participantCount = participantCount;
+    }
+
     public boolean isParticipated(Integer limitCount) {
         return this.participantCount < limitCount;
+    }
+
+    public boolean isBiggerParticipantCount(int participantCount) {
+        return this.participantCount > participantCount;
     }
 }

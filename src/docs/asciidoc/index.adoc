@@ -289,6 +289,36 @@ include::{snippets}/meeting-list/http-response.adoc[]
 
 '''
 
+
+=== *모임 삭제하기*
+
+==== *요청*
+
+include::{snippets}/meeting-delete/http-request.adoc[]
+include::{snippets}/meeting-delete/path-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/meeting-delete/http-response.adoc[]
+
+
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+| 모임(이)가 존재하지 않습니다.
+
+| 400
+|인증 정보가 존재하지 않습니다. +
+인증된 사용자가 아닙니다. +
+다른 사람의 모임 글을 지울 수 없습니다. +
+참가 인원이 존재합니다.
+|===
+
+'''
+
 === *모임 상세 조회*
 
 ==== *요청*
