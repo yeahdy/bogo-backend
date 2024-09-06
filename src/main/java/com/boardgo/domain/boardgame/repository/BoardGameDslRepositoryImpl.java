@@ -12,11 +12,11 @@ import com.boardgo.domain.boardgame.repository.projection.QBoardGameSearchProjec
 import com.boardgo.domain.boardgame.repository.projection.QGenreSearchProjection;
 import com.boardgo.domain.boardgame.repository.projection.QSituationBoardGameProjection;
 import com.boardgo.domain.boardgame.repository.projection.SituationBoardGameProjection;
-import com.boardgo.domain.boardgame.repository.response.BoardGameByMeetingIdResponse;
-import com.boardgo.domain.boardgame.repository.response.GenreSearchResponse;
+import com.boardgo.domain.boardgame.service.response.GenreSearchResponse;
 import com.boardgo.domain.mapper.BoardGameGenreMapper;
 import com.boardgo.domain.mapper.BoardGameMapper;
 import com.boardgo.domain.meeting.entity.QMeetingGameMatchEntity;
+import com.boardgo.domain.meeting.service.response.BoardGameByMeetingIdResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;

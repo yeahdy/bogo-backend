@@ -1,8 +1,7 @@
-package com.boardgo.domain.meeting.repository.response;
+package com.boardgo.domain.meeting.service.response;
 
-import com.boardgo.domain.boardgame.repository.response.BoardGameListResponse;
+import com.boardgo.domain.boardgame.service.response.BoardGameListResponse;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
-import com.boardgo.domain.user.repository.response.UserParticipantResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 

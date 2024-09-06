@@ -4,9 +4,9 @@ import static com.boardgo.common.constant.HeaderConstant.*;
 
 import com.boardgo.domain.boardgame.controller.request.BoardGameCreateRequest;
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
-import com.boardgo.domain.boardgame.repository.response.BoardGameSearchResponse;
 import com.boardgo.domain.boardgame.service.BoardGameCommandUseCase;
 import com.boardgo.domain.boardgame.service.BoardGameQueryUseCase;
+import com.boardgo.domain.boardgame.service.response.BoardGameSearchResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

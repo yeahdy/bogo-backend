@@ -3,9 +3,9 @@ package com.boardgo.integration.boardgame.service;
 import static org.assertj.core.api.Assertions.*;
 
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
-import com.boardgo.domain.boardgame.repository.response.BoardGameSearchResponse;
-import com.boardgo.domain.boardgame.repository.response.GenreSearchResponse;
 import com.boardgo.domain.boardgame.service.BoardGameQueryUseCase;
+import com.boardgo.domain.boardgame.service.response.BoardGameSearchResponse;
+import com.boardgo.domain.boardgame.service.response.GenreSearchResponse;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestMeetingInitializer;
 import com.boardgo.integration.support.IntegrationTestSupport;

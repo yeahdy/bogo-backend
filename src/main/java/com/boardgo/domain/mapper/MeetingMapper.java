@@ -1,6 +1,5 @@
 package com.boardgo.domain.mapper;
 
-import com.boardgo.domain.boardgame.repository.response.BoardGameByMeetingIdResponse;
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantSubEntity;
@@ -10,11 +9,12 @@ import com.boardgo.domain.meeting.repository.projection.LikedMeetingMyPageProjec
 import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.projection.MyPageMeetingProjection;
-import com.boardgo.domain.meeting.repository.response.MeetingDetailResponse;
-import com.boardgo.domain.meeting.repository.response.MeetingSearchResponse;
+import com.boardgo.domain.meeting.service.response.BoardGameByMeetingIdResponse;
 import com.boardgo.domain.meeting.service.response.LikedMeetingMyPageResponse;
+import com.boardgo.domain.meeting.service.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.service.response.MeetingMyPageResponse;
-import com.boardgo.domain.user.repository.response.UserParticipantResponse;
+import com.boardgo.domain.meeting.service.response.MeetingSearchResponse;
+import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

@@ -1,19 +1,18 @@
 package com.boardgo.domain.user.repository;
 
-import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
+import static com.querydsl.core.group.GroupBy.*;
 
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.mapper.UserInfoMapper;
 import com.boardgo.domain.meeting.entity.QMeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
+import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
 import com.boardgo.domain.user.entity.QUserInfoEntity;
 import com.boardgo.domain.user.entity.QUserPrTagEntity;
 import com.boardgo.domain.user.repository.projection.PersonalInfoProjection;
 import com.boardgo.domain.user.repository.projection.QPersonalInfoProjection;
 import com.boardgo.domain.user.repository.projection.QUserParticipantProjection;
 import com.boardgo.domain.user.repository.projection.UserParticipantProjection;
-import com.boardgo.domain.user.repository.response.UserParticipantResponse;
 import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

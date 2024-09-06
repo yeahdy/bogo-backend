@@ -1,4 +1,4 @@
-package com.boardgo.domain.meeting.repository.response;
+package com.boardgo.domain.meeting.service.response;
 
 import java.time.LocalDateTime;
 import java.util.List;

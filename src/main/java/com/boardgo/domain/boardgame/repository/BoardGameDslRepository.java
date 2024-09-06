@@ -3,8 +3,8 @@ package com.boardgo.domain.boardgame.repository;
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
 import com.boardgo.domain.boardgame.repository.projection.BoardGameSearchProjection;
 import com.boardgo.domain.boardgame.repository.projection.SituationBoardGameProjection;
-import com.boardgo.domain.boardgame.repository.response.BoardGameByMeetingIdResponse;
-import com.boardgo.domain.boardgame.repository.response.GenreSearchResponse;
+import com.boardgo.domain.boardgame.service.response.GenreSearchResponse;
+import com.boardgo.domain.meeting.service.response.BoardGameByMeetingIdResponse;
 import java.util.List;
 import java.util.Map;
 
