@@ -1,6 +1,7 @@
 package com.boardgo.domain.meeting.entity;
 
-import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.COMPLETE;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.FINISH;
 
 import com.boardgo.common.domain.BaseEntity;
 import com.boardgo.common.exception.CustomIllegalArgumentException;
@@ -165,5 +166,9 @@ public class MeetingEntity extends BaseEntity {
 
     public void updateMeetingState(MeetingState meetingState) {
         this.state = meetingState;
+    }
+
+    public void updateMeetingDatetime(LocalDateTime meetingDatetime) {
+        this.meetingDatetime = meetingDatetime;
     }
 }

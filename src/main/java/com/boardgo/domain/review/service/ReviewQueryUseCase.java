@@ -8,7 +8,7 @@ import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingReviewsResponse;
 import java.util.List;
 
-public interface ReviewUseCase {
+public interface ReviewQueryUseCase {
 
     List<ReviewMeetingResponse> getReviewMeetings(ReviewType reviewType, Long userId);
 

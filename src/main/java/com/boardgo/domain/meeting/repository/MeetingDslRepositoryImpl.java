@@ -1,5 +1,6 @@
 package com.boardgo.domain.meeting.repository;
 
+import static com.boardgo.common.constant.TimeConstant.REVIEWABLE_HOURS;
 import static com.boardgo.domain.meeting.entity.enums.MeetingState.FINISH;
 import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
 import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
@@ -389,18 +390,10 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                                 .eq(reviewerId)
                                 .and(mp.type.in(List.of(PARTICIPANT, LEADER)))
                                 .and(m.state.eq(FINISH))
+                                .and(
+                                        m.meetingDatetime.loe(
+                                                LocalDateTime.now().minusHours(REVIEWABLE_HOURS)))
                                 .and(m.id.notIn(reviewFinishedMeetings)))
-                .fetch();
-    }
-
-    @Override
-    public List<Long> findCompleteMeetingId(MeetingState meetingState) {
-        return queryFactory
-                .select(m.id)
-                .from(m)
-                .innerJoin(mpSub)
-                .on(mpSub.id.eq(m.id))
-                .where(m.state.eq(meetingState).and(m.limitParticipant.eq(mpSub.participantCount)))
                 .fetch();
     }
 }

@@ -5,7 +5,7 @@ import static com.boardgo.common.utils.SecurityUtils.currentUserId;
 
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.entity.enums.ReviewType;
-import com.boardgo.domain.review.service.ReviewUseCase;
+import com.boardgo.domain.review.service.ReviewQueryUseCase;
 import com.boardgo.domain.review.service.response.MyReviewsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
@@ -31,13 +31,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class ReviewController {
 
-    private final ReviewUseCase reviewUseCase;
+    private final ReviewQueryUseCase reviewQueryUseCase;
 
     @GetMapping(value = "/meetings", headers = API_VERSION_HEADER1)
     public ResponseEntity<List<ReviewMeetingResponse>> getReviewMeetings(
             @RequestParam("reviewType") ReviewType reviewType) {
         List<ReviewMeetingResponse> reviewMeetings =
-                reviewUseCase.getReviewMeetings(reviewType, currentUserId());
+                reviewQueryUseCase.getReviewMeetings(reviewType, currentUserId());
         if (reviewMeetings.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -46,13 +46,13 @@ public class ReviewController {
 
     @PostMapping(value = "", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> create(@RequestBody @Valid ReviewCreateRequest createRequest) {
-        reviewUseCase.create(createRequest, currentUserId());
+        reviewQueryUseCase.create(createRequest, currentUserId());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping(value = "", headers = API_VERSION_HEADER1)
     public ResponseEntity<MyReviewsResponse> getMyReviews() {
-        MyReviewsResponse myReviews = reviewUseCase.getMyReviews(currentUserId());
+        MyReviewsResponse myReviews = reviewQueryUseCase.getMyReviews(currentUserId());
         if (myReviews.averageRating() == null
                 && myReviews.positiveTags().isEmpty()
                 && myReviews.negativeTags().isEmpty()) {
@@ -65,7 +65,7 @@ public class ReviewController {
     public ResponseEntity<List<ReviewMeetingParticipantsResponse>> getReviewMeetingParticipants(
             @PathVariable("meetingId") @Positive Long meetingId) {
         List<ReviewMeetingParticipantsResponse> reviewMeetingParticipants =
-                reviewUseCase.getReviewMeetingParticipants(meetingId, currentUserId());
+                reviewQueryUseCase.getReviewMeetingParticipants(meetingId, currentUserId());
         return ResponseEntity.ok(reviewMeetingParticipants);
     }
 
@@ -73,7 +73,7 @@ public class ReviewController {
     public ResponseEntity<List<ReviewMeetingReviewsResponse>> getReviewMeetingReviews(
             @PathVariable("meetingId") @Positive Long meetingId) {
         List<ReviewMeetingReviewsResponse> reviewMeetingReviews =
-                reviewUseCase.getReviewMeetingReviews(meetingId, currentUserId());
+                reviewQueryUseCase.getReviewMeetingReviews(meetingId, currentUserId());
         return ResponseEntity.ok(reviewMeetingReviews);
     }
 }

@@ -21,7 +21,6 @@ import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.service.MeetingCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingCreateFactory;
 import com.boardgo.domain.user.entity.UserInfoEntity;
-import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.response.CustomUserDetails;
 import com.boardgo.integration.init.TestBoardGameInitializer;
@@ -192,12 +191,7 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
         int limit = 5;
         long leader = 1L;
         for (int i = 0; i < 10; i++) {
-            userRepository.save(
-                    userInfoEntityData()
-                            .email(i + "email@naver.com")
-                            .nickName("내이름" + i)
-                            .providerType(ProviderType.LOCAL)
-                            .build());
+            userRepository.save(userInfoEntityData(i + "email@naver.com", "내이름" + i).build());
             MeetingEntity meeting = getMeetingEntityData(leader).limitParticipant(limit).build();
             meetingIds.add(meetingRepository.save(meeting).getId());
             meetingParticipantRepository.save(

@@ -3,7 +3,6 @@ package com.boardgo.domain.meeting.repository;
 import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityCountProjection;
 import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityProjection;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
-import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.entity.enums.MyPageMeetingFilter;
 import com.boardgo.domain.meeting.repository.projection.LikedMeetingMyPageProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
@@ -39,6 +38,4 @@ public interface MeetingDslRepository {
             MeetingSearchRequest searchRequest, int offset, int size);
 
     Long getCreateMeetingCount(Long userId);
-
-    List<Long> findCompleteMeetingId(MeetingState meetingState);
 }

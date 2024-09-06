@@ -41,7 +41,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ReviewQueryServiceV1 implements ReviewUseCase {
+public class ReviewQueryServiceV1 implements ReviewQueryUseCase {
 
     private final ReviewRepository reviewRepository;
     private final MeetingRepository meetingRepository;

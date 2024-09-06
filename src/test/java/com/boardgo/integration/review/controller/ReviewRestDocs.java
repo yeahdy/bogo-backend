@@ -2,6 +2,7 @@ package com.boardgo.integration.review.controller;
 
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
 import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static com.boardgo.domain.review.entity.enums.ReviewType.PRE_PROGRESS;
 import static com.boardgo.integration.fixture.EvaluationTagFixture.getEvaluationTagEntity;
 import static com.boardgo.integration.fixture.ReviewFixture.getReview;
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
@@ -61,6 +62,7 @@ public class ReviewRestDocs extends RestDocsTestSupport {
         for (int i = 0; i < meetingEntities.size() / 10; i++) {
             MeetingEntity meeting = meetingEntities.get(i);
             meeting.updateMeetingState(MeetingState.FINISH);
+            meeting.updateMeetingDatetime(meeting.getMeetingDatetime().minusDays(30));
             meetingRepository.save(meeting);
         }
 
@@ -73,7 +75,7 @@ public class ReviewRestDocs extends RestDocsTestSupport {
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .header(API_VERSION_HEADER, "1")
                 .header(AUTHORIZATION, testAccessToken)
-                .multiPart("reviewType", "PRE_PROGRESS")
+                .multiPart("reviewType", PRE_PROGRESS)
                 .filter(
                         document(
                                 "get-review-meetings",
