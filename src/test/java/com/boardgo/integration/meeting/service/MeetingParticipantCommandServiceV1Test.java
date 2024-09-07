@@ -1,6 +1,7 @@
 package com.boardgo.integration.meeting.service;
 
 import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
+import static com.boardgo.integration.data.UserInfoData.userInfoEntityData;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.getLeaderMeetingParticipantEntity;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
@@ -156,5 +157,30 @@ public class MeetingParticipantCommandServiceV1Test extends IntegrationTestSuppo
                 getLeaderMeetingParticipantEntity(meeting.getId(), leader.getId()));
 
         return participants;
+    }
+
+    @Test
+    @DisplayName("모임에 참여하지 않은 모임은 나갈 수 없어서 예외가 발생한다")
+    void 모임에_참여하지_않은_모임은_나갈_수_없어서_예외가_발생한다() {
+        // given
+        UserInfoEntity leader =
+                userRepository.save(userInfoEntityData("leader@test.com", "Leader").build());
+        UserInfoEntity participant =
+                userRepository.save(userInfoEntityData("bear@test.com", "bear").build());
+        MeetingEntity meetingEntity = getMeetingEntityData(participant.getId()).build();
+        MeetingEntity meeting = meetingRepository.save(meetingEntity);
+        meetingParticipantRepository.save(
+                getLeaderMeetingParticipantEntity(meeting.getId(), leader.getId()));
+        meetingParticipantRepository.save(
+                getParticipantMeetingParticipantEntity(2L, participant.getId()));
+
+        // when
+        // then
+        assertThatThrownBy(
+                        () ->
+                                participantCommandUseCase.outMeeting(
+                                        meeting.getId(), participant.getId()))
+                .isInstanceOf(CustomIllegalArgumentException.class)
+                .hasMessageContaining("참여하지 않은 모임");
     }
 }

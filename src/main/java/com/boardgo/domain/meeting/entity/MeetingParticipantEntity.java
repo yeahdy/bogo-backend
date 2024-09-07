@@ -54,4 +54,8 @@ public class MeetingParticipantEntity extends BaseEntity {
         this.userInfoId = userInfoId;
         this.type = type;
     }
+
+    public void updateParticipantType(ParticipantType type) {
+        this.type = type;
+    }
 }

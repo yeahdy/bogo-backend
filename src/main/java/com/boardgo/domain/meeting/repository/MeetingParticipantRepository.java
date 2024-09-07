@@ -45,4 +45,6 @@ public interface MeetingParticipantRepository
                     + "WHERE mp.meetingId = :meetingId AND mp.userInfoId IN (:userIds)")
     Long countMeetingParticipant(
             @Param("meetingId") Long meetingId, @Param("userIds") List<Long> userIds);
+
+    MeetingParticipantEntity findByUserInfoIdAndMeetingId(Long userId, Long meetingId);
 }

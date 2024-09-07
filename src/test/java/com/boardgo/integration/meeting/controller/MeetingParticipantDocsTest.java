@@ -3,8 +3,10 @@ package com.boardgo.integration.meeting.controller;
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
 import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
 import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
+import static com.boardgo.integration.data.UserInfoData.userInfoEntityData;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.getLeaderMeetingParticipantEntity;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.getOutMeetingParticipantEntity;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
 import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
 import static io.restassured.RestAssured.given;
@@ -17,6 +19,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
+import com.boardgo.domain.meeting.controller.request.MeetingOutRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingParticipateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
@@ -75,6 +78,11 @@ public class MeetingParticipantDocsTest extends RestDocsTestSupport {
                 .statusCode(HttpStatus.CREATED.value());
     }
 
+    private RequestFieldsSnippet getParticipationRequestFieldsSnippet() {
+        return requestFields(
+                fieldWithPath("meetingId").type(JsonFieldType.NUMBER).description("모임 고유ID"));
+    }
+
     @Test
     @DisplayName("사용자가 방장에 의해 강퇴된 사람인지 판별할 수 있다")
     void 사용자가_방장에_의해_강퇴된_사람인지_판별할_수_있다() {
@@ -108,8 +116,80 @@ public class MeetingParticipantDocsTest extends RestDocsTestSupport {
                 .statusCode(HttpStatus.OK.value());
     }
 
-    RequestFieldsSnippet getParticipationRequestFieldsSnippet() {
+    @Test
+    @DisplayName("모임 내보내기")
+    void 모임을_내보내기() {
+        UserInfoEntity leader =
+                userRepository.save(userInfoEntityData("leader@test.com", "Leader").build());
+        UserInfoEntity participant =
+                userRepository.save(userInfoEntityData("bear@test.com", "bear").build());
+        MeetingEntity meetingEntity = getMeetingEntityData(participant.getId()).build();
+        MeetingEntity meeting = meetingRepository.save(meetingEntity);
+        meetingParticipantRepository.save(
+                getLeaderMeetingParticipantEntity(meeting.getId(), leader.getId()));
+        meetingParticipantRepository.save(
+                getParticipantMeetingParticipantEntity(meeting.getId(), participant.getId()));
+
+        MeetingOutRequest participateRequest =
+                new MeetingOutRequest(meetingEntity.getId(), "PROGRESS");
+        String requestJson = writeValueAsString(participateRequest);
+
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParams("userId", participant.getId())
+                .body(requestJson)
+                .filter(
+                        document(
+                                "patch-out-meeting",
+                                pathParameters(parameterWithName("userId").description("회원 id")),
+                                getOutMeetingRequestFieldsSnippet()))
+                .when()
+                .patch("/meeting-participant/out/{userId}")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("모임 나가기")
+    void 모임_나가기() {
+        UserInfoEntity leader =
+                userRepository.save(userInfoEntityData("leader@test.com", "Leader").build());
+        UserInfoEntity participant =
+                userRepository.save(userInfoEntityData("bear@test.com", "bear").build());
+        MeetingEntity meetingEntity = getMeetingEntityData(participant.getId()).build();
+        MeetingEntity meeting = meetingRepository.save(meetingEntity);
+        meetingParticipantRepository.save(
+                getLeaderMeetingParticipantEntity(meeting.getId(), leader.getId()));
+        meetingParticipantRepository.save(
+                getParticipantMeetingParticipantEntity(meeting.getId(), participant.getId()));
+
+        MeetingOutRequest participateRequest =
+                new MeetingOutRequest(meetingEntity.getId(), "PROGRESS");
+        String requestJson = writeValueAsString(participateRequest);
+
+        given(this.spec)
+                .log()
+                .all()
+                .port(port)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(requestJson)
+                .filter(document("patch-out-my-meeting", getOutMeetingRequestFieldsSnippet()))
+                .when()
+                .patch("/meeting-participant/out")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    private RequestFieldsSnippet getOutMeetingRequestFieldsSnippet() {
         return requestFields(
-                fieldWithPath("meetingId").type(JsonFieldType.NUMBER).description("모임 고유ID"));
+                fieldWithPath("meetingId").type(JsonFieldType.NUMBER).description("모임 고유ID"),
+                fieldWithPath("meetingState").type(JsonFieldType.STRING).description("모임 진행 상태"));
     }
 }

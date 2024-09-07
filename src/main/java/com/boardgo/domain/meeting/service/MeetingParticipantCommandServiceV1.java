@@ -1,5 +1,7 @@
 package com.boardgo.domain.meeting.service;
 
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.OUT;
+
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.mapper.MeetingParticipantMapper;
@@ -15,6 +17,7 @@ import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingParticipantSubRepository;
 import com.boardgo.domain.meeting.repository.MeetingParticipateWaitingRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,5 +73,16 @@ public class MeetingParticipantCommandServiceV1 implements MeetingParticipantCom
             throw new CustomIllegalArgumentException("모임 정원으로 참가 불가능 합니다");
         }
         meetingEntity.checkCompleteState();
+    }
+
+    @Override
+    public void outMeeting(Long meetingId, Long userId) {
+        MeetingParticipantEntity meetingParticipant =
+                meetingParticipantRepository.findByUserInfoIdAndMeetingId(userId, meetingId);
+        if (Objects.isNull(meetingParticipant)) {
+            throw new CustomIllegalArgumentException("참여하지 않은 모임입니다");
+        }
+        // TODO 쓰레드에서 나가기
+        meetingParticipant.updateParticipantType(OUT);
     }
 }
