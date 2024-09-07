@@ -2,15 +2,12 @@ package com.boardgo.domain.user.service;
 
 import com.boardgo.domain.user.controller.request.EmailRequest;
 import com.boardgo.domain.user.controller.request.NickNameRequest;
-import com.boardgo.domain.user.service.response.OtherPersonalInfoResponse;
-import com.boardgo.domain.user.service.response.UserPersonalInfoResponse;
+import com.boardgo.domain.user.service.response.UserInfoResponse;
 
 public interface UserQueryUseCase {
     void existEmail(EmailRequest emailRequest);
 
     void existNickName(NickNameRequest nickNameRequest);
 
-    UserPersonalInfoResponse getPersonalInfo(Long userId);
-
-    OtherPersonalInfoResponse getOtherPersonalInfo(Long userId);
+    UserInfoResponse getPersonalInfo(Long userId);
 }

@@ -1,5 +1,6 @@
 package com.boardgo.domain.user.service.response;
 
+import com.boardgo.domain.review.service.response.MyEvaluationTagResponse;
 import java.util.List;
 
 public record OtherPersonalInfoResponse(
@@ -7,4 +8,6 @@ public record OtherPersonalInfoResponse(
         String profileImage,
         Double averageRating,
         List<String> prTags,
-        int meetingCount) {}
+        int meetingCount,
+        List<MyEvaluationTagResponse> positiveTags,
+        List<MyEvaluationTagResponse> negativeTags) {}

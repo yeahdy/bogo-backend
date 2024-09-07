@@ -6,6 +6,7 @@ import static com.boardgo.common.utils.SecurityUtils.currentUserId;
 import com.boardgo.domain.user.controller.request.UserPersonalInfoUpdateRequest;
 import com.boardgo.domain.user.service.UserCommandUseCase;
 import com.boardgo.domain.user.service.UserQueryUseCase;
+import com.boardgo.domain.user.service.facade.UserQueryServiceFacade;
 import com.boardgo.domain.user.service.response.OtherPersonalInfoResponse;
 import com.boardgo.domain.user.service.response.UserPersonalInfoResponse;
 import jakarta.validation.constraints.Positive;
@@ -30,16 +31,17 @@ import org.springframework.web.multipart.MultipartFile;
 public class PersonalInfoController {
     private final UserQueryUseCase userQueryUseCase;
     private final UserCommandUseCase userCommandUseCase;
+    private final UserQueryServiceFacade userQueryServiceFacade;
 
     @GetMapping(value = "", headers = API_VERSION_HEADER1)
     public ResponseEntity<UserPersonalInfoResponse> getPersonalInfo() {
-        return ResponseEntity.ok(userQueryUseCase.getPersonalInfo(currentUserId()));
+        return ResponseEntity.ok(userQueryServiceFacade.getPersonalInfo(currentUserId()));
     }
 
     @GetMapping(value = "/{userId}", headers = API_VERSION_HEADER1)
     public ResponseEntity<OtherPersonalInfoResponse> getOtherPersonalInfo(
             @PathVariable("userId") @Positive Long userId) {
-        return ResponseEntity.ok(userQueryUseCase.getOtherPersonalInfo(userId));
+        return ResponseEntity.ok(userQueryServiceFacade.getOtherPersonalInfo(userId));
     }
 
     @PatchMapping(value = "", headers = API_VERSION_HEADER1)

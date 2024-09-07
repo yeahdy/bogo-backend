@@ -1,5 +1,8 @@
 package com.boardgo.domain.meeting.service;
 
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
+
 import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.common.utils.SecurityUtils;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
@@ -7,6 +10,7 @@ import com.boardgo.domain.meeting.entity.enums.ParticipantType;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.service.response.ParticipantOutResponse;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,5 +40,11 @@ public class MeetingParticipantQueryServiceV1 implements MeetingParticipantQuery
         meetingRepository
                 .findById(meetingId)
                 .orElseThrow(() -> new CustomNoSuchElementException("모임"));
+    }
+
+    @Override
+    public int getMeetingCount(Long userId) {
+        return meetingParticipantRepository.countByTypeAndUserInfoId(
+                List.of(LEADER, PARTICIPANT), userId);
     }
 }

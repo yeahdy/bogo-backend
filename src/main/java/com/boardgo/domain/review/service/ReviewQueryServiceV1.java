@@ -26,6 +26,7 @@ import com.boardgo.domain.review.repository.projection.MyEvaluationTagProjection
 import com.boardgo.domain.review.repository.projection.ReviewCountProjection;
 import com.boardgo.domain.review.repository.projection.ReviewMeetingReviewsProjection;
 import com.boardgo.domain.review.service.response.MyEvaluationTagResponse;
+import com.boardgo.domain.review.service.response.MyEvaluationTagsResponse;
 import com.boardgo.domain.review.service.response.MyReviewsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
@@ -215,8 +216,14 @@ public class ReviewQueryServiceV1 implements ReviewQueryUseCase {
     public MyReviewsResponse getMyReviews(Long userId) {
         Double averageRating =
                 Optional.ofNullable(reviewRepository.findRatingAvgByRevieweeId(userId)).orElse(0.0);
+        MyEvaluationTagsResponse myEvaluationTags = getMyEvaluationTags(userId);
+        return new MyReviewsResponse(
+                averageRating, myEvaluationTags.positiveTags(), myEvaluationTags.negativeTags());
+    }
+
+    @Override
+    public MyEvaluationTagsResponse getMyEvaluationTags(Long userId) {
         List<List<String>> evaluationTags = reviewRepository.findMyEvaluationTags(userId);
-        // FIXME 스케줄러를 통해 카운팅 누적 카운팅 계산하도록 기능 개선 필요
         Map<Long, Integer> evaluationTagsMap = calculateEvaluationTags(evaluationTags);
 
         // 긍정적 태그
@@ -231,7 +238,7 @@ public class ReviewQueryServiceV1 implements ReviewQueryUseCase {
                         EvaluationType.NEGATIVE, evaluationTagsMap.keySet());
         List<MyEvaluationTagResponse> negativeTags =
                 refineEvaluationTag(myNegativeEvaluationTags, evaluationTagsMap);
-        return new MyReviewsResponse(averageRating, positiveTags, negativeTags);
+        return new MyEvaluationTagsResponse(positiveTags, negativeTags);
     }
 
     /***
@@ -261,5 +268,11 @@ public class ReviewQueryServiceV1 implements ReviewQueryUseCase {
             evaluationTags.add(new MyEvaluationTagResponse(count, myTag.tagPhrase()));
         }
         return evaluationTags;
+    }
+
+    @Override
+    public Double getAverageRating(Long revieweeId) {
+        Double averageRating = reviewRepository.findRatingAvgByRevieweeId(revieweeId);
+        return averageRating == null ? 0.0 : Math.round(averageRating * 10) / 10.0; // 소수점 한자리
     }
 }

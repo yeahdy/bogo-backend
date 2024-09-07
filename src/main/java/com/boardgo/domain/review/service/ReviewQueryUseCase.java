@@ -2,6 +2,7 @@ package com.boardgo.domain.review.service;
 
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.entity.enums.ReviewType;
+import com.boardgo.domain.review.service.response.MyEvaluationTagsResponse;
 import com.boardgo.domain.review.service.response.MyReviewsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
@@ -20,4 +21,8 @@ public interface ReviewQueryUseCase {
     List<ReviewMeetingReviewsResponse> getReviewMeetingReviews(Long meetingId, Long reviewerId);
 
     MyReviewsResponse getMyReviews(Long userId);
+
+    Double getAverageRating(Long revieweeId);
+
+    MyEvaluationTagsResponse getMyEvaluationTags(Long userId);
 }

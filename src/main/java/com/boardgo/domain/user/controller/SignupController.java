@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class SignupControllerV1 {
+public class SignupController {
 
     private final UserCommandUseCase userCommandUseCase;
 

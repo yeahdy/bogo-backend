@@ -325,4 +325,22 @@ public class ReviewQueryServiceV1Test extends IntegrationTestSupport {
             assertThat(myEvaluationTag.count()).isEqualTo(count);
         }
     }
+
+    @Test
+    @DisplayName("리뷰 평균 점수는 소수점 한자리 까지 이다")
+    void 리뷰_평균_점수는_소수점_한자리_까지_이다() {
+        // given
+        Long revieweeId = 1L;
+        for (long i = 0; i < 10; i++) {
+            reviewRepository.save(getReview(i + 1, revieweeId, i + 1));
+        }
+
+        // when
+        Double averageRating = reviewQueryUseCase.getAverageRating(revieweeId);
+
+        // then
+        String averageRatingString = averageRating.toString();
+        assertThat(averageRatingString).isNotEmpty();
+        assertThat(averageRatingString.length()).isEqualTo(3); // 소수점 1자리는 0.0 == 문자열 길이 3자리
+    }
 }

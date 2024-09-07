@@ -19,8 +19,10 @@ import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserPrTagRepository;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.UserQueryUseCase;
+import com.boardgo.domain.user.service.facade.UserQueryServiceFacade;
 import com.boardgo.domain.user.service.response.CustomUserDetails;
 import com.boardgo.domain.user.service.response.OtherPersonalInfoResponse;
+import com.boardgo.domain.user.service.response.UserInfoResponse;
 import com.boardgo.domain.user.service.response.UserPersonalInfoResponse;
 import com.boardgo.integration.init.TestUserInfoInitializer;
 import com.boardgo.integration.support.IntegrationTestSupport;
@@ -44,6 +46,7 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;
     @Autowired private ReviewRepository reviewRepository;
     @Autowired private UserQueryUseCase userQueryUseCase;
+    @Autowired private UserQueryServiceFacade userQueryServiceFacade;
     @Autowired private TestUserInfoInitializer testUserInfoInitializer;
 
     @Test
@@ -132,7 +135,7 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
         reviewRepository.save(getReview(2L, userInfo.getId(), 1L));
 
         // when
-        UserPersonalInfoResponse personalInfo = userQueryUseCase.getPersonalInfo(userId);
+        UserPersonalInfoResponse personalInfo = userQueryServiceFacade.getPersonalInfo(userId);
 
         // then
         assertThat(personalInfo.email()).isEqualTo(userInfo.getEmail());
@@ -155,7 +158,7 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
         Long userId = getUserId(userInfo);
 
         // when
-        UserPersonalInfoResponse personalInfo = userQueryUseCase.getPersonalInfo(userId);
+        UserInfoResponse personalInfo = userQueryUseCase.getPersonalInfo(userId);
 
         // then
         assertThat(personalInfo.profileImage()).isNull();
@@ -175,7 +178,8 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
         }
 
         // when
-        OtherPersonalInfoResponse otherPersonalInfo = userQueryUseCase.getOtherPersonalInfo(userId);
+        OtherPersonalInfoResponse otherPersonalInfo =
+                userQueryServiceFacade.getOtherPersonalInfo(userId);
 
         // then
         assertThat(otherPersonalInfo.meetingCount()).isEqualTo(participationCount);

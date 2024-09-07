@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-public class TokenControllerV1 {
+public class TokenController {
 
     @GetMapping(value = "/token", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> getToken(HttpServletRequest request, HttpServletResponse response) {

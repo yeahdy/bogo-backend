@@ -46,11 +46,13 @@ public class LayeredDependencyConventionTest {
                 .definedBy("..projection..")
                 .layer("Job")
                 .definedBy("..job..")
+                .layer("Facade")
+                .definedBy("..facade")
                 .whereLayer("Controller")
                 .mayNotBeAccessedByAnyLayer()
                 .whereLayer("Service")
                 .mayOnlyBeAccessedByLayers(
-                        "Controller", "JWT", "Common", "Config", "Init", "Mapper", "Job")
+                        "Controller", "Facade", "JWT", "Common", "Config", "Init", "Mapper", "Job")
                 .whereLayer("Repository")
                 .mayOnlyBeAccessedByLayers("Service", "Init", "Controller", "Mapper")
                 .check(javaClasses);

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class UserControllerV1 {
+public class UserController {
     private final UserQueryUseCase userQueryUseCase;
 
     @GetMapping(value = "/check-email", headers = API_VERSION_HEADER1)

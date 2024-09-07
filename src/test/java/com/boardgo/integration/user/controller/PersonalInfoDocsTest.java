@@ -2,10 +2,15 @@ package com.boardgo.integration.user.controller;
 
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
 import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static com.boardgo.integration.fixture.EvaluationTagFixture.getEvaluationTagEntity;
+import static com.boardgo.integration.fixture.ReviewFixture.getReview;
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
 import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
 import static com.boardgo.integration.fixture.UserPrTagFixture.userPrTagEntity;
 import static io.restassured.RestAssured.given;
+import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
+import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
+import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -15,6 +20,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
+import com.boardgo.domain.review.repository.EvaluationTagRepository;
+import com.boardgo.domain.review.repository.ReviewRepository;
 import com.boardgo.domain.user.controller.request.UserPersonalInfoUpdateRequest;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
@@ -37,6 +44,8 @@ public class PersonalInfoDocsTest extends RestDocsTestSupport {
 
     @Autowired private UserRepository userRepository;
     @Autowired private UserPrTagRepository userPrTagRepository;
+    @Autowired private EvaluationTagRepository evaluationTagRepository;
+    @Autowired private ReviewRepository reviewRepository;
 
     @Test
     @DisplayName("내 개인정보 조회하기")
@@ -161,10 +170,16 @@ public class PersonalInfoDocsTest extends RestDocsTestSupport {
     @Test
     @DisplayName("다른 사람 프로필 조회하기")
     void 다른_사람_프로필_조회하기() {
+        // given
         UserInfoEntity userInfo = userRepository.save(socialUserInfoEntity(ProviderType.KAKAO));
         userPrTagRepository.save(userPrTagEntity(userInfo.getId(), "ISTP"));
         userPrTagRepository.save(userPrTagEntity(userInfo.getId(), "보드게임 좋아"));
         userPrTagRepository.save(userPrTagEntity(userInfo.getId(), "눈치빠름"));
+
+        evaluationTagRepository.saveAll(getEvaluationTagEntity());
+        Long meetingId = 2L;
+        reviewRepository.save(getReview(2L, userInfo.getId(), meetingId));
+        reviewRepository.save(getReview(3L, userInfo.getId(), meetingId));
 
         given(this.spec)
                 .log()
@@ -194,8 +209,15 @@ public class PersonalInfoDocsTest extends RestDocsTestSupport {
                 fieldWithPath("profileImage").type(JsonFieldType.STRING).description("프로필 이미지"),
                 fieldWithPath("averageRating").type(JsonFieldType.NUMBER).description("평균 별점"),
                 fieldWithPath("meetingCount").type(JsonFieldType.NUMBER).description("모임 참가 횟수"),
-                fieldWithPath("prTags")
+                fieldWithPath("prTags").type(JsonFieldType.ARRAY).description("PR태그(없을 경우 빈배열 반환)"),
+                fieldWithPath("positiveTags[]").type(ARRAY).description("긍정적 태그").optional(),
+                fieldWithPath("positiveTags[].count").type(NUMBER).description("태그 갯수"),
+                fieldWithPath("positiveTags[].tagPhrase").type(STRING).description("긍정적 태그 문구"),
+                fieldWithPath("negativeTags[]")
                         .type(JsonFieldType.ARRAY)
-                        .description("PR태그(없을 경우 빈배열 반환)"));
+                        .description("부정적 태그")
+                        .optional(),
+                fieldWithPath("negativeTags[].count").type(NUMBER).description("태그 갯수"),
+                fieldWithPath("negativeTags[].tagPhrase").type(STRING).description("부정적 태그 문구"));
     }
 }

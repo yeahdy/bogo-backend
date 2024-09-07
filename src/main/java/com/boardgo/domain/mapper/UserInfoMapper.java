@@ -1,11 +1,13 @@
 package com.boardgo.domain.mapper;
 
 import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
+import com.boardgo.domain.review.service.response.MyEvaluationTagsResponse;
 import com.boardgo.domain.user.controller.request.SignupRequest;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.repository.projection.PersonalInfoProjection;
 import com.boardgo.domain.user.repository.projection.UserParticipantProjection;
 import com.boardgo.domain.user.service.response.OtherPersonalInfoResponse;
+import com.boardgo.domain.user.service.response.UserInfoResponse;
 import com.boardgo.domain.user.service.response.UserPersonalInfoResponse;
 import com.boardgo.oauth2.dto.OAuth2CreateUserRequest;
 import org.mapstruct.Mapper;
@@ -24,12 +26,16 @@ public interface UserInfoMapper {
 
     UserInfoEntity toUserInfoEntity(OAuth2CreateUserRequest oAuth2CreateUserRequest);
 
+    UserInfoResponse toUserInfoResponse(PersonalInfoProjection personalInfoProjection);
+
     UserPersonalInfoResponse toUserPersonalInfoResponse(
-            PersonalInfoProjection userPersonalInfoResponse, Double averageRating);
+            UserInfoResponse userInfoResponse, Double averageRating);
 
     UserParticipantResponse toUserParticipantResponse(
             UserParticipantProjection userParticipantProjection);
 
     OtherPersonalInfoResponse toUserPersonalInfoResponse(
-            UserPersonalInfoResponse userPersonalInfoResponse, int meetingCount);
+            UserPersonalInfoResponse userPersonalInfoResponse,
+            int meetingCount,
+            MyEvaluationTagsResponse myEvaluationTags);
 }
