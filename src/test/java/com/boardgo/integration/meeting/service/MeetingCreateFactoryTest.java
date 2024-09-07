@@ -2,7 +2,7 @@ package com.boardgo.integration.meeting.service;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.mapper.MeetingMapper;
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
@@ -131,7 +131,7 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
                         () -> {
                             meetingCreateFactory.create(meetingEntity, null, genreIdList);
                         })
-                .isInstanceOf(CustomIllegalArgumentException.class);
+                .isInstanceOf(CustomNullPointException.class);
     }
 
     @Test
@@ -167,6 +167,6 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
                         () -> {
                             meetingCreateFactory.create(meetingEntity, boardGameIdList, null);
                         })
-                .isInstanceOf(CustomIllegalArgumentException.class);
+                .isInstanceOf(CustomNullPointException.class);
     }
 }

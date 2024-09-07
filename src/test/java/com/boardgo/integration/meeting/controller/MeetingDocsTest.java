@@ -10,6 +10,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
+import com.boardgo.domain.meeting.controller.request.MeetingUpdateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingType;
 import com.boardgo.domain.meeting.service.MeetingCreateFactory;
@@ -136,6 +137,104 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                 .all()
                 .statusCode(201)
                 .header("Location", matchesPattern("/meeting/\\d+"));
+    }
+
+    @Test
+    @DisplayName("모임을 수정할 수 있다")
+    void 모임을_수정할_수_있다() {
+        // given
+        initEssentialData();
+        MeetingUpdateRequest meetingUpdateRequest =
+                new MeetingUpdateRequest(
+                        1L,
+                        "updateContent",
+                        "FREE",
+                        2,
+                        "updatedTitle",
+                        "updateCity",
+                        "updateCounty",
+                        "35.12321312",
+                        "1232.213213213",
+                        "updateAddress",
+                        "updateLocation",
+                        LocalDateTime.now().plusDays(1),
+                        List.of(3L, 4L),
+                        List.of(3L, 4L));
+        // when
+        // then
+        String requestJson = writeValueAsString(meetingUpdateRequest);
+
+        given(this.spec)
+                .port(port)
+                .log()
+                .all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .header(API_VERSION_HEADER, "1")
+                .header(AUTHORIZATION, testAccessToken)
+                .multiPart("meetingUpdateRequest", requestJson, MediaType.APPLICATION_JSON_VALUE)
+                .multiPart("image", "test-image.jpg", "image/jpeg".getBytes())
+                .filter(
+                        document(
+                                "meeting-update",
+                                requestParts(
+                                        partWithName("meetingUpdateRequest")
+                                                .description("Meeting update details"),
+                                        partWithName("image")
+                                                .description("Meeting image file")
+                                                .optional()),
+                                requestPartFields(
+                                        "meetingUpdateRequest",
+                                        fieldWithPath("id")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("모임 id"),
+                                        fieldWithPath("content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 내용"),
+                                        fieldWithPath("type")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 타입 (FREE or ACCEPT)"),
+                                        fieldWithPath("limitParticipant")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("최대 참가자 수"),
+                                        fieldWithPath("title")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 제목"),
+                                        fieldWithPath("city")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 도시"),
+                                        fieldWithPath("county")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 구(ex. 강남구, 성동구)"),
+                                        fieldWithPath("latitude")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 장소의 위도"),
+                                        fieldWithPath("longitude")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 장소의 경도"),
+                                        fieldWithPath("detailAddress")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 장소의 상세주소"),
+                                        fieldWithPath("locationName")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 장소의 이름"),
+                                        fieldWithPath("meetingDatetime")
+                                                .type(JsonFieldType.STRING)
+                                                .description("모임 시간"),
+                                        fieldWithPath("boardGameIdList")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description(
+                                                        "보드게임 id 리스트(배열) / 개발 서버에서는 더미 데이터 [1 ~ 10]까지 존재"),
+                                        fieldWithPath("genreIdList")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description(
+                                                        "보드게임 장르 id 리스트(배열) / 개발 서버에서는 더미 데이터 [1 ~ 10]까지 존재"))))
+                .when()
+                .patch("/meeting")
+                .then()
+                .log()
+                .all()
+                .statusCode(200);
     }
 
     @Test

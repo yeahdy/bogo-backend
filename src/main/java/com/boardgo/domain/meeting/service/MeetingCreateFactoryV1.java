@@ -1,8 +1,6 @@
 package com.boardgo.domain.meeting.service;
 
-import static com.boardgo.common.exception.advice.dto.ErrorCode.*;
-
-import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
@@ -23,23 +21,28 @@ public class MeetingCreateFactoryV1 implements MeetingCreateFactory {
     private final MeetingGameMatchRepository meetingGameMatchRepository;
     private final MeetingParticipantRepository meetingParticipantRepository;
 
+    @Override
     public Long create(MeetingEntity meeting, List<Long> boardGameIdList, List<Long> genreIdList) {
-        Optional.ofNullable(boardGameIdList)
-                .orElseThrow(
-                        () ->
-                                new CustomIllegalArgumentException(
-                                        NULL_ERROR.getCode(), "boardGameIdList is Null"));
-        Optional.ofNullable(genreIdList)
-                .orElseThrow(
-                        () ->
-                                new CustomIllegalArgumentException(
-                                        NULL_ERROR.getCode(), "genreIdList Null"));
+        validateNullCheckIdList(boardGameIdList, "boardGameIdList is Null");
+        validateNullCheckIdList(genreIdList, "genreIdList is Null");
 
         Long meetingId = meetingRepository.save(meeting).getId();
         meetingParticipantRepository.save(getMeetingParticipant(meeting.getUserId(), meetingId));
-        meetingGenreMatchRepository.bulkInsert(genreIdList, meetingId);
         meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
+        meetingGenreMatchRepository.bulkInsert(genreIdList, meetingId);
         return meetingId;
+    }
+
+    @Override
+    public void createOnlyMatch(
+            MeetingEntity meeting, List<Long> boardGameIdList, List<Long> boardGameGenreIdList) {
+        Long meetingId = meeting.getId();
+        meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
+        meetingGenreMatchRepository.bulkInsert(boardGameGenreIdList, meetingId);
+    }
+
+    private void validateNullCheckIdList(List<Long> idList, String message) {
+        Optional.ofNullable(idList).orElseThrow(() -> new CustomNullPointException(message));
     }
 
     private MeetingParticipantEntity getMeetingParticipant(Long userId, Long meetingId) {

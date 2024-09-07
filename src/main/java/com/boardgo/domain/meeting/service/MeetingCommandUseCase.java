@@ -1,6 +1,7 @@
 package com.boardgo.domain.meeting.service;
 
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
+import com.boardgo.domain.meeting.controller.request.MeetingUpdateRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface MeetingCommandUseCase {
@@ -14,4 +15,7 @@ public interface MeetingCommandUseCase {
     void updateCompleteMeetingState(Long meetingId);
 
     void deleteMeeting(Long meetingId, Long userId);
+
+    void updateMeeting(
+            MeetingUpdateRequest meetingUpdateRequest, Long userId, MultipartFile imageFile);
 }

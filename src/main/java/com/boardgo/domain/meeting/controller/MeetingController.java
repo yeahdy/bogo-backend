@@ -5,6 +5,7 @@ import static com.boardgo.common.constant.HeaderConstant.*;
 import com.boardgo.common.utils.SecurityUtils;
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
+import com.boardgo.domain.meeting.controller.request.MeetingUpdateRequest;
 import com.boardgo.domain.meeting.service.MeetingCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
 import com.boardgo.domain.meeting.service.response.MeetingDetailResponse;
@@ -57,6 +58,14 @@ public class MeetingController {
         MeetingDetailResponse meetingDetail = meetingQueryUseCase.getDetailById(id);
         meetingCommandUseCase.incrementViewCount(meetingDetail.meetingId());
         return ResponseEntity.ok(meetingDetail);
+    }
+
+    @PatchMapping(value = "/meeting", headers = API_VERSION_HEADER1)
+    public ResponseEntity<Void> update(
+            @RequestPart(value = "meetingUpdateRequest") MeetingUpdateRequest request,
+            @RequestPart(value = "image") MultipartFile imageFile) {
+        meetingCommandUseCase.updateMeeting(request, SecurityUtils.currentUserId(), imageFile);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping(value = "/meeting/share/{id}", headers = API_VERSION_HEADER1)

@@ -1,10 +1,10 @@
 package com.boardgo.domain.meeting.entity;
 
-import static com.boardgo.domain.meeting.entity.enums.MeetingState.COMPLETE;
-import static com.boardgo.domain.meeting.entity.enums.MeetingState.FINISH;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
 
 import com.boardgo.common.domain.BaseEntity;
 import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.domain.meeting.controller.request.MeetingUpdateRequest;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.entity.enums.MeetingType;
 import jakarta.persistence.Column;
@@ -122,6 +122,20 @@ public class MeetingEntity extends BaseEntity {
         this.viewCount = viewCount;
         this.state = state;
         this.shareCount = shareCount;
+    }
+
+    public void update(MeetingUpdateRequest request, String imageUri) {
+        this.title = request.title();
+        this.content = request.content();
+        this.meetingDatetime = request.meetingDatetime();
+        this.city = request.city();
+        this.county = request.county();
+        this.latitude = request.latitude();
+        this.longitude = request.longitude();
+        this.locationName = request.locationName();
+        this.detailAddress = request.detailAddress();
+        this.limitParticipant = request.limitParticipant();
+        this.thumbnail = imageUri;
     }
 
     public boolean checkCompleteState() {

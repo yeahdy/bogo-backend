@@ -4,8 +4,10 @@ import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
 import static com.boardgo.integration.data.MeetingData.*;
 import static com.boardgo.integration.data.UserInfoData.*;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.Assertions.*;
 
+import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.domain.meeting.controller.request.MeetingUpdateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingGameMatchEntity;
 import com.boardgo.domain.meeting.entity.MeetingGenreMatchEntity;
@@ -31,10 +33,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -52,6 +55,168 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
     @Autowired private MeetingCreateFactory meetingCreateFactory;
     @Autowired private TestUserInfoInitializer testUserInfoInitializer;
     @Autowired private TestBoardGameInitializer testBoardGameInitializer;
+
+    @Test
+    @DisplayName("모임을 수정할 수 있다")
+    void 모임을_수정할_수_있다() {
+        // given
+        LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
+        long userId = 1L;
+        MeetingEntity meetingEntity =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(userId)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(PROGRESS)
+                        .meetingDatetime(meetingDatetime)
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList = List.of(1L, 2L);
+        List<Long> boardGameGenreIdList = List.of(1L, 2L);
+        Long meetingId =
+                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
+        LocalDateTime updatedMeetingDatetime = meetingDatetime.plusDays(2);
+        MeetingUpdateRequest meetingUpdateRequest =
+                new MeetingUpdateRequest(
+                        meetingId,
+                        "updateContent",
+                        "FREE",
+                        4,
+                        "updatedTitle",
+                        "updateCity",
+                        "updateCounty",
+                        "35.12321312",
+                        "1232.213213213",
+                        "updateAddress",
+                        "updateLocation",
+                        updatedMeetingDatetime,
+                        List.of(3L, 4L),
+                        List.of(3L, 4L));
+        MockMultipartFile mockFile =
+                new MockMultipartFile(
+                        "file", "test.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
+        // when
+        meetingCommandUseCase.updateMeeting(meetingUpdateRequest, userId, mockFile);
+        // then
+        MeetingEntity updateMeeting = meetingRepository.findById(meetingId).get();
+        assertThat(updateMeeting).isNotNull();
+        assertThat(updateMeeting.getMeetingDatetime()).isEqualTo(updatedMeetingDatetime);
+        assertThat(updateMeeting.getType()).isEqualTo(MeetingType.FREE);
+        assertThat(updateMeeting.getContent()).isEqualTo(meetingUpdateRequest.content());
+        assertThat(updateMeeting.getCity()).isEqualTo(meetingUpdateRequest.city());
+        assertThat(updateMeeting.getCounty()).isEqualTo(meetingUpdateRequest.county());
+        assertThat(updateMeeting.getTitle()).isEqualTo(meetingUpdateRequest.title());
+        assertThat(updateMeeting.getLocationName()).isEqualTo(meetingUpdateRequest.locationName());
+        assertThat(updateMeeting.getDetailAddress())
+                .isEqualTo(meetingUpdateRequest.detailAddress());
+        assertThat(updateMeeting.getLimitParticipant())
+                .isEqualTo(meetingUpdateRequest.limitParticipant());
+        assertThat(updateMeeting.getLongitude()).isEqualTo(meetingUpdateRequest.longitude());
+        assertThat(updateMeeting.getLatitude()).isEqualTo(meetingUpdateRequest.latitude());
+        assertThat(updateMeeting.getThumbnail()).isNotNull();
+        assertThat(updateMeeting.getState()).isEqualTo(PROGRESS);
+        List<MeetingGameMatchEntity> gameMatchEntityList =
+                meetingGameMatchRepository.findByMeetingId(meetingId);
+        assertThat(gameMatchEntityList).isNotNull();
+        assertThat(gameMatchEntityList.size()).isEqualTo(2);
+        assertThat(gameMatchEntityList)
+                .extracting(MeetingGameMatchEntity::getBoardGameId)
+                .contains(3L, 4L);
+    }
+
+    @Test
+    @DisplayName("현재 참가한 인원보다 최대 인원을 줄일 수가 없다")
+    void 현재_참가한_인원보다_최대_인원을_줄일_수가_없다() {
+        // given
+        LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
+        long userId = 1L;
+        MeetingEntity meetingEntity =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(userId)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(PROGRESS)
+                        .meetingDatetime(meetingDatetime)
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+
+        List<Long> boardGameIdList = List.of(1L, 2L);
+        List<Long> boardGameGenreIdList = List.of(1L, 2L);
+        Long meetingId =
+                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
+        meetingParticipantRepository.save(
+                MeetingParticipantEntity.builder()
+                        .meetingId(meetingId)
+                        .userInfoId(3L)
+                        .type(ParticipantType.PARTICIPANT)
+                        .build());
+        meetingParticipantRepository.save(
+                MeetingParticipantEntity.builder()
+                        .meetingId(meetingId)
+                        .userInfoId(4L)
+                        .type(ParticipantType.PARTICIPANT)
+                        .build());
+        meetingParticipantRepository.save(
+                MeetingParticipantEntity.builder()
+                        .meetingId(meetingId)
+                        .userInfoId(5L)
+                        .type(ParticipantType.PARTICIPANT)
+                        .build());
+        meetingParticipantRepository.save(
+                MeetingParticipantEntity.builder()
+                        .meetingId(meetingId)
+                        .userInfoId(6L)
+                        .type(ParticipantType.PARTICIPANT)
+                        .build());
+        LocalDateTime updatedMeetingDatetime = meetingDatetime.plusDays(2);
+        MeetingUpdateRequest meetingUpdateRequest =
+                new MeetingUpdateRequest(
+                        meetingId,
+                        "updateContent",
+                        "FREE",
+                        2,
+                        "updatedTitle",
+                        "updateCity",
+                        "updateCounty",
+                        "35.12321312",
+                        "1232.213213213",
+                        "updateAddress",
+                        "updateLocation",
+                        updatedMeetingDatetime,
+                        List.of(3L, 4L),
+                        List.of(3L, 4L));
+        MockMultipartFile mockFile =
+                new MockMultipartFile(
+                        "file", "test.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
+        // when
+        // then
+        assertThatThrownBy(
+                        () -> {
+                            meetingCommandUseCase.updateMeeting(
+                                    meetingUpdateRequest, userId, mockFile);
+                        })
+                .isInstanceOf(CustomIllegalArgumentException.class)
+                .message()
+                .isEqualTo("현재 참여한 인원보다 최대 인원수가 커야합니다.");
+    }
 
     @Test
     @DisplayName("모임을 삭제할 수 있다")
@@ -163,7 +328,7 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
         // then
         MeetingEntity meeting = meetingRepository.findById(savedMeeting.getId()).get();
         System.out.println("meeting = " + meeting);
-        Assertions.assertThat(meeting.getShareCount()).isEqualTo(1L);
+        assertThat(meeting.getShareCount()).isEqualTo(1L);
     }
 
     private void setSecurityContext() {
