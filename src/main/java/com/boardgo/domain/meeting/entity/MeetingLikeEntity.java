@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
         indexes = @Index(name = "idx_user_info_id", columnList = "user_info_id"),
         uniqueConstraints = {
             @UniqueConstraint(
-                    name = "MeetingLikeUniqueConstraint",
+                    name = "meeting_like_unique",
                     columnNames = {"user_info_id", "meeting_id"})
         })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
