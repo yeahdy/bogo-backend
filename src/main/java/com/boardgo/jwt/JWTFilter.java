@@ -1,7 +1,6 @@
 package com.boardgo.jwt;
 
-import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
-import static com.boardgo.common.constant.HeaderConstant.BEARER;
+import static com.boardgo.common.constant.HeaderConstant.*;
 
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.service.response.CustomUserDetails;
@@ -43,6 +42,11 @@ public class JWTFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
+        // if (!ACCESS_TOKEN.equals(jwtUtil.getCategory(token))) {
+        //     log.info("accessToken이 아님");
+        //     throw new CustomUnAuthorizedException("토큰에 문제가 있습니다.");
+        // }
 
         Authentication authenticationToken = getAuthentication(token);
 

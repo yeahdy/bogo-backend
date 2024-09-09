@@ -40,6 +40,15 @@ public class JWTUtil {
                 .get("role", String.class);
     }
 
+    public String getCategory(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("category", String.class);
+    }
+
     public Boolean isExpired(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
@@ -50,7 +59,7 @@ public class JWTUtil {
                 .before(new Date());
     }
 
-    public String createJwt(Long id, RoleType role, Long expiredSecond) {
+    public String createJwt(Long id, String category, RoleType role, Long expiredSecond) {
 
         Date issuedAt = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
         Date expiration =
@@ -63,6 +72,7 @@ public class JWTUtil {
         return Jwts.builder()
                 .claim("id", id)
                 .claim("role", role)
+                .claim("category", category)
                 .issuedAt(issuedAt)
                 .expiration(expiration)
                 .signWith(secretKey)

@@ -1,12 +1,14 @@
 package com.boardgo.config;
 
-import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static com.boardgo.common.constant.HeaderConstant.*;
 
 import com.boardgo.domain.user.entity.enums.RoleType;
 import com.boardgo.jwt.JWTFilter;
 import com.boardgo.jwt.JWTUtil;
 import com.boardgo.jwt.JwtExceptionHandlerFilter;
 import com.boardgo.jwt.LoginFilter;
+import com.boardgo.jwt.service.LoginService;
+import com.boardgo.jwt.service.TokenService;
 import com.boardgo.oauth2.handler.OAuth2SuccessHandler;
 import com.boardgo.oauth2.service.CustomOAuth2UserService;
 import java.util.Collections;
@@ -35,6 +37,8 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final LoginService loginService;
+    private final TokenService tokenService;
     private final JWTUtil jwtUtil;
 
     @Value("${spring.cors.origins}")
@@ -112,7 +116,9 @@ public class SecurityConfig {
                                         SessionCreationPolicy.STATELESS))
                 .addFilterAt(
                         new LoginFilter(
-                                authenticationManager(authenticationConfiguration), jwtUtil),
+                                authenticationManager(authenticationConfiguration),
+                                tokenService,
+                                loginService),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
                 .addFilterBefore(new JwtExceptionHandlerFilter(), JWTFilter.class)

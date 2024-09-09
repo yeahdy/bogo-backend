@@ -5,6 +5,7 @@ import static com.boardgo.common.exception.advice.dto.ErrorCode.*;
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.common.exception.CustomNullPointException;
+import com.boardgo.common.exception.CustomUnAuthorizedException;
 import com.boardgo.common.exception.advice.dto.ErrorCode;
 import com.boardgo.common.exception.advice.dto.ErrorResponse;
 import com.boardgo.common.exception.advice.dto.FieldErrorResponse;
@@ -116,6 +117,18 @@ public class CommonControllerAdvice {
     public ResponseEntity<ErrorResponse> customNoSuchElementException(
             CustomNoSuchElementException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND.value())
+                .body(
+                        ErrorResponse.builder()
+                                .errorCode(exception.getErrorCode())
+                                .messages(exception.getMessage())
+                                .build());
+    }
+
+    /** token 없을 경우 * */
+    @ExceptionHandler(CustomUnAuthorizedException.class)
+    public ResponseEntity<ErrorResponse> customUnAuthorizedException(
+            CustomUnAuthorizedException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
                 .body(
                         ErrorResponse.builder()
                                 .errorCode(exception.getErrorCode())

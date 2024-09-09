@@ -3,9 +3,11 @@ package com.boardgo.domain.user.service;
 import static com.boardgo.common.exception.advice.dto.ErrorCode.DUPLICATE_DATA;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.mapper.UserInfoMapper;
 import com.boardgo.domain.user.controller.request.EmailRequest;
 import com.boardgo.domain.user.controller.request.NickNameRequest;
+import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.repository.projection.PersonalInfoProjection;
@@ -20,6 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserQueryServiceV1 implements UserQueryUseCase {
     private final UserRepository userRepository;
     private final UserInfoMapper userInfoMapper;
+
+    @Override
+    public UserInfoEntity getById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new CustomNullPointException("유저"));
+    }
 
     @Override
     public void existEmail(EmailRequest emailRequest) {

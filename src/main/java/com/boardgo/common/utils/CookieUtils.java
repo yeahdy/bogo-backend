@@ -1,7 +1,5 @@
 package com.boardgo.common.utils;
 
-import static com.boardgo.common.constant.TimeConstant.ACCESS_TOKEN_DURATION;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
@@ -24,9 +22,9 @@ public abstract class CookieUtils {
         return Optional.empty();
     }
 
-    public static Cookie createCookies(String key, String value) {
+    public static Cookie createCookies(String key, String value, Long duration) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(Math.toIntExact(ACCESS_TOKEN_DURATION));
+        cookie.setMaxAge(Math.toIntExact(duration));
         cookie.setPath("/");
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
@@ -34,15 +32,14 @@ public abstract class CookieUtils {
         return cookie;
     }
 
-    public static ResponseCookie createCookies(String name, String value, String domain) {
-        ResponseCookie cookie =
-                ResponseCookie.from(name, value)
-                        .maxAge(Math.toIntExact(ACCESS_TOKEN_DURATION))
-                        .path("/")
-                        .secure(true)
-                        .httpOnly(true)
-                        .domain(domain)
-                        .build();
-        return cookie;
+    public static ResponseCookie createCookies(
+            String name, String value, String domain, Long duration) {
+        return ResponseCookie.from(name, value)
+                .maxAge(Math.toIntExact(duration))
+                .path("/")
+                .secure(true)
+                .httpOnly(true)
+                .domain(domain)
+                .build();
     }
 }

@@ -1,5 +1,9 @@
 package com.boardgo.jwt;
 
+import static com.boardgo.common.exception.advice.dto.ErrorCode.*;
+
+import com.boardgo.common.exception.CustomNoSuchElementException;
+import com.boardgo.common.exception.CustomUnAuthorizedException;
 import com.boardgo.common.exception.advice.dto.ErrorCode;
 import com.boardgo.common.exception.advice.dto.ErrorResponse;
 import com.boardgo.config.log.OutputLog;
@@ -24,12 +28,14 @@ public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
+        } catch (CustomNoSuchElementException e) {
+            setErrorResponse(response, ELEMENT_NOT_FOUND);
         } catch (ExpiredJwtException e) {
             // 토큰의 유효기간 만료
-            setErrorResponse(response, ErrorCode.EXPIRED_TOKEN);
-        } catch (JwtException | IllegalArgumentException e) {
+            setErrorResponse(response, EXPIRED_TOKEN);
+        } catch (JwtException | IllegalArgumentException | CustomUnAuthorizedException e) {
             // 유효하지 않은 토큰
-            setErrorResponse(response, ErrorCode.INVALID_TOKEN);
+            setErrorResponse(response, INVALID_TOKEN);
         }
     }
 
@@ -41,6 +47,7 @@ public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
         ErrorResponse errorResponse =
                 new ErrorResponse(errorCode.getCode(), errorCode.getMessage());
         try {
+
             response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
         } catch (IOException e) {
             OutputLog.logError(getPrintStackTrace(e));
