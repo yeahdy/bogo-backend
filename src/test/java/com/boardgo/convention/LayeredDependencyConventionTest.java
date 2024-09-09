@@ -1,6 +1,6 @@
 package com.boardgo.convention;
 
-import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
+import static com.tngtech.archunit.library.Architectures.*;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
@@ -48,11 +48,21 @@ public class LayeredDependencyConventionTest {
                 .definedBy("..job..")
                 .layer("Facade")
                 .definedBy("..facade")
+                .layer("Handler")
+                .definedBy("..handler")
                 .whereLayer("Controller")
                 .mayNotBeAccessedByAnyLayer()
                 .whereLayer("Service")
                 .mayOnlyBeAccessedByLayers(
-                        "Controller", "Facade", "JWT", "Common", "Config", "Init", "Mapper", "Job")
+                        "Controller",
+                        "Facade",
+                        "JWT",
+                        "Common",
+                        "Config",
+                        "Init",
+                        "Mapper",
+                        "Job",
+                        "Handler")
                 .whereLayer("Repository")
                 .mayOnlyBeAccessedByLayers("Service", "Init", "Controller", "Mapper")
                 .check(javaClasses);

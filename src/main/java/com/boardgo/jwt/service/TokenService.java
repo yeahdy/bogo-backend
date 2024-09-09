@@ -11,9 +11,9 @@ import com.boardgo.jwt.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class TokenService {
     private final JWTUtil jwtUtil;

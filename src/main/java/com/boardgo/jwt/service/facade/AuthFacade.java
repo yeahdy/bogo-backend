@@ -1,10 +1,12 @@
-package com.boardgo.jwt.service;
+package com.boardgo.jwt.service.facade;
 
 import static com.boardgo.common.constant.HeaderConstant.*;
 
 import com.boardgo.common.exception.CustomUnAuthorizedException;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.jwt.entity.AuthEntity;
+import com.boardgo.jwt.service.LoginService;
+import com.boardgo.jwt.service.TokenService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

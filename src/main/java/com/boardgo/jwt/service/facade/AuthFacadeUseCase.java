@@ -1,4 +1,4 @@
-package com.boardgo.jwt.service;
+package com.boardgo.jwt.service.facade;
 
 import jakarta.servlet.http.HttpServletResponse;
 

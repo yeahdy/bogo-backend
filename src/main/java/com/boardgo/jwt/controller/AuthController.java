@@ -3,7 +3,7 @@ package com.boardgo.jwt.controller;
 import static com.boardgo.common.constant.HeaderConstant.*;
 
 import com.boardgo.common.exception.CustomNullPointException;
-import com.boardgo.jwt.service.AuthFacadeUseCase;
+import com.boardgo.jwt.service.facade.AuthFacadeUseCase;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
