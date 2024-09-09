@@ -5,11 +5,13 @@ import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantSubEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.entity.enums.MeetingType;
+import com.boardgo.domain.meeting.repository.projection.HomeMeetingDeadlineProjection;
 import com.boardgo.domain.meeting.repository.projection.LikedMeetingMyPageProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.projection.MyPageMeetingProjection;
 import com.boardgo.domain.meeting.service.response.BoardGameByMeetingIdResponse;
+import com.boardgo.domain.meeting.service.response.HomeMeetingDeadlineResponse;
 import com.boardgo.domain.meeting.service.response.LikedMeetingMyPageResponse;
 import com.boardgo.domain.meeting.service.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.service.response.MeetingMyPageResponse;
@@ -143,4 +145,7 @@ public interface MeetingMapper {
                                         likeStatusMap.get(item.id())))
                 .toList();
     }
+
+    List<HomeMeetingDeadlineResponse> toHomeMeetingDeadlineResponses(
+            List<HomeMeetingDeadlineProjection> homeMeetingDeadlineProjections);
 }

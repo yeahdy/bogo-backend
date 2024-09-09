@@ -4,11 +4,13 @@ import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityCo
 import com.boardgo.domain.boardgame.repository.projection.CumulativePopularityProjection;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.entity.enums.MyPageMeetingFilter;
+import com.boardgo.domain.meeting.repository.projection.HomeMeetingDeadlineProjection;
 import com.boardgo.domain.meeting.repository.projection.LikedMeetingMyPageProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingReviewProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingSearchProjection;
 import com.boardgo.domain.meeting.repository.projection.MyPageMeetingProjection;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,4 +40,7 @@ public interface MeetingDslRepository {
             MeetingSearchRequest searchRequest, int offset, int size);
 
     Long getCreateMeetingCount(Long userId);
+
+    List<HomeMeetingDeadlineProjection> findByMeetingDateBetween(
+            LocalDateTime startDate, LocalDateTime endDate, int size);
 }

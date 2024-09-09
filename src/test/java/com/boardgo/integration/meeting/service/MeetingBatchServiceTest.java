@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
-import com.boardgo.domain.meeting.service.MeetingBatchServiceV1;
+import com.boardgo.domain.meeting.service.MeetingBatchService;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
@@ -19,9 +19,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class MeetingBatchServiceV1Test extends IntegrationTestSupport {
+public class MeetingBatchServiceTest extends IntegrationTestSupport {
 
-    @Autowired private MeetingBatchServiceV1 meetingBatchService;
+    @Autowired private MeetingBatchService meetingBatchService;
     @Autowired private MeetingRepository meetingRepository;
     @Autowired private UserRepository userRepository;
 

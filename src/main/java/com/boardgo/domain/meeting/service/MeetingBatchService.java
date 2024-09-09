@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class MeetingBatchServiceV1 {
+public class MeetingBatchService {
     private final MeetingRepository meetingRepository;
 
     public void updateFinishMeetingState() {

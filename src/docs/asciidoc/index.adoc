@@ -284,7 +284,6 @@ include::{snippets}/meeting-create/response-headers.adoc[]
 인증된 사용자가 아닙니다. +
 |===
 
-
 '''
 
 === *모임 수정*
@@ -606,7 +605,7 @@ include::{snippets}/boardgame-list/response-fields.adoc[]
 
 == 메인 홈
 
-=== *메인 홈 상황별 추천 보드게임*
+=== *상황별 추천 보드게임*
 
 ==== *요청*
 
@@ -620,7 +619,20 @@ include::{snippets}/get-home-situation/response-fields.adoc[]
 
 '''
 
-=== *메인 홈 누적 인기 보드게임*
+=== *마감임박 모임*
+
+==== *요청*
+
+include::{snippets}/get-home-deadline/http-request.adoc[]
+
+==== *응답*
+
+include::{snippets}/get-home-deadline/http-response.adoc[]
+include::{snippets}/get-home-deadline/response-fields.adoc[]
+
+'''
+
+=== *누적 인기 보드게임*
 
 ==== *요청*
 

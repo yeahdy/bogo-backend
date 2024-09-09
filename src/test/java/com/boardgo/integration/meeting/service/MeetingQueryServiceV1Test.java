@@ -1,6 +1,10 @@
 package com.boardgo.integration.meeting.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.COMPLETE;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.FINISH;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.PROGRESS;
+import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.boardgo.domain.boardgame.service.response.BoardGameListResponse;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
@@ -17,6 +21,7 @@ import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.service.MeetingCreateFactory;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
+import com.boardgo.domain.meeting.service.response.HomeMeetingDeadlineResponse;
 import com.boardgo.domain.meeting.service.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.service.response.MeetingSearchResponse;
 import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
@@ -803,5 +808,114 @@ public class MeetingQueryServiceV1Test extends IntegrationTestSupport {
                         customUserDetails, "password1", customUserDetails.getAuthorities());
         context.setAuthentication(auth);
         SecurityContextHolder.setContext(context);
+    }
+
+    @Test
+    @DisplayName("홈 마감임박 모임 목록은 현재 시점부터 3일 이내인 모임만 조회된다")
+    void 홈_마감임박_모임_목록은_현재_시점부터_3일_이내인_모임만_조회된다() {
+        // given
+        // 조회 가능
+        Long userId = 1L;
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().plusMinutes(59))
+                        .build());
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().plusHours(1))
+                        .build());
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().plusDays(1))
+                        .build());
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().plusDays(2))
+                        .build());
+        // 조회 불가
+        MeetingEntity meeting1 =
+                meetingRepository.save(
+                        getMeetingEntityData(userId)
+                                .meetingDatetime(LocalDateTime.now().plusNanos(59))
+                                .build());
+        MeetingEntity meeting2 =
+                meetingRepository.save(
+                        getMeetingEntityData(userId)
+                                .meetingDatetime(LocalDateTime.now().plusDays(3).plusMinutes(1))
+                                .build());
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().plusDays(4))
+                        .build());
+        meetingRepository.save(getMeetingEntityData(userId).build());
+        meetingRepository.save(getMeetingEntityData(userId).build());
+
+        // when
+        List<HomeMeetingDeadlineResponse> homeMeetingDeadlines =
+                meetingQueryUseCase.getMeetingDeadlines();
+        // then
+        assertThat(homeMeetingDeadlines).isNotEmpty();
+        homeMeetingDeadlines.forEach(
+                homeMeetingDeadline -> {
+                    assertThat(homeMeetingDeadline.meetingDatetime())
+                            .isBefore(LocalDateTime.now().plusDays(3));
+                    assertThat(homeMeetingDeadline.meetingId()).isNotEqualTo(meeting1.getId());
+                    assertThat(homeMeetingDeadline.meetingId()).isNotEqualTo(meeting2.getId());
+                });
+    }
+
+    @Test
+    @DisplayName("홈 마감임박 모임 목록은 모집 중인 모임 상태만 조회된다")
+    void 홈_마감임박_모임_목록은_모집_중인_모임_상태만_조회된다() {
+        // given
+        Long userId = 1L;
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().plusHours(1))
+                        .build());
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().plusDays(1))
+                        .build());
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().plusDays(1))
+                        .build());
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().plusDays(2))
+                        .build());
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().plusDays(2))
+                        .build());
+        meetingRepository.save(getMeetingEntityData(userId).state(COMPLETE).build());
+        meetingRepository.save(getMeetingEntityData(userId).state(COMPLETE).build());
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().minusDays(1))
+                        .state(FINISH)
+                        .build());
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().minusDays(2))
+                        .state(FINISH)
+                        .build());
+        meetingRepository.save(
+                getMeetingEntityData(userId)
+                        .meetingDatetime(LocalDateTime.now().minusDays(3))
+                        .state(FINISH)
+                        .build());
+        // when
+        List<HomeMeetingDeadlineResponse> homeMeetingDeadlines =
+                meetingQueryUseCase.getMeetingDeadlines();
+        // then
+        assertThat(homeMeetingDeadlines).isNotEmpty();
+        homeMeetingDeadlines.forEach(
+                homeMeetingDeadline -> {
+                    MeetingEntity meeting =
+                            meetingRepository.findById(homeMeetingDeadline.meetingId()).get();
+                    assertThat(meeting.getState()).isEqualTo(PROGRESS);
+                });
     }
 }

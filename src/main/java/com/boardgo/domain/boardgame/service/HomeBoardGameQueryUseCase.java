@@ -5,6 +5,7 @@ import com.boardgo.domain.boardgame.service.response.CumulativePopularityRespons
 import com.boardgo.domain.boardgame.service.response.SituationBoardGameResponse;
 import java.util.List;
 
+// FIXME HomeBoardGameQueryFacade 로 변경하기 + 테스트코드 작성
 public interface HomeBoardGameQueryUseCase {
 
     List<SituationBoardGameResponse> getSituationBoardGame(SituationType situationType);

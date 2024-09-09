@@ -7,14 +7,17 @@ import com.boardgo.domain.mapper.MeetingMapper;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.repository.MeetingLikeRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
+import com.boardgo.domain.meeting.repository.projection.HomeMeetingDeadlineProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingSearchProjection;
 import com.boardgo.domain.meeting.service.response.BoardGameByMeetingIdResponse;
+import com.boardgo.domain.meeting.service.response.HomeMeetingDeadlineResponse;
 import com.boardgo.domain.meeting.service.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.service.response.MeetingSearchResponse;
 import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
 import com.boardgo.domain.review.repository.ReviewRepository;
 import com.boardgo.domain.user.repository.UserRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -112,5 +115,17 @@ public class MeetingQueryServiceV1 implements MeetingQueryUseCase {
 
     private int getSize(Integer size) {
         return Objects.nonNull(size) ? size : 10;
+    }
+
+    @Override
+    public List<HomeMeetingDeadlineResponse> getMeetingDeadlines() {
+        final int DEADLINE_DATE = 3;
+        final int SIZE = 10;
+        List<HomeMeetingDeadlineProjection> homeMeetingDeadlineProjections =
+                meetingRepository.findByMeetingDateBetween(
+                        LocalDateTime.now().plusMinutes(1),
+                        LocalDateTime.now().plusDays(DEADLINE_DATE),
+                        SIZE);
+        return meetingMapper.toHomeMeetingDeadlineResponses(homeMeetingDeadlineProjections);
     }
 }

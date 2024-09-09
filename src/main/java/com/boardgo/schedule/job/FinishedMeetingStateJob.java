@@ -1,6 +1,6 @@
 package com.boardgo.schedule.job;
 
-import com.boardgo.domain.meeting.service.MeetingBatchServiceV1;
+import com.boardgo.domain.meeting.service.MeetingBatchService;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 @DisallowConcurrentExecution
 public class FinishedMeetingStateJob implements Job {
 
-    @Autowired private MeetingBatchServiceV1 meetingBatchServiceV1;
+    @Autowired private MeetingBatchService meetingBatchService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        meetingBatchServiceV1.updateFinishMeetingState();
+        meetingBatchService.updateFinishMeetingState();
     }
 }

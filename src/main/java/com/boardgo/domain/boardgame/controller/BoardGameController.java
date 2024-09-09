@@ -1,6 +1,6 @@
 package com.boardgo.domain.boardgame.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
 
 import com.boardgo.domain.boardgame.controller.request.BoardGameCreateRequest;
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
@@ -9,7 +9,6 @@ import com.boardgo.domain.boardgame.service.BoardGameQueryUseCase;
 import com.boardgo.domain.boardgame.service.response.BoardGameSearchResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class BoardGameController {

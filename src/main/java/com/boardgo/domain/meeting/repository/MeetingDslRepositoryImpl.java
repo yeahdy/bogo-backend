@@ -1,7 +1,9 @@
 package com.boardgo.domain.meeting.repository;
 
 import static com.boardgo.common.constant.TimeConstant.REVIEWABLE_HOURS;
+import static com.boardgo.domain.meeting.entity.enums.MeetingSortType.PARTICIPANT_COUNT;
 import static com.boardgo.domain.meeting.entity.enums.MeetingState.FINISH;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.PROGRESS;
 import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
 import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
 
@@ -18,6 +20,7 @@ import com.boardgo.domain.meeting.entity.QMeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.QMeetingParticipantSubEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.entity.enums.MyPageMeetingFilter;
+import com.boardgo.domain.meeting.repository.projection.HomeMeetingDeadlineProjection;
 import com.boardgo.domain.meeting.repository.projection.LikedMeetingMyPageProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingReviewProjection;
@@ -335,7 +338,7 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
     }
 
     private OrderSpecifier<?> getSortOrder(String sortBy) {
-        if ("PARTICIPANT_COUNT".equalsIgnoreCase(sortBy)) {
+        if (PARTICIPANT_COUNT.name().equalsIgnoreCase(sortBy)) {
             return m.limitParticipant.castToNum(Long.class).subtract(mpSub.participantCount).asc();
         } else {
             return m.meetingDatetime.asc();
@@ -394,6 +397,26 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                                         m.meetingDatetime.loe(
                                                 LocalDateTime.now().minusHours(REVIEWABLE_HOURS)))
                                 .and(m.id.notIn(reviewFinishedMeetings)))
+                .fetch();
+    }
+
+    @Override
+    public List<HomeMeetingDeadlineProjection> findByMeetingDateBetween(
+            LocalDateTime startDate, LocalDateTime endDate, int size) {
+        return queryFactory
+                .select(
+                        Projections.constructor(
+                                HomeMeetingDeadlineProjection.class,
+                                m.id,
+                                m.title,
+                                m.thumbnail,
+                                m.city,
+                                m.county,
+                                m.meetingDatetime))
+                .from(m)
+                .where(m.meetingDatetime.between(startDate, endDate).and(m.state.eq(PROGRESS)))
+                .orderBy(m.meetingDatetime.asc())
+                .limit(size)
                 .fetch();
     }
 }
