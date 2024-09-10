@@ -14,4 +14,5 @@ public record MeetingSearchRequest(
         String county,
         Integer page,
         Integer size,
+        @AllowedValues(values = {"COMPLETE"}) String state,
         @AllowedValues(values = {"MEETING_DATE", "PARTICIPANT_COUNT"}) String sortBy) {}

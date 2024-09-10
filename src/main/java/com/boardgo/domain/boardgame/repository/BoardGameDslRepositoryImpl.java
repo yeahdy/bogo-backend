@@ -107,8 +107,8 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
                                 b.thumbnail,
                                 b.minPeople,
                                 b.maxPeople,
-                                b.minPeople,
-                                b.maxPeople))
+                                b.maxPlaytime,
+                                b.minPlaytime))
                 .from(b)
                 .where(searchKeyword(request.searchWord()))
                 .offset(offset)

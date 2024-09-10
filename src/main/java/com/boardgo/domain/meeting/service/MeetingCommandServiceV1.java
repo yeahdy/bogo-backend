@@ -49,7 +49,8 @@ public class MeetingCommandServiceV1 implements MeetingCommandUseCase {
 
     @Override
     public Long create(MeetingCreateRequest meetingCreateRequest, MultipartFile imageFile) {
-        String imageUri = registerImage(meetingCreateRequest.genreIdList().getFirst(), imageFile);
+        String imageUri =
+                registerImage(meetingCreateRequest.boardGameIdList().getFirst(), imageFile);
         Long userId = SecurityUtils.currentUserId();
         MeetingEntity meetingEntity =
                 meetingMapper.toMeetingEntity(meetingCreateRequest, userId, imageUri);

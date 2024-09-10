@@ -137,7 +137,6 @@ public class MeetingCreateFactoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("genreId가 Null인 경우 에러가 발생한다")
     void genreId가_Null인_경우_에러가_발생한다() {
-
         // given
         UserInfoEntity savedUser =
                 userRepository.save(

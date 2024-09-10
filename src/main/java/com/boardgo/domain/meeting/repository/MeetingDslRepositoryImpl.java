@@ -1,11 +1,9 @@
 package com.boardgo.domain.meeting.repository;
 
-import static com.boardgo.common.constant.TimeConstant.REVIEWABLE_HOURS;
-import static com.boardgo.domain.meeting.entity.enums.MeetingSortType.PARTICIPANT_COUNT;
-import static com.boardgo.domain.meeting.entity.enums.MeetingState.FINISH;
-import static com.boardgo.domain.meeting.entity.enums.MeetingState.PROGRESS;
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
+import static com.boardgo.common.constant.TimeConstant.*;
+import static com.boardgo.domain.meeting.entity.enums.MeetingSortType.*;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
 
 import com.boardgo.domain.boardgame.entity.QBoardGameEntity;
 import com.boardgo.domain.boardgame.entity.QBoardGameGenreEntity;
@@ -192,11 +190,7 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                 .on(mgem.meetingId.eq(m.id))
                 .innerJoin(bgg)
                 .on(bgg.id.eq(mgem.boardGameGenreId))
-                .where(
-                        m.meetingDatetime
-                                .after(LocalDateTime.now())
-                                .and(m.state.ne(MeetingState.FINISH))
-                                .and(filters))
+                .where(m.meetingDatetime.after(LocalDateTime.now()).and(filters))
                 .groupBy(m.id)
                 .orderBy(sortOrder)
                 .offset(offset)
@@ -280,7 +274,8 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
         BooleanBuilder builder = new BooleanBuilder();
 
         // 동적 조건 추가 메서드 호출
-        builder.and(genreFilter(searchRequest.tag()))
+        builder.and(stateFilter(searchRequest.state()))
+                .and(genreFilter(searchRequest.tag()))
                 .and(meetingDateBetween(searchRequest.startDate(), searchRequest.endDate()))
                 .and(searchKeywordFilter(searchRequest.searchWord(), searchRequest.searchType()))
                 .and(cityFilter(searchRequest.city()))
@@ -288,12 +283,8 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
         return builder;
     }
 
-    private int getPage(Integer page) {
-        return Objects.nonNull(page) ? page : 0;
-    }
-
-    private int getSize(Integer size) {
-        return Objects.nonNull(size) ? size : 10;
+    private BooleanExpression stateFilter(String state) {
+        return Objects.nonNull(state) ? m.state.ne(FINISH) : m.state.eq(PROGRESS);
     }
 
     // 동적 조건 메서드들
