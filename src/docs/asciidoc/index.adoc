@@ -7,6 +7,35 @@
 :sectlinks:
 
 
+=== *액세스 토큰 재발급*
+
+==== *요청*
+
+include::{snippets}/reissue/http-request.adoc[]
+- cookie
+include::{snippets}/reissue/request-cookies.adoc[]
+
+==== *응답*
+- HTTP 상태 코드
+
+|===
+| code | messages
+
+| 200
+| 정상 발급 - 액세스 토큰(헤더), 리프레시 토큰(쿠키)
+|===
+
+
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4005
+| 쿠키가 존재하지 않습니다
+|===
+
+
 === *소셜 로그인 토큰 발급*
 
 ==== *요청*

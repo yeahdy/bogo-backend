@@ -25,29 +25,33 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 public class AuthEntity extends BaseEntity {
     @Id
+    @Column(name = "auth_info_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = LAZY)
     private UserInfoEntity userInfo;
 
-    @Column(nullable = false, length = 512)
+    @Column(nullable = false, name = "refresh_token", unique = true, length = 512)
     private String refreshToken;
 
-    @Column(nullable = false)
-    private LocalDateTime expirationTime;
+    @Column(nullable = false, name = "expiration_datetime", columnDefinition = "DATETIME")
+    private LocalDateTime expirationDatetime;
 
     @Builder
     private AuthEntity(
-            Long id, UserInfoEntity userInfo, String refreshToken, LocalDateTime expirationTime) {
+            Long id,
+            UserInfoEntity userInfo,
+            String refreshToken,
+            LocalDateTime expirationDatetime) {
         this.id = id;
         this.userInfo = userInfo;
         this.refreshToken = refreshToken;
-        this.expirationTime = expirationTime;
+        this.expirationDatetime = expirationDatetime;
     }
 
     public void update(String refreshToken, LocalDateTime expirationTime) {
         this.refreshToken = refreshToken;
-        this.expirationTime = expirationTime;
+        this.expirationDatetime = expirationTime;
     }
 }

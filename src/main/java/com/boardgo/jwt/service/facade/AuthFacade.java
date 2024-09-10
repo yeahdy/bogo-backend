@@ -1,6 +1,8 @@
 package com.boardgo.jwt.service.facade;
 
 import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.TimeConstant.*;
+import static com.boardgo.common.utils.CookieUtils.*;
 
 import com.boardgo.common.exception.CustomUnAuthorizedException;
 import com.boardgo.domain.user.entity.UserInfoEntity;
@@ -32,10 +34,13 @@ public class AuthFacade implements AuthFacadeUseCase {
         AuthEntity authEntity = loginService.getByRefreshToken(refreshToken);
         UserInfoEntity user = authEntity.getUserInfo();
         String accessToken = tokenService.getAccessToken(user.getId(), refreshToken);
-        String newRefreshToken = tokenService.getRefreshToken(user.getId(), refreshToken, domain);
+        String newRefreshToken = tokenService.getRefreshToken(user.getId(), refreshToken);
 
-        loginService.updateTokenWithOutValidation(authEntity, refreshToken, user.getId());
+        loginService.updateTokenWithOutValidation(authEntity.getId(), newRefreshToken);
         response.addHeader(AUTHORIZATION, BEARER + accessToken);
-        response.setHeader("Set-cookie", newRefreshToken);
+        response.setHeader(
+                "Set-cookie",
+                createCookies(AUTHORIZATION, newRefreshToken, domain, REFRESH_TOKEN_DURATION)
+                        .toString());
     }
 }

@@ -1,6 +1,7 @@
 package com.boardgo.config;
 
 import static com.boardgo.common.constant.HeaderConstant.*;
+import static org.springframework.http.HttpMethod.*;
 
 import com.boardgo.domain.user.entity.enums.RoleType;
 import com.boardgo.jwt.JWTFilter;
@@ -16,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -63,12 +63,13 @@ public class SecurityConfig {
         AntPathRequestMatcher.antMatcher("/login/oauth2/**"),
         AntPathRequestMatcher.antMatcher("/token"),
         AntPathRequestMatcher.antMatcher("/actuator/**"),
-        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/meeting/**"),
-        AntPathRequestMatcher.antMatcher(HttpMethod.PATCH, "/meeting/share/{id}"),
-        AntPathRequestMatcher.antMatcher(HttpMethod.PATCH, "/meeting/complete/{id}"),
-        AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/boardgame"),
-        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/personal-info/{userId}"),
-        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/home/**")
+        AntPathRequestMatcher.antMatcher(GET, "/meeting/**"),
+        AntPathRequestMatcher.antMatcher(POST, "/reissue"),
+        AntPathRequestMatcher.antMatcher(PATCH, "/meeting/share/{id}"),
+        AntPathRequestMatcher.antMatcher(PATCH, "/meeting/complete/{id}"),
+        AntPathRequestMatcher.antMatcher(POST, "/boardgame"),
+        AntPathRequestMatcher.antMatcher(GET, "/personal-info/{userId}"),
+        AntPathRequestMatcher.antMatcher(GET, "/home/**")
     };
 
     final AntPathRequestMatcher[] permitUserUri = {

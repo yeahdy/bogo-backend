@@ -22,7 +22,8 @@ public class AuthController {
             @CookieValue(name = AUTHORIZATION) Optional<String> refreshToken,
             HttpServletResponse response) {
         authUseCase.reissue(
-                refreshToken.orElseThrow(() -> new CustomNullPointException("토큰")), response);
+                refreshToken.orElseThrow(() -> new CustomNullPointException("토큰이 Null입니다.")),
+                response);
         return ResponseEntity.ok().build();
     }
 }

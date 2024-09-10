@@ -8,9 +8,11 @@ import java.time.ZoneId;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class JWTUtil {
     private final SecretKey secretKey;
@@ -59,16 +61,15 @@ public class JWTUtil {
                 .before(new Date());
     }
 
-    public String createJwt(Long id, String category, RoleType role, Long expiredSecond) {
+    public String createJwt(Long id, String category, RoleType role, Long expiredMinutes) {
 
         Date issuedAt = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
         Date expiration =
                 Date.from(
                         LocalDateTime.now()
-                                .plusMinutes(expiredSecond)
+                                .plusMinutes(expiredMinutes)
                                 .atZone(ZoneId.systemDefault())
                                 .toInstant());
-
         return Jwts.builder()
                 .claim("id", id)
                 .claim("role", role)

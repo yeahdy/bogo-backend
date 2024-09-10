@@ -24,7 +24,7 @@ public abstract class CookieUtils {
 
     public static Cookie createCookies(String key, String value, Long duration) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(Math.toIntExact(duration));
+        cookie.setMaxAge(Math.toIntExact(duration * 60));
         cookie.setPath("/");
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
@@ -35,7 +35,7 @@ public abstract class CookieUtils {
     public static ResponseCookie createCookies(
             String name, String value, String domain, Long duration) {
         return ResponseCookie.from(name, value)
-                .maxAge(Math.toIntExact(duration))
+                .maxAge(Math.toIntExact(duration * 60))
                 .path("/")
                 .secure(true)
                 .httpOnly(true)

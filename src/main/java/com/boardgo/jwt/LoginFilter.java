@@ -1,6 +1,8 @@
 package com.boardgo.jwt;
 
 import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.constant.TimeConstant.*;
+import static com.boardgo.common.utils.CookieUtils.*;
 
 import com.boardgo.domain.user.entity.enums.RoleType;
 import com.boardgo.domain.user.service.response.CustomUserDetails;
@@ -65,12 +67,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         RoleType role = RoleType.toRoleType(auth.getAuthority());
 
         String accessToken = tokenService.getAccessToken(id, role);
-        // String refreshToken = tokenService.getRefreshToken(id, role, domain);
-        // log.info("-------------------여기------------------------------------");
-        // loginService.create(refreshToken, id);
+        String refreshToken = tokenService.getRefreshToken(id, role);
+        loginService.create(refreshToken, id);
         response.addHeader(AUTHORIZATION, BEARER + accessToken);
-        // response.setHeader("Set-cookie", createCookies(AUTHORIZATION, refreshToken, domain,
-        // REFRESH_TOKEN_DURATION).toString());
+        response.setHeader(
+                "Set-cookie",
+                createCookies(AUTHORIZATION, refreshToken, domain, REFRESH_TOKEN_DURATION)
+                        .toString());
     }
 
     @Override

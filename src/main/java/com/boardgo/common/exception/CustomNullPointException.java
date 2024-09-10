@@ -1,6 +1,6 @@
 package com.boardgo.common.exception;
 
-import static com.boardgo.common.exception.advice.dto.ErrorCode.NULL_ERROR;
+import static com.boardgo.common.exception.advice.dto.ErrorCode.*;
 
 import lombok.Getter;
 
