@@ -78,7 +78,8 @@ public class SecurityConfig {
         AntPathRequestMatcher.antMatcher("/meeting-participant/**"),
         AntPathRequestMatcher.antMatcher("/evaluationTags"),
         AntPathRequestMatcher.antMatcher("/meeting/like"),
-        AntPathRequestMatcher.antMatcher("/my/review/**")
+        AntPathRequestMatcher.antMatcher("/my/review/**"),
+        AntPathRequestMatcher.antMatcher("/terms-conditions/user")
     };
 
     @Bean

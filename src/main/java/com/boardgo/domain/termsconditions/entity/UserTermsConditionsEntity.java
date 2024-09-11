@@ -1,7 +1,9 @@
 package com.boardgo.domain.termsconditions.entity;
 
+import com.boardgo.common.converter.BooleanConverter;
 import com.boardgo.common.domain.BaseEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -35,8 +38,16 @@ public class UserTermsConditionsEntity extends BaseEntity {
     @JoinColumn(name = "terms_conditions_id")
     private TermsConditionsEntity termsConditions;
 
-    public UserTermsConditionsEntity(Long userInfoId, TermsConditionsEntity termsConditionsEntity) {
+    @Comment("동의여부(Y/N)")
+    @Convert(converter = BooleanConverter.class)
+    @Column(name = "agreement", nullable = false, columnDefinition = "char(1)")
+    private Boolean agreement;
+
+    @Builder
+    private UserTermsConditionsEntity(
+            Long userInfoId, TermsConditionsEntity termsConditionsEntity, boolean agreement) {
         this.userInfoId = userInfoId;
         this.termsConditions = termsConditionsEntity;
+        this.agreement = agreement;
     }
 }

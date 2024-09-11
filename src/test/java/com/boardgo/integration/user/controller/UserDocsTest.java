@@ -3,9 +3,6 @@ package com.boardgo.integration.user.controller;
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
 import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
 import static io.restassured.RestAssured.given;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -103,12 +100,7 @@ public class UserDocsTest extends RestDocsTestSupport {
                 .header(AUTHORIZATION, testAccessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .filter(
-                        document(
-                                "social-signup",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                getSocialSignupRequestFieldsSnippet()))
+                .filter(document("social-signup", getSocialSignupRequestFieldsSnippet()))
                 .body(socialSignupRequest)
                 .urlEncodingEnabled(false)
                 .when()
