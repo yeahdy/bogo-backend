@@ -1,7 +1,9 @@
 package com.boardgo.config;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
-import static org.springframework.http.HttpMethod.*;
+import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.HttpMethod.POST;
 
 import com.boardgo.domain.user.entity.enums.RoleType;
 import com.boardgo.jwt.JWTFilter;
@@ -69,7 +71,8 @@ public class SecurityConfig {
         AntPathRequestMatcher.antMatcher(PATCH, "/meeting/complete/{id}"),
         AntPathRequestMatcher.antMatcher(POST, "/boardgame"),
         AntPathRequestMatcher.antMatcher(GET, "/personal-info/{userId}"),
-        AntPathRequestMatcher.antMatcher(GET, "/home/**")
+        AntPathRequestMatcher.antMatcher(GET, "/home/**"),
+        AntPathRequestMatcher.antMatcher(GET, "/terms-conditions/**")
     };
 
     final AntPathRequestMatcher[] permitUserUri = {

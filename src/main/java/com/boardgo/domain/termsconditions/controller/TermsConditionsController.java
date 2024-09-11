@@ -1,19 +1,17 @@
 package com.boardgo.domain.termsconditions.controller;
 
-import static com.boardgo.common.utils.SecurityUtils.currentUserId;
-
-import com.boardgo.domain.termsconditions.controller.request.TermsConditionsCreateRequest;
-import com.boardgo.domain.termsconditions.service.facade.UserTermsConditionsCommandFacade;
-import jakarta.validation.Valid;
+import com.boardgo.common.exception.CustomNoSuchElementException;
+import com.boardgo.domain.termsconditions.service.TermsConditionsQueryUseCase;
+import com.boardgo.domain.termsconditions.service.response.TermsConditionsResponse;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,14 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class TermsConditionsController {
 
-    private final UserTermsConditionsCommandFacade userTermsConditionsCommandFacade;
+    private final TermsConditionsQueryUseCase termsConditionsQueryUseCase;
 
-    @PostMapping("/user")
-    public ResponseEntity<Void> createUserTermsConditions(
-            @RequestBody @NotEmpty(message = "빈 배열일 수 없습니다.")
-                    List<@Valid TermsConditionsCreateRequest> request) {
-        userTermsConditionsCommandFacade.createUserTermsConditions(request, currentUserId());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @GetMapping("")
+    public ResponseEntity<List<TermsConditionsResponse>> getTermsConditionsList(
+            @RequestParam("required") @NotEmpty(message = "빈 배열일 수 없습니다.") List<Boolean> required) {
+        List<TermsConditionsResponse> termsConditionsList =
+                termsConditionsQueryUseCase.getTermsConditionsList(required);
+        if (Objects.isNull(termsConditionsList)) {
+            throw new CustomNoSuchElementException("약관동의");
+        }
+        return ResponseEntity.ok(termsConditionsList);
     }
 
     // TODO. 약관 추가 및 히스토리 버전업데이트 API 개발

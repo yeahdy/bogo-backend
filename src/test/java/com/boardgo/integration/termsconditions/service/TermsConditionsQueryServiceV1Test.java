@@ -31,7 +31,7 @@ public class TermsConditionsQueryServiceV1Test extends IntegrationTestSupport {
         List<Boolean> required = List.of(TRUE);
         // when
         List<TermsConditionsEntity> termsConditionsEntities =
-                termsConditionsQueryUseCase.getTermsConditions(required);
+                termsConditionsQueryUseCase.getTermsConditionsEntities(required);
         // then
         termsConditionsEntities.forEach(
                 entity -> {
@@ -46,7 +46,7 @@ public class TermsConditionsQueryServiceV1Test extends IntegrationTestSupport {
         List<Boolean> required = List.of(FALSE);
         // when
         List<TermsConditionsEntity> termsConditionsEntities =
-                termsConditionsQueryUseCase.getTermsConditions(required);
+                termsConditionsQueryUseCase.getTermsConditionsEntities(required);
         // then
         termsConditionsEntities.forEach(
                 entity -> {

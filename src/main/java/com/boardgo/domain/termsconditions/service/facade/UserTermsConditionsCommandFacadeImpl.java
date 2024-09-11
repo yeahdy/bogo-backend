@@ -32,7 +32,7 @@ public class UserTermsConditionsCommandFacadeImpl implements UserTermsConditions
     public void createUserTermsConditions(
             List<TermsConditionsCreateRequest> termsConditionsCreateRequest, Long userId) {
         List<TermsConditionsEntity> termsConditionsEntities =
-                termsConditionsQueryUseCase.getTermsConditions(List.of(TRUE, FALSE));
+                termsConditionsQueryUseCase.getTermsConditionsEntities(List.of(TRUE, FALSE));
         validateUserTermsConditions(
                 termsConditionsEntities.size(), termsConditionsCreateRequest.size(), userId);
 
