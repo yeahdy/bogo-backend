@@ -1,7 +1,6 @@
 package com.boardgo.domain.meeting.service;
 
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
 
 import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.common.utils.SecurityUtils;
@@ -36,15 +35,15 @@ public class MeetingParticipantQueryServiceV1 implements MeetingParticipantQuery
                 : new ParticipantOutResponse(null);
     }
 
-    private void checkMeetingExist(Long meetingId) {
-        meetingRepository
-                .findById(meetingId)
-                .orElseThrow(() -> new CustomNoSuchElementException("모임"));
-    }
-
     @Override
     public int getMeetingCount(Long userId) {
         return meetingParticipantRepository.countByTypeAndUserInfoId(
                 List.of(LEADER, PARTICIPANT), userId);
+    }
+
+    private void checkMeetingExist(Long meetingId) {
+        meetingRepository
+                .findById(meetingId)
+                .orElseThrow(() -> new CustomNoSuchElementException("모임"));
     }
 }

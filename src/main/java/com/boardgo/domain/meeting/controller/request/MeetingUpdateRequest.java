@@ -22,7 +22,4 @@ public record MeetingUpdateRequest(
         @NotEmpty String detailAddress,
         @NotEmpty String locationName,
         @Future @NotNull @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime meetingDatetime,
-        /* 보드게임의 id들 */
-        @NotNull(message = "boardGameIdList") List<Long> boardGameIdList,
-        /* GenreId */
-        @NotNull(message = "genreIdList") List<Long> genreIdList) {}
+        List<Long> boardGameIdList) {}

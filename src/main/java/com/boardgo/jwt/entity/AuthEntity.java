@@ -17,6 +17,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -30,6 +32,7 @@ public class AuthEntity extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserInfoEntity userInfo;
 
     @Column(nullable = false, name = "refresh_token", unique = true, length = 512)

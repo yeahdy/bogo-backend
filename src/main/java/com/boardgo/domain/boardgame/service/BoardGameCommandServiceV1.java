@@ -2,6 +2,7 @@ package com.boardgo.domain.boardgame.service;
 
 import static com.boardgo.common.constant.S3BucketConstant.*;
 
+import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.common.utils.FileUtils;
 import com.boardgo.common.utils.S3Service;
 import com.boardgo.domain.boardgame.controller.request.BoardGameCreateRequest;
@@ -13,6 +14,7 @@ import com.boardgo.domain.boardgame.repository.GameGenreMatchRepository;
 import com.boardgo.domain.mapper.BoardGameMapper;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,5 +53,9 @@ public class BoardGameCommandServiceV1 implements BoardGameCommandUseCase {
         Set<String> genres = new HashSet<>(request.genres());
 
         boardGameGenreRepository.bulkInsert(genres.stream().toList());
+    }
+
+    private void validateNullCheckIdList(List<Long> idList, String message) {
+        Optional.ofNullable(idList).orElseThrow(() -> new CustomNullPointException(message));
     }
 }

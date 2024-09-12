@@ -12,9 +12,13 @@ import static org.springframework.restdocs.restassured.RestAssuredRestDocumentat
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingUpdateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
+import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingType;
-import com.boardgo.domain.meeting.service.MeetingCreateFactory;
-import com.boardgo.domain.user.repository.UserRepository;
+import com.boardgo.domain.meeting.entity.enums.ParticipantType;
+import com.boardgo.domain.meeting.repository.MeetingGameMatchRepository;
+import com.boardgo.domain.meeting.repository.MeetingGenreMatchRepository;
+import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
+import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestMeetingInitializer;
 import com.boardgo.integration.init.TestUserInfoInitializer;
@@ -37,8 +41,10 @@ public class MeetingDocsTest extends RestDocsTestSupport {
     @Autowired private TestUserInfoInitializer testUserInfoInitializer;
     @Autowired private TestBoardGameInitializer testBoardGameInitializer;
     @Autowired private TestMeetingInitializer testMeetingInitializer;
-    @Autowired private MeetingCreateFactory meetingCreateFactory;
-    @Autowired private UserRepository userRepository;
+    @Autowired private MeetingRepository meetingRepository;
+    @Autowired private MeetingGameMatchRepository meetingGameMatchRepository;
+    @Autowired private MeetingGenreMatchRepository meetingGenreMatchRepository;
+    @Autowired private MeetingParticipantRepository meetingParticipantRepository;
 
     @Test
     @DisplayName("사용자는 모임을 만들 수 있다")
@@ -143,10 +149,41 @@ public class MeetingDocsTest extends RestDocsTestSupport {
     @DisplayName("모임을 수정할 수 있다")
     void 모임을_수정할_수_있다() {
         // given
-        initEssentialData();
+        LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
+        long userId = 1L;
+        MeetingEntity meetingEntity =
+                MeetingEntity.builder()
+                        .viewCount(0L)
+                        .userId(userId)
+                        .latitude("12312312")
+                        .longitude("12321")
+                        .thumbnail("thumbnail")
+                        .state(PROGRESS)
+                        .meetingDatetime(meetingDatetime)
+                        .type(MeetingType.FREE)
+                        .content("content")
+                        .city("city")
+                        .county("county")
+                        .title("title")
+                        .locationName("location")
+                        .detailAddress("detailAddress")
+                        .limitParticipant(5)
+                        .build();
+        List<Long> boardGameIdList = List.of(userId, 2L);
+        List<Long> boardGameGenreIdList = List.of(userId, 2L);
+        MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
+        Long meetingId = savedMeeting.getId();
+        meetingGenreMatchRepository.bulkInsert(boardGameGenreIdList, meetingId);
+        meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
+        meetingParticipantRepository.save(
+                MeetingParticipantEntity.builder()
+                        .userInfoId(userId)
+                        .meetingId(meetingId)
+                        .type(ParticipantType.LEADER)
+                        .build());
         MeetingUpdateRequest meetingUpdateRequest =
                 new MeetingUpdateRequest(
-                        1L,
+                        meetingId,
                         "updateContent",
                         "FREE",
                         2,
@@ -158,7 +195,6 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                         "updateAddress",
                         "updateLocation",
                         LocalDateTime.now().plusDays(1),
-                        List.of(3L, 4L),
                         List.of(3L, 4L));
         // when
         // then
@@ -224,11 +260,7 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("boardGameIdList")
                                                 .type(JsonFieldType.ARRAY)
                                                 .description(
-                                                        "보드게임 id 리스트(배열) / 개발 서버에서는 더미 데이터 [1 ~ 10]까지 존재"),
-                                        fieldWithPath("genreIdList")
-                                                .type(JsonFieldType.ARRAY)
-                                                .description(
-                                                        "보드게임 장르 id 리스트(배열) / 개발 서버에서는 더미 데이터 [1 ~ 10]까지 존재"))))
+                                                        "보드게임 id 리스트(배열) / 개발 서버에서는 더미 데이터 [1 ~ 10]까지 존재"))))
                 .when()
                 .patch("/meeting")
                 .then()
@@ -549,8 +581,16 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                         .build();
         List<Long> boardGameIdList = List.of(userId, 2L);
         List<Long> boardGameGenreIdList = List.of(userId, 2L);
-        Long meetingId =
-                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
+        MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
+        Long meetingId = savedMeeting.getId();
+        meetingGenreMatchRepository.bulkInsert(boardGameGenreIdList, meetingId);
+        meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
+        meetingParticipantRepository.save(
+                MeetingParticipantEntity.builder()
+                        .userInfoId(userId)
+                        .meetingId(meetingId)
+                        .type(ParticipantType.LEADER)
+                        .build());
         // when
         // then
         given(this.spec)

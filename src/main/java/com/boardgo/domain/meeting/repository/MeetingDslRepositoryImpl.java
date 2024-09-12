@@ -106,6 +106,7 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                 .select(
                         new QMyPageMeetingProjection(
                                 m.id,
+                                m.userId,
                                 m.title,
                                 m.thumbnail,
                                 m.detailAddress,
@@ -147,10 +148,6 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
             return (mp.type.eq(LEADER).or(mp.type.eq(PARTICIPANT)))
                     .and(m.state.eq(MeetingState.FINISH));
         }
-    }
-
-    private BooleanExpression userIdEqualsFilter(Long userId) {
-        return Objects.nonNull(userId) ? u.id.eq(userId) : null;
     }
 
     private StringExpression getLikeStatus() {

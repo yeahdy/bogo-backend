@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public record MeetingMyPageResponse(
         Long meetingId,
+        Long writerId,
         String title,
         String thumbnail,
         String detailAddress,

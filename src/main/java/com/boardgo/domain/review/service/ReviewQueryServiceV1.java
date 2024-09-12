@@ -1,8 +1,7 @@
 package com.boardgo.domain.review.service;
 
-import static com.boardgo.common.utils.CustomStringUtils.stringToLongList;
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
+import static com.boardgo.common.utils.CustomStringUtils.*;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNoSuchElementException;
@@ -239,6 +238,11 @@ public class ReviewQueryServiceV1 implements ReviewQueryUseCase {
         List<MyEvaluationTagResponse> negativeTags =
                 refineEvaluationTag(myNegativeEvaluationTags, evaluationTagsMap);
         return new MyEvaluationTagsResponse(positiveTags, negativeTags);
+    }
+
+    @Override
+    public Double getRating(Long userId) {
+        return Optional.ofNullable(reviewRepository.findRatingAvgByRevieweeId(userId)).orElse(0.0);
     }
 
     /***

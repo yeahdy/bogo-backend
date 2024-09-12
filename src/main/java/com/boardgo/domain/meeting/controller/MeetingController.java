@@ -1,15 +1,15 @@
 package com.boardgo.domain.meeting.controller;
 
 import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.common.utils.SecurityUtils.*;
 
-import com.boardgo.common.utils.SecurityUtils;
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingUpdateRequest;
-import com.boardgo.domain.meeting.service.MeetingCommandUseCase;
-import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
-import com.boardgo.domain.meeting.service.response.MeetingDetailResponse;
-import com.boardgo.domain.meeting.service.response.MeetingSearchResponse;
+import com.boardgo.domain.meeting.service.facade.MeetingCommandFacade;
+import com.boardgo.domain.meeting.service.facade.MeetingQueryFacade;
+import com.boardgo.domain.meeting.service.response.MeetingResponse;
+import com.boardgo.domain.meeting.service.response.MeetingSearchPageResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.net.URI;
@@ -31,22 +31,24 @@ import org.springframework.web.multipart.MultipartFile;
 @Validated
 @RequiredArgsConstructor
 public class MeetingController {
-    private final MeetingCommandUseCase meetingCommandUseCase;
-    private final MeetingQueryUseCase meetingQueryUseCase;
+    private final MeetingCommandFacade meetingCommandFacade;
+    private final MeetingQueryFacade meetingQueryFacade;
 
     @PostMapping(value = "/meeting", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> create(
             @RequestPart(value = "meetingCreateRequest") @Valid
                     MeetingCreateRequest meetingCreateRequest,
             @RequestPart(value = "image", required = false) MultipartFile imageFile) {
-        Long meetingId = meetingCommandUseCase.create(meetingCreateRequest, imageFile);
+        Long meetingId =
+                meetingCommandFacade.create(meetingCreateRequest, imageFile, currentUserId());
         return ResponseEntity.created(URI.create("/meeting/" + meetingId)).build();
     }
 
     @GetMapping(value = "/meeting", headers = API_VERSION_HEADER1)
-    public ResponseEntity<Page<MeetingSearchResponse>> search(
+    public ResponseEntity<Page<MeetingSearchPageResponse>> search(
             @ModelAttribute @Valid MeetingSearchRequest meetingSearchRequest) {
-        Page<MeetingSearchResponse> searchResult = meetingQueryUseCase.search(meetingSearchRequest);
+        Page<MeetingSearchPageResponse> searchResult =
+                meetingQueryFacade.search(meetingSearchRequest, currentUserIdWithoutThrow());
         if (searchResult.getSize() == 0) {
             return ResponseEntity.noContent().build();
         }
@@ -54,9 +56,10 @@ public class MeetingController {
     }
 
     @GetMapping(value = "/meeting/{id}", headers = API_VERSION_HEADER1)
-    public ResponseEntity<MeetingDetailResponse> getById(@PathVariable("id") @Positive Long id) {
-        MeetingDetailResponse meetingDetail = meetingQueryUseCase.getDetailById(id);
-        meetingCommandUseCase.incrementViewCount(meetingDetail.meetingId());
+    public ResponseEntity<MeetingResponse> getById(@PathVariable("id") @Positive Long id) {
+        MeetingResponse meetingDetail =
+                meetingQueryFacade.getDetailById(id, currentUserIdWithoutThrow());
+        meetingCommandFacade.incrementViewCount(meetingDetail.meetingId());
         return ResponseEntity.ok(meetingDetail);
     }
 
@@ -64,25 +67,25 @@ public class MeetingController {
     public ResponseEntity<Void> update(
             @RequestPart(value = "meetingUpdateRequest") MeetingUpdateRequest request,
             @RequestPart(value = "image") MultipartFile imageFile) {
-        meetingCommandUseCase.updateMeeting(request, SecurityUtils.currentUserId(), imageFile);
+        meetingCommandFacade.updateMeeting(request, currentUserId(), imageFile);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping(value = "/meeting/share/{id}", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> incrementShareCount(@PathVariable("id") @Positive Long id) {
-        meetingCommandUseCase.incrementShareCount(id);
+        meetingCommandFacade.incrementShareCount(id);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping(value = "/meeting/complete/{id}", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> updateCompleteMeetingState(@PathVariable("id") @Positive Long id) {
-        meetingCommandUseCase.updateCompleteMeetingState(id);
+        meetingCommandFacade.updateCompleteMeetingState(id);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/meeting/{id}", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> deleteMeeting(@PathVariable("id") @Positive Long id) {
-        meetingCommandUseCase.deleteMeeting(id, SecurityUtils.currentUserId());
+        meetingCommandFacade.deleteMeeting(id, currentUserId());
         return ResponseEntity.ok().build();
     }
 }

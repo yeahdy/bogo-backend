@@ -66,7 +66,7 @@ public class MeetingLikeCommandServiceV1Test extends IntegrationTestSupport {
                         .findFirst()
                         .orElseThrow(() -> new CustomNoSuchElementException("찜"));
         // when
-        meetingLikeCommandUseCase.deleteByMeetingId(1L);
+        meetingLikeCommandUseCase.deleteByUserIdAndMeetingId(1L, 1L);
         // then
         Optional<MeetingLikeEntity> deletedEntity = meetingLikeRepository.findById(first.getId());
         Assertions.assertThat(deletedEntity).isEmpty();
@@ -92,7 +92,7 @@ public class MeetingLikeCommandServiceV1Test extends IntegrationTestSupport {
         // then
         Assertions.assertThatThrownBy(
                         () -> {
-                            meetingLikeCommandUseCase.deleteByMeetingId(1L);
+                            meetingLikeCommandUseCase.deleteByUserIdAndMeetingId(2L, 1L);
                         })
                 .isInstanceOf(CustomNoSuchElementException.class);
     }

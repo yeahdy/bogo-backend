@@ -1,7 +1,7 @@
 package com.boardgo.integration.meeting.service;
 
-import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.boardgo.integration.data.MeetingData.*;
+import static org.assertj.core.api.Assertions.*;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingLikeEntity;
@@ -32,7 +32,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class MyPageMeetingQueryServiceV1Test extends IntegrationTestSupport {
+public class MyPageMeetingQueryFacadeImplTest extends IntegrationTestSupport {
     @Autowired private UserRepository userRepository;
     @Autowired private MeetingRepository meetingRepository;
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;

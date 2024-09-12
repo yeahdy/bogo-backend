@@ -15,6 +15,8 @@ import com.boardgo.domain.meeting.service.response.HomeMeetingDeadlineResponse;
 import com.boardgo.domain.meeting.service.response.LikedMeetingMyPageResponse;
 import com.boardgo.domain.meeting.service.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.service.response.MeetingMyPageResponse;
+import com.boardgo.domain.meeting.service.response.MeetingResponse;
+import com.boardgo.domain.meeting.service.response.MeetingSearchPageResponse;
 import com.boardgo.domain.meeting.service.response.MeetingSearchResponse;
 import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
 import java.util.List;
@@ -22,11 +24,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface MeetingMapper {
     MeetingMapper INSTANCE = Mappers.getMapper(MeetingMapper.class);
+
+    MeetingSearchResponse toMeetingSearchResponse(MeetingSearchProjection projection);
+
+    List<MeetingSearchResponse> toMeetingSearchResponseList(
+            List<MeetingSearchProjection> projection);
 
     default MeetingEntity toMeetingEntity(
             MeetingCreateRequest meetingCreateRequest, Long userId, String imageUri) {
@@ -50,8 +58,10 @@ public interface MeetingMapper {
                 .build();
     }
 
-    default MeetingDetailResponse toMeetingDetailResponse(
-            MeetingDetailProjection meetingDetailProjection,
+    MeetingDetailResponse toMeetingDetailResponse(MeetingDetailProjection projection);
+
+    default MeetingResponse toMeetingResponse(
+            MeetingDetailResponse meetingDetailResponse,
             List<UserParticipantResponse> userParticipantResponseList,
             List<BoardGameByMeetingIdResponse> boardGameByMeetingIdResponseList,
             Long createMeetingCount,
@@ -61,25 +71,25 @@ public interface MeetingMapper {
                 boardGameByMeetingIdResponseList.stream()
                         .flatMap(response -> response.genres().stream())
                         .collect(Collectors.toSet());
-        return new MeetingDetailResponse(
-                meetingDetailProjection.meetingId(),
-                meetingDetailProjection.userNickName(),
+        return new MeetingResponse(
+                meetingDetailResponse.meetingId(),
+                meetingDetailResponse.userNickName(),
                 rating,
-                meetingDetailProjection.meetingDatetime(),
+                meetingDetailResponse.meetingDatetime(),
                 likeStatus,
-                meetingDetailProjection.thumbnail(),
-                meetingDetailProjection.title(),
-                meetingDetailProjection.content(),
-                meetingDetailProjection.longitude(),
-                meetingDetailProjection.latitude(),
-                meetingDetailProjection.city(),
-                meetingDetailProjection.county(),
-                meetingDetailProjection.locationName(),
-                meetingDetailProjection.detailAddress(),
-                meetingDetailProjection.limitParticipant(),
-                meetingDetailProjection.state(),
-                meetingDetailProjection.shareCount(),
-                meetingDetailProjection.viewCount(),
+                meetingDetailResponse.thumbnail(),
+                meetingDetailResponse.title(),
+                meetingDetailResponse.content(),
+                meetingDetailResponse.longitude(),
+                meetingDetailResponse.latitude(),
+                meetingDetailResponse.city(),
+                meetingDetailResponse.county(),
+                meetingDetailResponse.locationName(),
+                meetingDetailResponse.detailAddress(),
+                meetingDetailResponse.limitParticipant(),
+                meetingDetailResponse.state(),
+                meetingDetailResponse.shareCount(),
+                meetingDetailResponse.viewCount(),
                 createMeetingCount,
                 genres.stream().toList(),
                 (long) userParticipantResponseList.size(),
@@ -89,24 +99,25 @@ public interface MeetingMapper {
                         .toList());
     }
 
-    default MeetingSearchResponse toMeetingSearchResponse(
-            MeetingSearchProjection queryDto, List<String> games, String likeStatus) {
-        return new MeetingSearchResponse(
-                queryDto.id(),
-                queryDto.title(),
-                queryDto.city(),
-                queryDto.county(),
-                queryDto.thumbnail(),
-                queryDto.viewCount(),
+    default MeetingSearchPageResponse toMeetingSearchResponse(
+            MeetingSearchResponse meetingSearchResponse, List<String> games, String likeStatus) {
+        return new MeetingSearchPageResponse(
+                meetingSearchResponse.id(),
+                meetingSearchResponse.title(),
+                meetingSearchResponse.city(),
+                meetingSearchResponse.county(),
+                meetingSearchResponse.thumbnail(),
+                meetingSearchResponse.viewCount(),
                 likeStatus,
-                queryDto.meetingDate(),
-                queryDto.limitParticipant(),
-                queryDto.nickName(),
+                meetingSearchResponse.meetingDate(),
+                meetingSearchResponse.limitParticipant(),
+                meetingSearchResponse.nickName(),
                 games,
-                Set.of(queryDto.genres().split(",")),
-                queryDto.participantCount());
+                Set.of(meetingSearchResponse.genres().split(",")),
+                meetingSearchResponse.participantCount());
     }
 
+    @Mapping(source = "myPageMeetingProjection.userId", target = "writerId")
     MeetingMyPageResponse toMeetingMyPageResponse(
             MyPageMeetingProjection myPageMeetingProjection, Integer currentParticipant);
 
@@ -132,11 +143,11 @@ public interface MeetingMapper {
                 .toList();
     }
 
-    default List<MeetingSearchResponse> toMeetingSearchResponseList(
-            List<MeetingSearchProjection> meetingSearchProjectionList,
+    default List<MeetingSearchPageResponse> toMeetingSearchPageResponseList(
+            List<MeetingSearchResponse> meetingSearchResponseList,
             Map<Long, List<String>> gamesMap,
             Map<Long, String> likeStatusMap) {
-        return meetingSearchProjectionList.stream()
+        return meetingSearchResponseList.stream()
                 .map(
                         item ->
                                 toMeetingSearchResponse(

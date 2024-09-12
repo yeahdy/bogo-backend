@@ -1,11 +1,14 @@
 package com.boardgo.domain.boardgame.service;
 
+import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
+import com.boardgo.domain.boardgame.entity.BoardGameEntity;
 import com.boardgo.domain.boardgame.repository.BoardGameRepository;
 import com.boardgo.domain.boardgame.repository.projection.BoardGameSearchProjection;
 import com.boardgo.domain.boardgame.service.response.BoardGameSearchResponse;
 import com.boardgo.domain.boardgame.service.response.GenreSearchResponse;
 import com.boardgo.domain.mapper.BoardGameMapper;
+import com.boardgo.domain.meeting.service.response.BoardGameByMeetingIdResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,6 +42,18 @@ public class BoardGameQueryServiceV1 implements BoardGameQueryUseCase {
                 boardGameSearchResponseList,
                 pageable,
                 boardGameRepository.countBySearchResult(request));
+    }
+
+    @Override
+    public List<BoardGameByMeetingIdResponse> findMeetingDetailByMeetingId(Long meetingId) {
+        return boardGameRepository.findMeetingDetailByMeetingId(meetingId);
+    }
+
+    @Override
+    public BoardGameEntity getById(Long id) {
+        return boardGameRepository
+                .findById(id)
+                .orElseThrow(() -> new CustomNoSuchElementException("보드게임"));
     }
 
     private int getPage(Integer page) {

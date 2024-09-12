@@ -10,7 +10,7 @@ import com.boardgo.integration.support.IntegrationTestSupport;
 import com.boardgo.jwt.entity.AuthEntity;
 import com.boardgo.jwt.repository.AuthRepository;
 import com.boardgo.jwt.service.TokenService;
-import com.boardgo.jwt.service.facade.AuthFacade;
+import com.boardgo.jwt.service.facade.AuthFacadeImpl;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
@@ -19,9 +19,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class AuthFacadeTest extends IntegrationTestSupport {
+public class AuthFacadeImplTest extends IntegrationTestSupport {
 
-    @Autowired private AuthFacade authFacade;
+    @Autowired private AuthFacadeImpl authFacade;
     @Autowired private TokenService tokenService;
     @Autowired private UserRepository userRepository;
     @Autowired private AuthRepository authRepository;

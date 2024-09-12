@@ -3,7 +3,7 @@ package com.boardgo.jwt.controller;
 import static com.boardgo.common.constant.HeaderConstant.*;
 
 import com.boardgo.common.exception.CustomNullPointException;
-import com.boardgo.jwt.service.facade.AuthFacadeUseCase;
+import com.boardgo.jwt.service.facade.AuthFacade;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
-    private final AuthFacadeUseCase authUseCase;
+    private final AuthFacade authUseCase;
 
     @PostMapping("/reissue")
     public ResponseEntity<String> reissue(

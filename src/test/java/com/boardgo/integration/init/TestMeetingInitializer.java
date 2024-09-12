@@ -7,8 +7,10 @@ import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
+import com.boardgo.domain.meeting.repository.MeetingGameMatchRepository;
+import com.boardgo.domain.meeting.repository.MeetingGenreMatchRepository;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
-import com.boardgo.domain.meeting.service.MeetingCreateFactory;
+import com.boardgo.domain.meeting.repository.MeetingRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +21,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestMeetingInitializer {
 
-    private final MeetingCreateFactory meetingCreateFactory;
+    private final MeetingRepository meetingRepository;
+    private final MeetingGenreMatchRepository meetingGenreMatchRepository;
+    private final MeetingGameMatchRepository meetingGameMatchRepository;
     private final MeetingParticipantRepository meetingParticipantRepository;
     private final GameGenreMatchRepository gameGenreMatchRepository;
 
     public TestMeetingInitializer(
-            MeetingCreateFactory meetingCreateFactory,
+            MeetingRepository meetingRepository,
+            MeetingGenreMatchRepository meetingGenreMatchRepository,
+            MeetingGameMatchRepository meetingGameMatchRepository,
             MeetingParticipantRepository meetingParticipantRepository,
             GameGenreMatchRepository gameGenreMatchRepository) {
-        this.meetingCreateFactory = meetingCreateFactory;
+        this.meetingRepository = meetingRepository;
+        this.meetingGenreMatchRepository = meetingGenreMatchRepository;
+        this.meetingGameMatchRepository = meetingGameMatchRepository;
         this.meetingParticipantRepository = meetingParticipantRepository;
         this.gameGenreMatchRepository = gameGenreMatchRepository;
     }
@@ -78,9 +86,17 @@ public class TestMeetingInitializer {
                             userId,
                             "thumbnail" + i);
 
-            Long savedMeetingId =
-                    meetingCreateFactory.create(meetingEntity, boardGameIdList, genreIdList);
-            meetingIds.add(savedMeetingId);
+            MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
+            Long meetingId = savedMeeting.getId();
+            meetingGenreMatchRepository.bulkInsert(genreIdList, meetingId);
+            meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
+            meetingParticipantRepository.save(
+                    MeetingParticipantEntity.builder()
+                            .userInfoId(userId)
+                            .meetingId(meetingId)
+                            .type(ParticipantType.LEADER)
+                            .build());
+            meetingIds.add(meetingId);
 
             int participantLimit = Math.max(i % limitNumber, 1);
 
@@ -93,9 +109,7 @@ public class TestMeetingInitializer {
                     builder.type(ParticipantType.PARTICIPANT);
                 }
                 meetingParticipantRepository.save(
-                        builder.meetingId(savedMeetingId)
-                                .userInfoId((userId + j) % 30 + 1)
-                                .build());
+                        builder.meetingId(meetingId).userInfoId((userId + j) % 30 + 1).build());
             }
         }
         return meetingIds;
@@ -127,8 +141,10 @@ public class TestMeetingInitializer {
                                 genreIdList),
                         userId,
                         "thumbnail" + i);
-        Long savedMeetingId =
-                meetingCreateFactory.create(meetingEntity, boardGameIdList, genreIdList);
+        MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
+        Long meetingId = savedMeeting.getId();
+        meetingGenreMatchRepository.bulkInsert(genreIdList, meetingId);
+        meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
     }
 
     /** 모임 상태 여러 상태로 바꾸고 싶을 때 사용 * */

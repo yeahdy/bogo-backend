@@ -30,10 +30,14 @@ public class MeetingLikeCommandServiceV1 implements MeetingLikeCommandUseCase {
     }
 
     @Override
-    public void deleteByMeetingId(Long meetingId) {
-        Long userId = SecurityUtils.currentUserId();
+    public void deleteByUserIdAndMeetingId(Long userId, Long meetingId) {
         checkDeleteLikeValidation(meetingId, userId);
         meetingLikeRepository.deleteByUserIdAndMeetingId(userId, meetingId);
+    }
+
+    @Override
+    public void deleteByMeetingId(Long meetingId) {
+        meetingLikeRepository.deleteAllInBatchByMeetingId(meetingId);
     }
 
     private void checkDeleteLikeValidation(Long meetingId, Long userId) {

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 public record MyPageMeetingProjection(
         Long meetingId,
+        Long userId,
         String title,
         String thumbnail,
         String detailAddress,

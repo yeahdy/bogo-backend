@@ -1,14 +1,11 @@
 package com.boardgo.integration.meeting.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
-import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
-import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
-import static io.restassured.RestAssured.given;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.integration.data.MeetingData.*;
+import static io.restassured.RestAssured.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingLikeEntity;
@@ -82,8 +79,10 @@ public class MyPageMeetingDocsTest extends RestDocsTestSupport {
                                 responseFields(
                                         fieldWithPath("[].meetingId")
                                                 .type(JsonFieldType.NUMBER)
-                                                .description("모임 id")
-                                                .optional(),
+                                                .description("모임 id"),
+                                        fieldWithPath("[].writerId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("작성자 id"),
                                         fieldWithPath("[].title")
                                                 .type(JsonFieldType.STRING)
                                                 .description("모임 제목"),

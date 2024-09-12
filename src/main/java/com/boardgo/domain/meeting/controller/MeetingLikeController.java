@@ -1,5 +1,6 @@
 package com.boardgo.domain.meeting.controller;
 
+import com.boardgo.common.utils.SecurityUtils;
 import com.boardgo.domain.meeting.service.MeetingLikeCommandUseCase;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
@@ -27,7 +28,8 @@ public class MeetingLikeController {
 
     @DeleteMapping("/meeting/like/{meetingId}")
     public ResponseEntity<Void> deleteLike(@PathVariable("meetingId") @Positive Long meetingId) {
-        meetingLikeCommandUseCase.deleteByMeetingId(meetingId);
+        meetingLikeCommandUseCase.deleteByUserIdAndMeetingId(
+                SecurityUtils.currentUserId(), meetingId);
         return ResponseEntity.ok().build();
     }
 }

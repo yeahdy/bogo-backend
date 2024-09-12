@@ -7,8 +7,10 @@ import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
+import com.boardgo.domain.meeting.repository.MeetingGameMatchRepository;
+import com.boardgo.domain.meeting.repository.MeetingGenreMatchRepository;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
-import com.boardgo.domain.meeting.service.MeetingCreateFactory;
+import com.boardgo.domain.meeting.repository.MeetingRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MeetingInitializer implements ApplicationRunner {
 
-    private final MeetingCreateFactory meetingCreateFactory;
+    private final MeetingRepository meetingRepository;
+    private final MeetingGenreMatchRepository meetingGenreMatchRepository;
+    private final MeetingGameMatchRepository meetingGameMatchRepository;
     private final MeetingParticipantRepository meetingParticipantRepository;
     private final GameGenreMatchRepository gameGenreMatchRepository;
 
@@ -58,9 +62,16 @@ public class MeetingInitializer implements ApplicationRunner {
                                     genreIdList),
                             userId,
                             "thumbnail" + i);
-            Long savedMeetingId =
-                    meetingCreateFactory.create(meetingEntity, boardGameIdList, genreIdList);
-
+            MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
+            Long meetingId = savedMeeting.getId();
+            meetingGenreMatchRepository.bulkInsert(genreIdList, meetingId);
+            meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
+            meetingParticipantRepository.save(
+                    MeetingParticipantEntity.builder()
+                            .userInfoId(userId)
+                            .meetingId(meetingId)
+                            .type(ParticipantType.LEADER)
+                            .build());
             int participantLimit = Math.max(i % limitNumber, 1);
 
             for (int j = 0; j < participantLimit; j++) {
@@ -72,9 +83,7 @@ public class MeetingInitializer implements ApplicationRunner {
                     builder.type(ParticipantType.PARTICIPANT);
                 }
                 meetingParticipantRepository.save(
-                        builder.meetingId(savedMeetingId)
-                                .userInfoId((userId + j) % 30 + 1)
-                                .build());
+                        builder.meetingId(meetingId).userInfoId((userId + j) % 30 + 1).build());
             }
         }
     }

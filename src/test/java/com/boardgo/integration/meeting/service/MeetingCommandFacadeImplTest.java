@@ -7,6 +7,9 @@ import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.common.exception.CustomNullPointException;
+import com.boardgo.domain.mapper.MeetingMapper;
+import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingUpdateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingGameMatchEntity;
@@ -20,11 +23,10 @@ import com.boardgo.domain.meeting.repository.MeetingGenreMatchRepository;
 import com.boardgo.domain.meeting.repository.MeetingLikeRepository;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
-import com.boardgo.domain.meeting.service.MeetingCommandUseCase;
-import com.boardgo.domain.meeting.service.MeetingCreateFactory;
+import com.boardgo.domain.meeting.service.facade.MeetingCommandFacade;
 import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
-import com.boardgo.domain.user.service.response.CustomUserDetails;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.init.TestUserInfoInitializer;
 import com.boardgo.integration.support.IntegrationTestSupport;
@@ -38,23 +40,140 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
-public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
+public class MeetingCommandFacadeImplTest extends IntegrationTestSupport {
     @Autowired private MeetingRepository meetingRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;
-    @Autowired private MeetingCommandUseCase meetingCommandUseCase;
+    @Autowired private MeetingCommandFacade meetingCommandFacade;
     @Autowired private MeetingLikeRepository meetingLikeRepository;
     @Autowired private MeetingGenreMatchRepository meetingGenreMatchRepository;
     @Autowired private MeetingGameMatchRepository meetingGameMatchRepository;
     @Autowired private EntityManager entityManager;
-    @Autowired private MeetingCreateFactory meetingCreateFactory;
     @Autowired private TestUserInfoInitializer testUserInfoInitializer;
     @Autowired private TestBoardGameInitializer testBoardGameInitializer;
+
+    @Test
+    @DisplayName("모임을 저장할 수 있다")
+    void 모임을_저장할_수_있다() {
+        // given
+        MeetingMapper meetingMapper = MeetingMapper.INSTANCE;
+
+        LocalDateTime now = LocalDateTime.now();
+
+        UserInfoEntity savedUser =
+                userRepository.save(
+                        UserInfoEntity.builder()
+                                .nickName("nickName")
+                                .email("aa@aa.com")
+                                .password("password")
+                                .providerType(ProviderType.LOCAL)
+                                .build());
+
+        MeetingCreateRequest meetingCreateRequest =
+                new MeetingCreateRequest(
+                        "content",
+                        "FREE",
+                        5,
+                        "title",
+                        "서울",
+                        "강남",
+                        "32.12321321321",
+                        "147.12321321321",
+                        "detailAddress",
+                        "location",
+                        now,
+                        List.of(1L, 2L),
+                        List.of(1L, 2L));
+        MeetingEntity meetingEntity =
+                meetingMapper.toMeetingEntity(meetingCreateRequest, savedUser.getId(), "thumbnail");
+        MockMultipartFile mockMultipartFile =
+                new MockMultipartFile(
+                        "file",
+                        "test.png",
+                        "image/png",
+                        "This is a test image file content".getBytes());
+
+        // when
+        Long meetingId = meetingCommandFacade.create(meetingCreateRequest, mockMultipartFile, 1L);
+        // then
+        MeetingEntity meeting = meetingRepository.findById(meetingId).get();
+        assertThat(meeting.getMeetingDatetime()).isEqualTo(now);
+        assertThat(meeting.getCity()).isEqualTo(meetingEntity.getCity());
+        assertThat(meeting.getLatitude()).isEqualTo(meetingEntity.getLatitude());
+        assertThat(meeting.getLongitude()).isEqualTo(meetingEntity.getLongitude());
+        assertThat(meeting.getType()).isEqualTo(meetingEntity.getType());
+        assertThat(meeting.getContent()).isEqualTo(meetingEntity.getContent());
+        assertThat(meeting.getCounty()).isEqualTo(meetingEntity.getCounty());
+        assertThat(meeting.getThumbnail()).isNotNull();
+        assertThat(meeting.getViewCount()).isEqualTo(0L);
+        assertThat(meeting.getState()).isEqualTo(PROGRESS);
+        assertThat(meeting.getUserId()).isEqualTo(savedUser.getId());
+
+        List<MeetingGameMatchEntity> gameMatchEntityList =
+                meetingGameMatchRepository.findByMeetingId(meetingId);
+        List<MeetingGenreMatchEntity> genreMatchEntityList =
+                meetingGenreMatchRepository.findByMeetingId(meetingId);
+        MeetingParticipantEntity participantEntity =
+                meetingParticipantRepository.findByMeetingId(meeting.getId()).getFirst();
+
+        assertThat(participantEntity.getUserInfoId()).isEqualTo(savedUser.getId());
+        assertThat(gameMatchEntityList).extracting("boardGameId").contains(1L, 2L);
+        assertThat(genreMatchEntityList).extracting("boardGameGenreId").contains(1L, 2L);
+    }
+
+    @Test
+    @DisplayName("boardGameId가 Null인 경우 에러가 발생한다")
+    void boardGameId가_Null인_경우_에러가_발생한다() {
+        // given
+
+        UserInfoEntity savedUser =
+                userRepository.save(
+                        UserInfoEntity.builder()
+                                .nickName("nickName")
+                                .email("aa@aa.com")
+                                .password("password")
+                                .providerType(ProviderType.LOCAL)
+                                .build());
+        LocalDateTime now = LocalDateTime.now();
+        MeetingEntity meetingEntity =
+                MeetingEntity.builder()
+                        .content("content")
+                        .meetingDatetime(now)
+                        .type(MeetingType.FREE)
+                        .city("서울특별시")
+                        .county("강남구")
+                        .thumbnail("test.png")
+                        .limitParticipant(5)
+                        .longitude("32.12312412412")
+                        .latitude("146.1232312321")
+                        .build();
+        List<Long> genreIdList = List.of(3L, 4L);
+        MeetingCreateRequest meetingCreateRequest =
+                new MeetingCreateRequest(
+                        "content",
+                        "FREE",
+                        5,
+                        "title",
+                        "서울",
+                        "강남",
+                        "32.12321321321",
+                        "147.12321321321",
+                        "detailAddress",
+                        "location",
+                        now,
+                        null,
+                        List.of(1L, 2L));
+        // when
+        // then
+        assertThatThrownBy(
+                        () -> {
+                            meetingCommandFacade.create(meetingCreateRequest, null, 1L);
+                        })
+                .isInstanceOf(CustomNullPointException.class)
+                .message()
+                .isEqualTo("boardGame is Null");
+    }
 
     @Test
     @DisplayName("모임을 수정할 수 있다")
@@ -82,8 +201,16 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
                         .build();
         List<Long> boardGameIdList = List.of(1L, 2L);
         List<Long> boardGameGenreIdList = List.of(1L, 2L);
-        Long meetingId =
-                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
+        MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
+        Long meetingId = savedMeeting.getId();
+        meetingGenreMatchRepository.bulkInsert(boardGameGenreIdList, meetingId);
+        meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
+        meetingParticipantRepository.save(
+                MeetingParticipantEntity.builder()
+                        .userInfoId(userId)
+                        .meetingId(meetingId)
+                        .type(ParticipantType.LEADER)
+                        .build());
         LocalDateTime updatedMeetingDatetime = meetingDatetime.plusDays(2);
         MeetingUpdateRequest meetingUpdateRequest =
                 new MeetingUpdateRequest(
@@ -99,13 +226,12 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
                         "updateAddress",
                         "updateLocation",
                         updatedMeetingDatetime,
-                        List.of(3L, 4L),
                         List.of(3L, 4L));
         MockMultipartFile mockFile =
                 new MockMultipartFile(
                         "file", "test.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
         // when
-        meetingCommandUseCase.updateMeeting(meetingUpdateRequest, userId, mockFile);
+        meetingCommandFacade.updateMeeting(meetingUpdateRequest, userId, mockFile);
         // then
         MeetingEntity updateMeeting = meetingRepository.findById(meetingId).get();
         assertThat(updateMeeting).isNotNull();
@@ -160,8 +286,16 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
 
         List<Long> boardGameIdList = List.of(1L, 2L);
         List<Long> boardGameGenreIdList = List.of(1L, 2L);
-        Long meetingId =
-                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
+        MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
+        Long meetingId = savedMeeting.getId();
+        meetingGenreMatchRepository.bulkInsert(boardGameGenreIdList, meetingId);
+        meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
+        meetingParticipantRepository.save(
+                MeetingParticipantEntity.builder()
+                        .userInfoId(userId)
+                        .meetingId(meetingId)
+                        .type(ParticipantType.LEADER)
+                        .build());
         meetingParticipantRepository.save(
                 MeetingParticipantEntity.builder()
                         .meetingId(meetingId)
@@ -201,7 +335,6 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
                         "updateAddress",
                         "updateLocation",
                         updatedMeetingDatetime,
-                        List.of(3L, 4L),
                         List.of(3L, 4L));
         MockMultipartFile mockFile =
                 new MockMultipartFile(
@@ -210,7 +343,7 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
         // then
         assertThatThrownBy(
                         () -> {
-                            meetingCommandUseCase.updateMeeting(
+                            meetingCommandFacade.updateMeeting(
                                     meetingUpdateRequest, userId, mockFile);
                         })
                 .isInstanceOf(CustomIllegalArgumentException.class)
@@ -244,11 +377,18 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
                         .build();
         List<Long> boardGameIdList = List.of(userId, 2L);
         List<Long> boardGameGenreIdList = List.of(userId, 2L);
-        Long meetingId =
-                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
-
+        MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
+        Long meetingId = savedMeeting.getId();
+        meetingGenreMatchRepository.bulkInsert(boardGameGenreIdList, meetingId);
+        meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
+        meetingParticipantRepository.save(
+                MeetingParticipantEntity.builder()
+                        .userInfoId(userId)
+                        .meetingId(meetingId)
+                        .type(ParticipantType.LEADER)
+                        .build());
         // when
-        meetingCommandUseCase.deleteMeeting(meetingId, userId);
+        meetingCommandFacade.deleteMeeting(meetingId, userId);
         // then
         Optional<MeetingEntity> meetingOptional = meetingRepository.findById(meetingId);
         List<MeetingParticipantEntity> meetingParticipantList =
@@ -272,7 +412,6 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
     void 모임_상세_조회_시_조회수가_오른다() {
         // given
         testBoardGameInitializer.generateBoardGameData();
-        setSecurityContext();
 
         LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
         MeetingEntity meetingEntity =
@@ -295,8 +434,16 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
                         .build();
         List<Long> boardGameIdList = List.of(1L, 2L);
         List<Long> boardGameGenreIdList = List.of(1L, 2L);
-        Long meetingId =
-                meetingCreateFactory.create(meetingEntity, boardGameIdList, boardGameGenreIdList);
+        MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
+        Long meetingId = savedMeeting.getId();
+        meetingGenreMatchRepository.bulkInsert(boardGameGenreIdList, meetingId);
+        meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
+        meetingParticipantRepository.save(
+                MeetingParticipantEntity.builder()
+                        .userInfoId(1L)
+                        .meetingId(meetingId)
+                        .type(ParticipantType.LEADER)
+                        .build());
 
         MeetingParticipantEntity savedParticipant =
                 meetingParticipantRepository.save(
@@ -308,10 +455,10 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
 
         // when
         // then
-        meetingCommandUseCase.incrementViewCount(meetingId);
+        meetingCommandFacade.incrementViewCount(meetingId);
         MeetingEntity result = meetingRepository.findById(meetingId).get();
         assertThat(result.getViewCount()).isEqualTo(1L);
-        meetingCommandUseCase.incrementViewCount(meetingId);
+        meetingCommandFacade.incrementViewCount(meetingId);
         MeetingEntity result2 = meetingRepository.findById(meetingId).get();
         assertThat(result2.getViewCount()).isEqualTo(2L);
     }
@@ -324,28 +471,11 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
         MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
         entityManager.clear();
         // when
-        meetingCommandUseCase.incrementShareCount(savedMeeting.getId());
+        meetingCommandFacade.incrementShareCount(savedMeeting.getId());
         // then
         MeetingEntity meeting = meetingRepository.findById(savedMeeting.getId()).get();
         System.out.println("meeting = " + meeting);
         assertThat(meeting.getShareCount()).isEqualTo(1L);
-    }
-
-    private void setSecurityContext() {
-        testUserInfoInitializer.generateUserData();
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-
-        UserInfoEntity userInfoEntity =
-                userRepository
-                        .findById(1L)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
-        CustomUserDetails customUserDetails = new CustomUserDetails(userInfoEntity);
-
-        Authentication auth =
-                new UsernamePasswordAuthenticationToken(
-                        customUserDetails, "password1", customUserDetails.getAuthorities());
-        context.setAuthentication(auth);
-        SecurityContextHolder.setContext(context);
     }
 
     @Test
@@ -369,7 +499,7 @@ public class MeetingCommandServiceV1Test extends IntegrationTestSupport {
                 meetingParticipantRepository.save(
                         getParticipantMeetingParticipantEntity((long) i, (long) j + 1));
             }
-            meetingCommandUseCase.updateCompleteMeetingState((long) i);
+            meetingCommandFacade.updateCompleteMeetingState((long) i);
         }
 
         // then
