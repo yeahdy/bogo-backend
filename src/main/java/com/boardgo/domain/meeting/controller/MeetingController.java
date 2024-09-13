@@ -66,7 +66,7 @@ public class MeetingController {
     @PatchMapping(value = "/meeting", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> update(
             @RequestPart(value = "meetingUpdateRequest") MeetingUpdateRequest request,
-            @RequestPart(value = "image") MultipartFile imageFile) {
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         meetingCommandFacade.updateMeeting(request, currentUserId(), imageFile);
         return ResponseEntity.ok().build();
     }

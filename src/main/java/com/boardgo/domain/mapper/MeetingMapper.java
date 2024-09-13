@@ -18,6 +18,7 @@ import com.boardgo.domain.meeting.service.response.MeetingMyPageResponse;
 import com.boardgo.domain.meeting.service.response.MeetingResponse;
 import com.boardgo.domain.meeting.service.response.MeetingSearchPageResponse;
 import com.boardgo.domain.meeting.service.response.MeetingSearchResponse;
+import com.boardgo.domain.meeting.service.response.MyPageMeetingResponse;
 import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,8 @@ public interface MeetingMapper {
     MeetingMapper INSTANCE = Mappers.getMapper(MeetingMapper.class);
 
     MeetingSearchResponse toMeetingSearchResponse(MeetingSearchProjection projection);
+
+    List<MyPageMeetingResponse> toMyPageMeetingResponse(List<MyPageMeetingProjection> projection);
 
     List<MeetingSearchResponse> toMeetingSearchResponseList(
             List<MeetingSearchProjection> projection);
@@ -117,14 +120,14 @@ public interface MeetingMapper {
                 meetingSearchResponse.participantCount());
     }
 
-    @Mapping(source = "myPageMeetingProjection.userId", target = "writerId")
+    @Mapping(source = "myPageMeetingResponse.userId", target = "writerId")
     MeetingMyPageResponse toMeetingMyPageResponse(
-            MyPageMeetingProjection myPageMeetingProjection, Integer currentParticipant);
+            MyPageMeetingResponse myPageMeetingResponse, Integer currentParticipant);
 
     default List<MeetingMyPageResponse> toMeetingMyPageResponseList(
-            List<MyPageMeetingProjection> myPageMeetingProjectionList,
+            List<MyPageMeetingResponse> myPageMeetingResponseList,
             Map<Long, MeetingParticipantSubEntity> entityMap) {
-        return myPageMeetingProjectionList.stream()
+        return myPageMeetingResponseList.stream()
                 .map(
                         item ->
                                 toMeetingMyPageResponse(

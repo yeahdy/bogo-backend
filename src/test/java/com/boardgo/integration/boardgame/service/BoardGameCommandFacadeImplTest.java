@@ -7,7 +7,7 @@ import com.boardgo.domain.boardgame.entity.BoardGameEntity;
 import com.boardgo.domain.boardgame.entity.BoardGameGenreEntity;
 import com.boardgo.domain.boardgame.repository.BoardGameGenreRepository;
 import com.boardgo.domain.boardgame.repository.BoardGameRepository;
-import com.boardgo.domain.boardgame.service.BoardGameCommandUseCase;
+import com.boardgo.domain.boardgame.service.facade.BoardGameCommandFacade;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.init.TestUserInfoInitializer;
 import com.boardgo.integration.support.IntegrationTestSupport;
@@ -20,8 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-public class BoardGameCommandServiceV1Test extends IntegrationTestSupport {
-    @Autowired private BoardGameCommandUseCase boardGameCommandUseCase;
+public class BoardGameCommandFacadeImplTest extends IntegrationTestSupport {
+    @Autowired private BoardGameCommandFacade boardGameCommandFacade;
 
     @Autowired private BoardGameRepository boardGameRepository;
 
@@ -42,7 +42,7 @@ public class BoardGameCommandServiceV1Test extends IntegrationTestSupport {
                 new BoardGameCreateRequest("Game1", 2, 4, 30, 60, genres1, imageFile);
 
         // when
-        boardGameCommandUseCase.create(request);
+        boardGameCommandFacade.create(request);
 
         // then
         BoardGameEntity boardGameEntity1 = boardGameRepository.findByTitle("Game1").get();
@@ -68,7 +68,7 @@ public class BoardGameCommandServiceV1Test extends IntegrationTestSupport {
                 new BoardGameCreateRequest("Game1", 2, 4, 30, 60, genres1, imageFile);
 
         // when
-        boardGameCommandUseCase.create(request);
+        boardGameCommandFacade.create(request);
 
         // then
         BoardGameEntity boardGameEntity1 = boardGameRepository.findByTitle("Game1").get();

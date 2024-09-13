@@ -59,8 +59,7 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
             MeetingCreateRequest meetingCreateRequest, MultipartFile imageFile, Long userId) {
         validateNullCheckIdList(meetingCreateRequest.boardGameIdList(), "boardGame is Null");
 
-        String imageUri =
-                registerImage(meetingCreateRequest.boardGameIdList().getFirst(), imageFile);
+        String imageUri = registerImage(meetingCreateRequest.boardGameIdList(), imageFile);
         MeetingEntity meetingEntity =
                 meetingMapper.toMeetingEntity(meetingCreateRequest, userId, imageUri);
         Long meetingId = meetingCommandUseCase.create(meetingEntity);
@@ -110,6 +109,7 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
     public void updateMeeting(
             MeetingUpdateRequest updateRequest, Long userId, MultipartFile imageFile) {
         MeetingEntity meeting = meetingQueryUseCase.getMeeting(updateRequest.id());
+        log.info("userId : {}, meeting.WriterId: {}", userId, meeting.getId());
         validateUserIsWriter(userId, meeting);
         Long meetingId = meeting.getId();
 
@@ -120,13 +120,11 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
         }
 
         List<Long> boardGameIdList = updateRequest.boardGameIdList();
-        if (!boardGameIdList.isEmpty() || !imageFile.isEmpty()) {
-            s3Service.deleteFile(meeting.getThumbnail());
-            String imageUri = registerImage(boardGameIdList.getFirst(), imageFile);
-            meeting.update(updateRequest, imageUri);
-        }
 
-        if (!boardGameIdList.isEmpty()) {
+        String imageUri = updateImage(imageFile, boardGameIdList, meeting);
+        meeting.update(updateRequest, imageUri);
+
+        if (Objects.nonNull(boardGameIdList) && !boardGameIdList.isEmpty()) {
             meetingGenreMatchCommandUseCase.deleteByMeetingId(meetingId);
             meetingGameMatchCommandUseCase.deleteByMeetingId(meetingId);
             meetingGameMatchCommandUseCase.bulkInsert(boardGameIdList, meetingId);
@@ -136,10 +134,21 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
         }
     }
 
-    private String registerImage(Long boardGameId, MultipartFile imageFile) {
+    private String updateImage(
+            MultipartFile imageFile, List<Long> boardGameIdList, MeetingEntity meeting) {
+        if (Objects.isNull(imageFile) && Objects.isNull(boardGameIdList)) {
+            return meeting.getThumbnail();
+        } else {
+            s3Service.deleteFile(meeting.getThumbnail());
+            return registerImage(boardGameIdList, imageFile);
+        }
+    }
+
+    private String registerImage(List<Long> boardGameIdList, MultipartFile imageFile) {
         String imageUri;
         if (Objects.isNull(imageFile) || imageFile.isEmpty()) {
-            BoardGameEntity boardGameEntity = boardGameQueryUseCase.getById(boardGameId);
+            BoardGameEntity boardGameEntity =
+                    boardGameQueryUseCase.getById(boardGameIdList.getFirst());
             imageUri = boardGameEntity.getThumbnail();
         } else {
             imageUri = s3Service.upload(MEETING, FileUtils.getUniqueFileName(imageFile), imageFile);

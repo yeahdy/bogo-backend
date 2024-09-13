@@ -54,4 +54,9 @@ public class UserQueryServiceV1 implements UserQueryUseCase {
     public List<UserParticipantResponse> findByMeetingId(Long meetingId) {
         return userRepository.findByMeetingId(meetingId);
     }
+
+    @Override
+    public boolean existById(Long id) {
+        return userRepository.existsById(id);
+    }
 }

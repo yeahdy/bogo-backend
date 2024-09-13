@@ -18,4 +18,6 @@ public interface UserQueryUseCase {
     UserInfoResponse getPersonalInfo(Long userId);
 
     List<UserParticipantResponse> findByMeetingId(Long meetingId);
+
+    boolean existById(Long id);
 }

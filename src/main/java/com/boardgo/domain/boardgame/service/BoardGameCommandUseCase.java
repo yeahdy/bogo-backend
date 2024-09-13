@@ -1,7 +1,7 @@
 package com.boardgo.domain.boardgame.service;
 
-import com.boardgo.domain.boardgame.controller.request.BoardGameCreateRequest;
+import com.boardgo.domain.boardgame.entity.BoardGameEntity;
 
 public interface BoardGameCommandUseCase {
-    void create(BoardGameCreateRequest request);
+    BoardGameEntity create(BoardGameEntity boardGameEntity);
 }

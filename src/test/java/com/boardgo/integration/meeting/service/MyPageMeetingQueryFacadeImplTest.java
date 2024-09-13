@@ -11,7 +11,7 @@ import com.boardgo.domain.meeting.entity.enums.MyPageMeetingFilter;
 import com.boardgo.domain.meeting.repository.MeetingLikeRepository;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
-import com.boardgo.domain.meeting.service.MyPageMeetingQueryUseCase;
+import com.boardgo.domain.meeting.service.facade.MyPageMeetingQueryFacade;
 import com.boardgo.domain.meeting.service.response.LikedMeetingMyPageResponse;
 import com.boardgo.domain.meeting.service.response.MeetingMyPageResponse;
 import com.boardgo.domain.user.entity.UserInfoEntity;
@@ -36,7 +36,7 @@ public class MyPageMeetingQueryFacadeImplTest extends IntegrationTestSupport {
     @Autowired private UserRepository userRepository;
     @Autowired private MeetingRepository meetingRepository;
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;
-    @Autowired private MyPageMeetingQueryUseCase myPageMeetingQueryUseCase;
+    @Autowired private MyPageMeetingQueryFacade myPageMeetingQueryFacade;
     @Autowired private MeetingLikeRepository meetingLikeRepository;
 
     @Test
@@ -45,7 +45,6 @@ public class MyPageMeetingQueryFacadeImplTest extends IntegrationTestSupport {
         // given
         UserInfoEntity userInfoEntity = UserInfoFixture.localUserInfoEntity();
         UserInfoEntity savedUser = userRepository.save(userInfoEntity);
-        setSecurityContext(savedUser.getId(), savedUser.getPassword());
 
         MeetingEntity meetingEntity1 = getMeetingEntityData(2L).limitParticipant(10).build();
         MeetingEntity savedMeeting1 = meetingRepository.save(meetingEntity1);
@@ -74,7 +73,7 @@ public class MyPageMeetingQueryFacadeImplTest extends IntegrationTestSupport {
 
         // when
         List<LikedMeetingMyPageResponse> likedMeeting =
-                myPageMeetingQueryUseCase.findLikedMeeting();
+                myPageMeetingQueryFacade.findLikedMeeting(savedUser.getId());
         // then
         assertThat(likedMeeting)
                 .extracting(LikedMeetingMyPageResponse::meetingId)
@@ -96,7 +95,6 @@ public class MyPageMeetingQueryFacadeImplTest extends IntegrationTestSupport {
         UserInfoEntity savedUser = userRepository.save(userInfoEntity);
         UserInfoEntity userInfoEntity2 = UserInfoFixture.socialUserInfoEntity(ProviderType.KAKAO);
         UserInfoEntity savedUser2 = userRepository.save(userInfoEntity2);
-        setSecurityContext(savedUser.getId(), savedUser.getPassword());
         MeetingEntity meetingEntity1 = getMeetingEntityData(savedUser.getId()).build();
         MeetingEntity meetingEntity2 =
                 getMeetingEntityData(savedUser.getId()).limitParticipant(10).build();
@@ -116,7 +114,8 @@ public class MyPageMeetingQueryFacadeImplTest extends IntegrationTestSupport {
         meetingParticipantRepository.save(participantMeetingParticipantEntity);
         // when
         List<MeetingMyPageResponse> result =
-                myPageMeetingQueryUseCase.findByFilter(MyPageMeetingFilter.CREATE);
+                myPageMeetingQueryFacade.findByFilter(
+                        MyPageMeetingFilter.CREATE, savedUser.getId());
         // then
         assertThat(result)
                 .extracting(MeetingMyPageResponse::meetingId)
@@ -134,7 +133,6 @@ public class MyPageMeetingQueryFacadeImplTest extends IntegrationTestSupport {
         UserInfoEntity savedUser = userRepository.save(userInfoEntity);
         UserInfoEntity userInfoEntity2 = UserInfoFixture.socialUserInfoEntity(ProviderType.KAKAO);
         UserInfoEntity savedUser2 = userRepository.save(userInfoEntity2);
-        setSecurityContext(savedUser2.getId(), savedUser2.getPassword());
         MeetingEntity meetingEntity1 = getMeetingEntityData(savedUser.getId()).build();
         MeetingEntity meetingEntity2 =
                 getMeetingEntityData(savedUser.getId()).limitParticipant(10).build();
@@ -154,7 +152,8 @@ public class MyPageMeetingQueryFacadeImplTest extends IntegrationTestSupport {
         meetingParticipantRepository.save(participantMeetingParticipantEntity);
         // when
         List<MeetingMyPageResponse> result =
-                myPageMeetingQueryUseCase.findByFilter(MyPageMeetingFilter.PARTICIPANT);
+                myPageMeetingQueryFacade.findByFilter(
+                        MyPageMeetingFilter.PARTICIPANT, savedUser2.getId());
         // then
         assertThat(result)
                 .extracting(MeetingMyPageResponse::meetingId)
@@ -171,7 +170,6 @@ public class MyPageMeetingQueryFacadeImplTest extends IntegrationTestSupport {
         UserInfoEntity savedUser = userRepository.save(userInfoEntity);
         UserInfoEntity userInfoEntity2 = UserInfoFixture.socialUserInfoEntity(ProviderType.KAKAO);
         UserInfoEntity savedUser2 = userRepository.save(userInfoEntity2);
-        setSecurityContext(savedUser.getId(), savedUser.getPassword());
         MeetingEntity meetingEntity1 =
                 getMeetingEntityData(savedUser.getId())
                         .meetingDatetime(LocalDateTime.now().minusDays(5))
@@ -195,7 +193,8 @@ public class MyPageMeetingQueryFacadeImplTest extends IntegrationTestSupport {
         meetingParticipantRepository.save(participantMeetingParticipantEntity);
         // when
         List<MeetingMyPageResponse> result =
-                myPageMeetingQueryUseCase.findByFilter(MyPageMeetingFilter.FINISH);
+                myPageMeetingQueryFacade.findByFilter(
+                        MyPageMeetingFilter.FINISH, savedUser.getId());
         // then
         assertThat(result)
                 .extracting(MeetingMyPageResponse::meetingId)
@@ -211,10 +210,10 @@ public class MyPageMeetingQueryFacadeImplTest extends IntegrationTestSupport {
         // given
         UserInfoEntity userInfoEntity = UserInfoFixture.localUserInfoEntity();
         UserInfoEntity savedUser = userRepository.save(userInfoEntity);
-        setSecurityContext(savedUser.getId(), savedUser.getPassword());
         // when
         List<MeetingMyPageResponse> result =
-                myPageMeetingQueryUseCase.findByFilter(MyPageMeetingFilter.FINISH);
+                myPageMeetingQueryFacade.findByFilter(
+                        MyPageMeetingFilter.FINISH, savedUser.getId());
         // then
         assertThat(result).isEmpty();
     }

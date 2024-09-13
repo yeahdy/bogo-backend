@@ -1,11 +1,11 @@
 package com.boardgo.domain.boardgame.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
+import static com.boardgo.common.constant.HeaderConstant.*;
 
 import com.boardgo.domain.boardgame.controller.request.BoardGameCreateRequest;
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
-import com.boardgo.domain.boardgame.service.BoardGameCommandUseCase;
 import com.boardgo.domain.boardgame.service.BoardGameQueryUseCase;
+import com.boardgo.domain.boardgame.service.facade.BoardGameCommandFacade;
 import com.boardgo.domain.boardgame.service.response.BoardGameSearchResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class BoardGameController {
-    private final BoardGameCommandUseCase boardGameCommandUseCase;
+    private final BoardGameCommandFacade boardGameCommandFacade;
     private final BoardGameQueryUseCase boardGameQueryUseCase;
 
     @GetMapping(value = "/boardgame", headers = API_VERSION_HEADER1)
@@ -39,7 +39,7 @@ public class BoardGameController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> create(
             @ModelAttribute @Valid BoardGameCreateRequest boardGameCreateRequest) {
-        boardGameCommandUseCase.create(boardGameCreateRequest);
+        boardGameCommandFacade.create(boardGameCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

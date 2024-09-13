@@ -4,13 +4,16 @@ import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.domain.mapper.MeetingMapper;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
+import com.boardgo.domain.meeting.entity.enums.MyPageMeetingFilter;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.repository.projection.HomeMeetingDeadlineProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingDetailProjection;
 import com.boardgo.domain.meeting.repository.projection.MeetingSearchProjection;
 import com.boardgo.domain.meeting.service.response.HomeMeetingDeadlineResponse;
+import com.boardgo.domain.meeting.service.response.LikedMeetingMyPageResponse;
 import com.boardgo.domain.meeting.service.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.service.response.MeetingSearchResponse;
+import com.boardgo.domain.meeting.service.response.MyPageMeetingResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -80,5 +83,22 @@ public class MeetingQueryServiceV1 implements MeetingQueryUseCase {
     @Override
     public Long getCreateMeetingCount(Long userId) {
         return meetingRepository.getCreateMeetingCount(userId);
+    }
+
+    @Override
+    public List<MyPageMeetingResponse> findMyPageByFilter(MyPageMeetingFilter filter, Long userId) {
+        return meetingMapper.toMyPageMeetingResponse(
+                meetingRepository.findMyPageByFilter(filter, userId));
+    }
+
+    @Override
+    public List<MeetingEntity> findByIdIn(List<Long> meetingIdList) {
+        return meetingRepository.findByIdIn(meetingIdList);
+    }
+
+    @Override
+    public List<LikedMeetingMyPageResponse> findLikedMeeting(List<Long> meetingIdList) {
+        return meetingMapper.toLikedMeetingMyPageResponseList(
+                meetingRepository.findLikedMeeting(meetingIdList));
     }
 }
