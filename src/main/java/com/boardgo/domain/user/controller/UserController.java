@@ -25,7 +25,7 @@ public class UserController {
 
     @GetMapping(value = "/check-nickname", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> checkNickName(@Valid NickNameRequest nickNameRequest) {
-        userQueryUseCase.existNickName(nickNameRequest);
+        userQueryUseCase.existNickName(nickNameRequest.nickName());
         return ResponseEntity.ok().build();
     }
 

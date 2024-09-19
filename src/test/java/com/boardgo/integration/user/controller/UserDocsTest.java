@@ -2,6 +2,7 @@ package com.boardgo.integration.user.controller;
 
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
 import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static com.boardgo.integration.data.UserInfoData.userInfoEntityData;
 import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
@@ -12,7 +13,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.boardgo.domain.user.controller.request.SocialSignupRequest;
-import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.support.RestDocsTestSupport;
@@ -81,12 +81,9 @@ public class UserDocsTest extends RestDocsTestSupport {
     @DisplayName("소셜로그인 시 서비스 회원가입을 한다")
     void 소셜로그인_시_서비스_회원가입을_한다() {
         userRepository.save(
-                UserInfoEntity.builder()
-                        .email("abc123@google.com")
-                        .password(null)
-                        .nickName(null)
+                userInfoEntityData("abc123@google.com", "googoo")
                         .providerType(ProviderType.GOOGLE)
-                        .deleteAt(null)
+                        .password(null)
                         .build());
 
         SocialSignupRequest socialSignupRequest =

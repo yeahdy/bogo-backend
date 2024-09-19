@@ -5,7 +5,7 @@ import static com.boardgo.common.utils.SecurityUtils.currentUserId;
 
 import com.boardgo.domain.user.controller.request.SignupRequest;
 import com.boardgo.domain.user.controller.request.SocialSignupRequest;
-import com.boardgo.domain.user.service.UserCommandUseCase;
+import com.boardgo.domain.user.service.facade.UserCommandFacade;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,18 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SignupController {
 
-    private final UserCommandUseCase userCommandUseCase;
+    private final UserCommandFacade userCommandFacade;
 
     @PostMapping(value = "/signup", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> signup(@Valid @RequestBody SignupRequest signupRequest) {
-        userCommandUseCase.signup(signupRequest);
+        userCommandFacade.signup(signupRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping(value = "/social/signup", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> socialSignup(
             @Valid @RequestBody SocialSignupRequest socialSignupRequest) {
-        userCommandUseCase.socialSignup(socialSignupRequest, currentUserId());
+        userCommandFacade.socialSignup(socialSignupRequest, currentUserId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

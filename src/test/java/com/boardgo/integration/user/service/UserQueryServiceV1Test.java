@@ -1,5 +1,8 @@
 package com.boardgo.integration.user.service;
 
+import static com.boardgo.integration.data.UserInfoData.userInfoEntityData;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getLeaderMeetingParticipantEntity;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getOutMeetingParticipantEntity;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
 import static com.boardgo.integration.fixture.ReviewFixture.getReview;
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
@@ -9,10 +12,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
+import com.boardgo.domain.meeting.entity.enums.ParticipantType;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
+import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
 import com.boardgo.domain.review.repository.ReviewRepository;
 import com.boardgo.domain.user.controller.request.EmailRequest;
-import com.boardgo.domain.user.controller.request.NickNameRequest;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.UserPrTagEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
@@ -20,12 +24,11 @@ import com.boardgo.domain.user.repository.UserPrTagRepository;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.UserQueryUseCase;
 import com.boardgo.domain.user.service.facade.UserQueryServiceFacade;
-import com.boardgo.domain.user.service.response.CustomUserDetails;
 import com.boardgo.domain.user.service.response.OtherPersonalInfoResponse;
 import com.boardgo.domain.user.service.response.UserInfoResponse;
 import com.boardgo.domain.user.service.response.UserPersonalInfoResponse;
-import com.boardgo.integration.init.TestUserInfoInitializer;
 import com.boardgo.integration.support.IntegrationTestSupport;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
@@ -35,10 +38,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 public class UserQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private UserRepository userRepository;
@@ -47,20 +46,6 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private ReviewRepository reviewRepository;
     @Autowired private UserQueryUseCase userQueryUseCase;
     @Autowired private UserQueryServiceFacade userQueryServiceFacade;
-    @Autowired private TestUserInfoInitializer testUserInfoInitializer;
-
-    @Test
-    @DisplayName("유저컨텍스트 테스트")
-    void 유저컨텍스트_테스트() {
-        // given
-        setSecurityContext();
-        // when
-        CustomUserDetails result =
-                (CustomUserDetails)
-                        SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        // then
-        assertThat(result.getId()).isEqualTo(1L);
-    }
 
     @Test
     @DisplayName("해당 이메일이 존재하지 않으면 에러가 발생하지 않는다")
@@ -89,22 +74,21 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
     @DisplayName("해당 닉네임이 존재하지 않으면 에러가 발생하지 않는다")
     void 해당_닉네임이_존재하지_않으면_에러가_발생하지_않는다() {
         // given
-        NickNameRequest nickNameRequest = new NickNameRequest("nickName");
+        String nickname = "nickName";
         // when
-        userQueryUseCase.existNickName(nickNameRequest);
         // then
-
+        userQueryUseCase.existNickName(nickname);
     }
 
     @Test
     @DisplayName("해당 닉네임이 존재하면 에러가 발생한다")
     void 해당_닉네임이_존재하면_에러가_발생한다() {
         // given
-        NickNameRequest nickNameRequest = new NickNameRequest("water");
+        String nickname = "water";
         userRepository.save(localUserInfoEntity());
         // when
         // then
-        Assertions.assertThatThrownBy(() -> userQueryUseCase.existNickName(nickNameRequest))
+        Assertions.assertThatThrownBy(() -> userQueryUseCase.existNickName(nickname))
                 .isInstanceOf(CustomIllegalArgumentException.class);
     }
 
@@ -120,11 +104,11 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
                 .isInstanceOf(CustomNullPointException.class);
     }
 
-    @ParameterizedTest
+    @Test
     @DisplayName("회원정보로 이메일(id), 닉네임, 프로필이미지, 평점, PR태그를 조회한다")
-    @MethodSource("getUserEntity")
-    void 회원정보로_이메일_닉네임_프로필이미지_평점_PR태그를_조회한다(UserInfoEntity userInfo) {
+    void 회원정보로_이메일_닉네임_프로필이미지_평점_PR태그를_조회한다() {
         // given
+        UserInfoEntity userInfo = userInfoEntityData("aa@aa.com", "nickName").build();
         Long userId = getUserId(userInfo);
         UserPrTagEntity userPrTagEntity1 =
                 userPrTagRepository.save(userPrTagEntity(userId, "ENFJ"));
@@ -185,21 +169,46 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
         assertThat(otherPersonalInfo.meetingCount()).isEqualTo(participationCount);
     }
 
+    @Test
+    @DisplayName("모임에 참여한 회원 목록을 조회한다")
+    void 모임에_참여한_회원_목록을_조회한다() {
+        // given
+        List<UserInfoEntity> userInfoEntities = new ArrayList<>();
+        int userNumber = 7;
+        for (int i = 0; i < userNumber; i++) {
+            UserInfoEntity userInfo =
+                    userInfoEntityData("participate" + i + "@naver.com", "participate" + i).build();
+            userInfoEntities.add(userInfo);
+        }
+        userRepository.saveAll(userInfoEntities);
+
+        Long meetingId = 1L;
+        for (int i = 0; i < userNumber / 2; i++) {
+            meetingParticipantRepository.save(
+                    getLeaderMeetingParticipantEntity(meetingId, userInfoEntities.get(i).getId()));
+        }
+        for (int i = 3; i < userNumber - 1; i++) {
+            meetingParticipantRepository.save(
+                    getParticipantMeetingParticipantEntity(
+                            meetingId, userInfoEntities.get(i).getId()));
+        }
+        meetingParticipantRepository.save(
+                getOutMeetingParticipantEntity(meetingId, (long) (userNumber)));
+
+        // when
+        List<UserParticipantResponse> userParticipantResponse =
+                userQueryUseCase.findByMeetingId(meetingId);
+
+        // then
+        userParticipantResponse.forEach(
+                userParticipant -> {
+                    assertThat(userParticipant.type()).isNotEqualTo(ParticipantType.OUT);
+                });
+    }
+
     private Long getUserId(UserInfoEntity userInfo) {
         UserInfoEntity userInfoEntity = userRepository.save(userInfo);
         return userInfoEntity.getId();
-    }
-
-    private static Stream<Arguments> getUserEntity() {
-        UserInfoEntity userInfoEntity =
-                UserInfoEntity.builder()
-                        .email("aa@aa.com")
-                        .password("password")
-                        .nickName("nickName")
-                        .profileImage("브이하는내사진.jpg")
-                        .providerType(ProviderType.LOCAL)
-                        .build();
-        return Stream.of(Arguments.of(userInfoEntity));
     }
 
     private static Stream<Arguments> getNoImageAndPrtTagsUserEntity() {
@@ -212,22 +221,5 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
                                 .profileImage(null)
                                 .providerType(ProviderType.LOCAL)
                                 .build()));
-    }
-
-    private void setSecurityContext() {
-        testUserInfoInitializer.generateUserData();
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-
-        UserInfoEntity userInfoEntity =
-                userRepository
-                        .findById(1L)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
-        CustomUserDetails customUserDetails = new CustomUserDetails(userInfoEntity);
-
-        Authentication auth =
-                new UsernamePasswordAuthenticationToken(
-                        customUserDetails, "password1", customUserDetails.getAuthorities());
-        context.setAuthentication(auth);
-        SecurityContextHolder.setContext(context);
     }
 }

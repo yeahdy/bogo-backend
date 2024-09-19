@@ -1,8 +1,9 @@
 package com.boardgo.domain.user.service;
 
-import static com.boardgo.common.constant.S3BucketConstant.*;
-import static com.boardgo.common.utils.CustomStringUtils.*;
-import static com.boardgo.common.utils.ValidateUtils.*;
+import static com.boardgo.common.constant.S3BucketConstant.USER;
+import static com.boardgo.common.utils.CustomStringUtils.existString;
+import static com.boardgo.common.utils.ValidateUtils.validateNickname;
+import static com.boardgo.common.utils.ValidateUtils.validatePassword;
 
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.common.exception.DuplicateException;
@@ -10,13 +11,9 @@ import com.boardgo.common.utils.FileUtils;
 import com.boardgo.common.utils.S3Service;
 import com.boardgo.domain.mapper.UserInfoMapper;
 import com.boardgo.domain.user.controller.request.SignupRequest;
-import com.boardgo.domain.user.controller.request.SocialSignupRequest;
 import com.boardgo.domain.user.controller.request.UserPersonalInfoUpdateRequest;
 import com.boardgo.domain.user.entity.UserInfoEntity;
-import com.boardgo.domain.user.entity.UserPrTagEntity;
-import com.boardgo.domain.user.repository.UserPrTagRepository;
 import com.boardgo.domain.user.repository.UserRepository;
-import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,45 +28,24 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class UserCommandServiceV1 implements UserCommandUseCase {
     private final UserRepository userRepository;
-    private final UserPrTagRepository userPrTagRepository;
     private final UserInfoMapper userInfoMapper;
     private final PasswordEncoder passwordEncoder;
     private final S3Service s3Service;
 
     @Override
-    public Long signup(SignupRequest signupRequest) {
-        validateNickNameAndPrTag(signupRequest.nickName(), signupRequest.prTags());
+    public Long save(SignupRequest signupRequest) {
         UserInfoEntity userInfo = userInfoMapper.toUserInfoEntity(signupRequest);
         userInfo.encodePassword(passwordEncoder);
         UserInfoEntity savedUser = userRepository.save(userInfo);
-        userPrTagRepository.bulkInsertPrTags(signupRequest.prTags(), savedUser.getId());
         return savedUser.getId();
     }
 
     @Override
-    public Long socialSignup(SocialSignupRequest signupRequest, Long userId) {
-        UserInfoEntity userInfoEntity = getUserInfoEntity(userId);
-        if (userRepository.existsByNickName(signupRequest.nickName())) {
-            throw new DuplicateException("중복된 닉네임입니다.");
-        }
-        validateNickNameAndPrTag(signupRequest.nickName(), signupRequest.prTags());
-
-        userInfoEntity.updateNickname(signupRequest.nickName());
-        userPrTagRepository.bulkInsertPrTags(signupRequest.prTags(), userInfoEntity.getId());
-        return userInfoEntity.getId();
-    }
-
-    private void validateNickNameAndPrTag(String nickName, List<String> prTags) {
-        validateNickname(nickName);
-
-        if (!Objects.isNull(prTags)) {
-            validatePrTag(prTags);
-        }
-    }
-
-    @Override
     public void updateProfileImage(Long userId, MultipartFile profileImage) {
-        UserInfoEntity userInfoEntity = getUserInfoEntity(userId);
+        UserInfoEntity userInfoEntity =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new CustomNullPointException("회원이 존재하지 않습니다"));
         String originalImage = userInfoEntity.getProfileImage();
         String newImage = "";
         if (!Objects.isNull(profileImage)) {
@@ -84,7 +60,10 @@ public class UserCommandServiceV1 implements UserCommandUseCase {
 
     @Override
     public void updatePersonalInfo(Long userId, UserPersonalInfoUpdateRequest updateRequest) {
-        UserInfoEntity userInfoEntity = getUserInfoEntity(userId);
+        UserInfoEntity userInfoEntity =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new CustomNullPointException("회원이 존재하지 않습니다"));
         if (userRepository.existsByNickName(updateRequest.nickName())) {
             throw new DuplicateException("중복된 닉네임입니다.");
         }
@@ -95,21 +74,5 @@ public class UserCommandServiceV1 implements UserCommandUseCase {
         if (existString(updateRequest.password()) && validatePassword(updateRequest.password())) {
             userInfoEntity.updatePassword(updateRequest.password(), passwordEncoder);
         }
-    }
-
-    @Override
-    public void updatePrTags(List<String> changedPrTag, Long userId) {
-        List<UserPrTagEntity> prTags = userPrTagRepository.findByUserInfoId(userId);
-        if (!Objects.isNull(changedPrTag)) {
-            validatePrTag(changedPrTag);
-        }
-        userPrTagRepository.deleteAllInBatch(prTags);
-        userPrTagRepository.bulkInsertPrTags(changedPrTag, userId);
-    }
-
-    private UserInfoEntity getUserInfoEntity(Long userId) {
-        return userRepository
-                .findById(userId)
-                .orElseThrow(() -> new CustomNullPointException("회원이 존재하지 않습니다"));
     }
 }

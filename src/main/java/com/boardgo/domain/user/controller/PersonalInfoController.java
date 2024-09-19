@@ -5,7 +5,7 @@ import static com.boardgo.common.utils.SecurityUtils.currentUserId;
 
 import com.boardgo.domain.user.controller.request.UserPersonalInfoUpdateRequest;
 import com.boardgo.domain.user.service.UserCommandUseCase;
-import com.boardgo.domain.user.service.UserQueryUseCase;
+import com.boardgo.domain.user.service.UserPrTagCommandUseCase;
 import com.boardgo.domain.user.service.facade.UserQueryServiceFacade;
 import com.boardgo.domain.user.service.response.OtherPersonalInfoResponse;
 import com.boardgo.domain.user.service.response.UserPersonalInfoResponse;
@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/personal-info")
 @Validated
 public class PersonalInfoController {
-    private final UserQueryUseCase userQueryUseCase;
+    private final UserPrTagCommandUseCase userPrTagCommandUseCase;
     private final UserCommandUseCase userCommandUseCase;
     private final UserQueryServiceFacade userQueryServiceFacade;
 
@@ -61,7 +61,7 @@ public class PersonalInfoController {
     @PatchMapping(value = "/prTags", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> updatePrTags(
             @RequestParam(name = "prTags", required = false) List<String> prTags) {
-        userCommandUseCase.updatePrTags(prTags, currentUserId());
+        userPrTagCommandUseCase.updatePrTags(prTags, currentUserId());
         return ResponseEntity.ok().build();
     }
 }

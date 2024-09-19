@@ -18,10 +18,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TermsConditionsQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private TermsConditionsQueryUseCase termsConditionsQueryUseCase;
     @Autowired private TermsConditionsRepository termsConditionsRepository;
+    private List<TermsConditionsEntity> termsConditionsEntities;
 
     @BeforeEach
     void init() {
-        termsConditionsRepository.saveAll(getTermsConditionsList());
+        termsConditionsEntities = termsConditionsRepository.saveAll(getTermsConditionsList());
+    }
+
+    @Test
+    @DisplayName("모든 약관동의 조회하기")
+    void 모든_약관동의_조회하기() {
+        // given
+        List<Boolean> required = List.of(TRUE, FALSE);
+        // when
+        List<TermsConditionsEntity> termsConditionsList =
+                termsConditionsQueryUseCase.getTermsConditionsEntities(required);
+        // then
+        assertThat(termsConditionsList).isNotEmpty();
+        assertThat(termsConditionsList.size()).isEqualTo(termsConditionsEntities.size());
     }
 
     @Test
@@ -33,6 +47,7 @@ public class TermsConditionsQueryServiceV1Test extends IntegrationTestSupport {
         List<TermsConditionsEntity> termsConditionsEntities =
                 termsConditionsQueryUseCase.getTermsConditionsEntities(required);
         // then
+        assertThat(termsConditionsEntities).isNotEmpty();
         termsConditionsEntities.forEach(
                 entity -> {
                     assertThat(entity.getRequired()).isTrue();
@@ -48,6 +63,7 @@ public class TermsConditionsQueryServiceV1Test extends IntegrationTestSupport {
         List<TermsConditionsEntity> termsConditionsEntities =
                 termsConditionsQueryUseCase.getTermsConditionsEntities(required);
         // then
+        assertThat(termsConditionsEntities).isNotEmpty();
         termsConditionsEntities.forEach(
                 entity -> {
                     assertThat(entity.getRequired()).isFalse();

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class TokenController {
 
+    // FIXME: 사용안하면 삭제
     @GetMapping(value = "/token", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> getToken(HttpServletRequest request, HttpServletResponse response) {
         Optional<String> jwtToken =
@@ -34,7 +35,4 @@ public class TokenController {
         response.addHeader(AUTHORIZATION, BEARER + jwtToken.get());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
-    // TODO. token 대신 refresh 토큰 사용
-
 }
