@@ -136,7 +136,9 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
 
     private String updateImage(
             MultipartFile imageFile, List<Long> boardGameIdList, MeetingEntity meeting) {
-        if (Objects.isNull(imageFile) && Objects.isNull(boardGameIdList)) {
+        if ((Objects.isNull(imageFile) && Objects.isNull(boardGameIdList))
+                || (Objects.nonNull(meeting.getThumbnail())
+                        && meeting.getThumbnail().startsWith("meeting"))) {
             return meeting.getThumbnail();
         } else {
             s3Service.deleteFile(meeting.getThumbnail());
