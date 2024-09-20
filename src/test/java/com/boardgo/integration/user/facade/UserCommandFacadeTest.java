@@ -46,6 +46,10 @@ public class UserCommandFacadeTest extends IntegrationTestSupport {
     @MethodSource("getTermsConditionsCreateRequest")
     void 사용자는_회원가입해서_userInfo_데이터를_생성할_수_있다(List<TermsConditionsCreateRequest> termsConditions) {
         // given
+        List<TermsConditionsCreateRequest> request = new ArrayList<>();
+        for (TermsConditionsType type : TermsConditionsType.values()) {
+            request.add(new TermsConditionsCreateRequest(type.name(), true));
+        }
         SignupRequest signupRequest =
                 new SignupRequest(
                         "aa@aa.aa",

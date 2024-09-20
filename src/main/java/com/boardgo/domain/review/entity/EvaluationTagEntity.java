@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,7 +16,13 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "evaluation_tag")
+@Table(
+        name = "evaluation_tag",
+        indexes = {
+            @Index(
+                    name = "idx_evaluation_tag_id_evaluationType",
+                    columnList = "evaluation_tag_id,evaluationType")
+        })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EvaluationTagEntity {
 
