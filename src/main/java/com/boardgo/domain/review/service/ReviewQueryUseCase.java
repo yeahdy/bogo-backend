@@ -25,6 +25,4 @@ public interface ReviewQueryUseCase {
     Double getAverageRating(Long revieweeId);
 
     MyEvaluationTagsResponse getMyEvaluationTags(Long userId);
-
-    Double getRating(Long userId);
 }

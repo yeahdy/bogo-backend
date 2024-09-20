@@ -75,7 +75,7 @@ public class MeetingQueryFacadeImpl implements MeetingQueryFacade {
 
         MeetingDetailResponse meetingDetailResponse =
                 meetingQueryUseCase.getMeetingDetailById(meetingId, userId);
-        Double rating = reviewQueryUseCase.getRating(meetingDetailResponse.userId());
+        Double rating = reviewQueryUseCase.getAverageRating(meetingDetailResponse.userId());
 
         return meetingMapper.toMeetingResponse(
                 meetingDetailResponse,

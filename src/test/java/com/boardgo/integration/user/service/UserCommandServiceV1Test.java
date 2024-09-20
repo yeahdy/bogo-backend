@@ -48,7 +48,8 @@ public class UserCommandServiceV1Test extends IntegrationTestSupport {
     void 닉네임이_중복일_경우_예외가_발생한다() {
         // given
         userCommandUseCase.save(
-                new SignupRequest("aa@aa.aa", "nickname", "password", List.of("prTag1", "prTag2")));
+                new SignupRequest(
+                        "aa@aa.aa", "nickname", "password", List.of("prTag1", "prTag2"), null));
         UserInfoEntity user = userRepository.save(localUserInfoEntity());
         UserPersonalInfoUpdateRequest updateRequest =
                 new UserPersonalInfoUpdateRequest("nickname", "test12!@");

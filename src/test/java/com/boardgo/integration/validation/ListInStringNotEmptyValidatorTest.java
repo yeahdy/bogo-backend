@@ -2,6 +2,7 @@ package com.boardgo.integration.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.boardgo.domain.termsconditions.controller.request.TermsConditionsCreateRequest;
 import com.boardgo.domain.user.controller.request.SocialSignupRequest;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import jakarta.validation.ConstraintViolation;
@@ -21,7 +22,10 @@ public class ListInStringNotEmptyValidatorTest extends IntegrationTestSupport {
     void ListInStringNotEmpty_빈_문자열과_공백_문자열이_리스트에_존재하면_에러를_발생한다() {
         // Given
         SocialSignupRequest request =
-                new SocialSignupRequest("Bread", List.of("ENFJ", "", "SLEEP", " "));
+                new SocialSignupRequest(
+                        "Bread",
+                        List.of("ENFJ", "", "SLEEP", " "),
+                        List.of(new TermsConditionsCreateRequest("약관1", true)));
 
         // When
         Set<ConstraintViolation<SocialSignupRequest>> violations =

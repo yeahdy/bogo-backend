@@ -4,11 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.boardgo.domain.mapper.UserInfoMapper;
 import com.boardgo.domain.user.controller.request.SignupRequest;
-import com.boardgo.domain.user.controller.request.SocialSignupRequest;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.unittest.user.fake.FakePasswordEncoder;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +17,8 @@ public class UserInfoEntityTest {
         // given
         String encodedPassword = "12345678";
         FakePasswordEncoder fakePasswordEncoder = new FakePasswordEncoder();
-        SignupRequest signupRequest = new SignupRequest("aa@aa.aa", "nickname", "password", null);
+        SignupRequest signupRequest =
+                new SignupRequest("aa@aa.aa", "nickname", "password", null, null);
         UserInfoMapper instance = UserInfoMapper.INSTANCE;
 
         // when
@@ -34,7 +33,8 @@ public class UserInfoEntityTest {
     @DisplayName("signupRequest는 userInfoEntity로 매핑할 수 있다")
     void signupRequest는_userInfoEntity로_매핑할_수_있다() {
         // given
-        SignupRequest signupRequest = new SignupRequest("aa@aa.aa", "nickname", "password", null);
+        SignupRequest signupRequest =
+                new SignupRequest("aa@aa.aa", "nickname", "password", null, null);
         UserInfoMapper instance = UserInfoMapper.INSTANCE;
         // when
         UserInfoEntity userInfo = instance.toUserInfoEntity(signupRequest);
@@ -48,7 +48,7 @@ public class UserInfoEntityTest {
     @DisplayName("userInfoEntity는 닉네임을 변경할 수 있다")
     void userInfoEntity는_닉네임을_변경할_수_있다() {
         // given
-        SocialSignupRequest request = new SocialSignupRequest("changeName", List.of("Happy"));
+        String nickName = "changeName";
         UserInfoEntity userInfoEntity =
                 UserInfoEntity.builder()
                         .id(1L)
@@ -56,9 +56,9 @@ public class UserInfoEntityTest {
                         .providerType(ProviderType.GOOGLE)
                         .build();
         // when
-        userInfoEntity.updateNickname(request.nickName());
+        userInfoEntity.updateNickname(nickName);
         // then
-        assertThat(userInfoEntity.getNickName()).isEqualTo(request.nickName());
+        assertThat(userInfoEntity.getNickName()).isEqualTo(nickName);
         assertThat(userInfoEntity.getNickName()).isNotBlank();
     }
 

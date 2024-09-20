@@ -1,7 +1,8 @@
 package com.boardgo.domain.review.service;
 
-import static com.boardgo.common.utils.CustomStringUtils.*;
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
+import static com.boardgo.common.utils.CustomStringUtils.stringToLongList;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNoSuchElementException;
@@ -34,7 +35,6 @@ import com.boardgo.domain.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -213,9 +213,9 @@ public class ReviewQueryServiceV1 implements ReviewQueryUseCase {
 
     @Override
     public MyReviewsResponse getMyReviews(Long userId) {
-        Double averageRating =
-                Optional.ofNullable(reviewRepository.findRatingAvgByRevieweeId(userId)).orElse(0.0);
+        Double averageRating = getAverageRating(userId);
         MyEvaluationTagsResponse myEvaluationTags = getMyEvaluationTags(userId);
+        // FIXME 스케줄러를 통해 카운팅 누적 카운팅 계산하도록 기능 개선 필요
         return new MyReviewsResponse(
                 averageRating, myEvaluationTags.positiveTags(), myEvaluationTags.negativeTags());
     }
@@ -238,11 +238,6 @@ public class ReviewQueryServiceV1 implements ReviewQueryUseCase {
         List<MyEvaluationTagResponse> negativeTags =
                 refineEvaluationTag(myNegativeEvaluationTags, evaluationTagsMap);
         return new MyEvaluationTagsResponse(positiveTags, negativeTags);
-    }
-
-    @Override
-    public Double getRating(Long userId) {
-        return Optional.ofNullable(reviewRepository.findRatingAvgByRevieweeId(userId)).orElse(0.0);
     }
 
     /***

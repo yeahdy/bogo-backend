@@ -1,28 +1,18 @@
 package com.boardgo.integration.user.controller;
 
 import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
-import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
-import static com.boardgo.integration.data.UserInfoData.userInfoEntityData;
 import static io.restassured.RestAssured.given;
-import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
-import static org.springframework.restdocs.payload.JsonFieldType.STRING;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
-import com.boardgo.domain.user.controller.request.SocialSignupRequest;
-import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.support.RestDocsTestSupport;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.RequestFieldsSnippet;
 
 public class UserDocsTest extends RestDocsTestSupport {
 
@@ -75,43 +65,5 @@ public class UserDocsTest extends RestDocsTestSupport {
                 .get("/check-nickname")
                 .then()
                 .statusCode(HttpStatus.OK.value());
-    }
-
-    @Test
-    @DisplayName("소셜로그인 시 서비스 회원가입을 한다")
-    void 소셜로그인_시_서비스_회원가입을_한다() {
-        userRepository.save(
-                userInfoEntityData("abc123@google.com", "googoo")
-                        .providerType(ProviderType.GOOGLE)
-                        .password(null)
-                        .build());
-
-        SocialSignupRequest socialSignupRequest =
-                new SocialSignupRequest("Bread", List.of("ENFJ", "HAPPY"));
-
-        given(this.spec)
-                .port(port)
-                .log()
-                .all()
-                .header(API_VERSION_HEADER, "1")
-                .header(AUTHORIZATION, testAccessToken)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .filter(document("social-signup", getSocialSignupRequestFieldsSnippet()))
-                .body(socialSignupRequest)
-                .urlEncodingEnabled(false)
-                .when()
-                .post("/social/signup")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .log()
-                .ifError()
-                .extract();
-    }
-
-    private RequestFieldsSnippet getSocialSignupRequestFieldsSnippet() {
-        return requestFields(
-                fieldWithPath("nickName").type(STRING).description("닉네임"),
-                fieldWithPath("prTags").type(ARRAY).description("PR태그").optional());
     }
 }

@@ -97,34 +97,6 @@ include::{snippets}/reissue/request-cookies.adoc[]
 
 '''
 
-=== *소셜 로그인 토큰 발급*
-
-==== *요청*
-
-include::{snippets}/token/http-request.adoc[]
-- header
-include::{snippets}/token/request-headers.adoc[]
-- cookie
-include::{snippets}/token/request-cookies.adoc[]
-
-==== *응답*
-
-- header
-
-include::{snippets}/token/response-headers.adoc[]
-include::{snippets}/social-signup/http-response.adoc[]
-
-- 에러 HTTP 상태 코드
-
-|===
-| errorCode | messages
-
-| 4005
-| 쿠키가 존재하지 않습니다
-|===
-
-'''
-
 === *소셜 회원가입*
 
 ==== *요청*
