@@ -51,7 +51,7 @@ public class ReviewEntity extends BaseEntity {
 
     @Convert(converter = BooleanConverter.class)
     @Column(columnDefinition = "varchar(1)")
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
     @Builder
     public ReviewEntity(
