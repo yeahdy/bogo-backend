@@ -25,6 +25,7 @@ import com.boardgo.domain.meeting.service.MeetingParticipantCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantSubQueryUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantWaitingCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
+import com.boardgo.domain.meeting.service.response.BoardGameByMeetingIdResponse;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -109,13 +110,16 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
     public void updateMeeting(
             MeetingUpdateRequest updateRequest, Long userId, MultipartFile imageFile) {
         MeetingEntity meeting = meetingQueryUseCase.getMeeting(updateRequest.id());
-        log.info("userId : {}, meeting.WriterId: {}", userId, meeting.getId());
         validateUserIsWriter(userId, meeting);
         Long meetingId = meeting.getId();
 
+        log.info("update limitCount : {}", updateRequest.limitParticipant());
         MeetingParticipantSubEntity meetingParticipantSubEntity =
                 meetingParticipantSubQueryUseCase.getByMeetingId(meetingId);
-        if (!meetingParticipantSubEntity.isParticipated(updateRequest.limitParticipant())) {
+        log.info("subentity limitCount : {}", meetingParticipantSubEntity.getParticipantCount());
+        if (updateRequest.limitParticipant() <= 1
+                || meetingParticipantSubEntity.getParticipantCount()
+                        > updateRequest.limitParticipant()) {
             throw new CustomIllegalArgumentException("현재 참여한 인원보다 최대 인원수가 커야합니다.");
         }
 
@@ -136,12 +140,22 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
 
     private String updateImage(
             MultipartFile imageFile, List<Long> boardGameIdList, MeetingEntity meeting) {
-        if ((Objects.isNull(imageFile) && Objects.isNull(boardGameIdList))
-                || (Objects.nonNull(meeting.getThumbnail())
-                        && meeting.getThumbnail().startsWith("meeting"))) {
+        // 1. 이미지 파일 수정 X, 보드게임 수정 X
+        // 2. 이미지 파일 수정 X, 보드게임 수정 O, thumbnail 사용자 등록 이미지인 경우
+        if (Objects.isNull(imageFile)
+                && (Objects.isNull(boardGameIdList)
+                        || (Objects.nonNull(meeting.getThumbnail())
+                                && meeting.getThumbnail().startsWith("meeting")))) {
             return meeting.getThumbnail();
         } else {
             s3Service.deleteFile(meeting.getThumbnail());
+            if (Objects.isNull(boardGameIdList)) {
+                List<Long> meetingBoardGameIdList =
+                        boardGameQueryUseCase.findMeetingDetailByMeetingId(meeting.getId()).stream()
+                                .map(BoardGameByMeetingIdResponse::boardGameId)
+                                .toList();
+                return registerImage(meetingBoardGameIdList, imageFile);
+            }
             return registerImage(boardGameIdList, imageFile);
         }
     }

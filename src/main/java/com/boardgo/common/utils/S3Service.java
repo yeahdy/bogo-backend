@@ -1,5 +1,7 @@
 package com.boardgo.common.utils;
 
+import static com.boardgo.common.constant.S3BucketConstant.*;
+
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -52,6 +54,9 @@ public class S3Service {
 
     public void deleteFile(String fileName) {
         try {
+            if (fileName.startsWith(BOARDGAME)) {
+                return;
+            }
             amazonS3Client.deleteObject(bucket, fileName);
         } catch (SdkClientException sce) {
             throw new CustomS3Exception(sce.getMessage());

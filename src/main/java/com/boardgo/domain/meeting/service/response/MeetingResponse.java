@@ -24,7 +24,7 @@ public record MeetingResponse(
         MeetingState state,
         Integer shareCount,
         Long viewCount,
-        Long createMeetingCount,
+        Long userWritingCount,
         List<String> genres,
         Long totalParticipantCount,
         List<UserParticipantResponse> userParticipantResponseList,

@@ -116,7 +116,7 @@ public class MeetingQueryFacadeImplTest extends IntegrationTestSupport {
         assertThat(result.limitParticipant()).isEqualTo(meetingEntity.getLimitParticipant());
         assertThat(result.state()).isEqualTo(meetingEntity.getState());
         assertThat(result.shareCount()).isEqualTo(0L);
-        assertThat(result.createMeetingCount()).isEqualTo(1L);
+        assertThat(result.userWritingCount()).isEqualTo(1L);
         assertThat(result.likeStatus()).isEqualTo("N");
         assertThat(result.userParticipantResponseList())
                 .extracting(UserParticipantResponse::userId)
@@ -197,7 +197,7 @@ public class MeetingQueryFacadeImplTest extends IntegrationTestSupport {
         assertThat(result.limitParticipant()).isEqualTo(meetingEntity.getLimitParticipant());
         assertThat(result.state()).isEqualTo(meetingEntity.getState());
         assertThat(result.shareCount()).isEqualTo(0L);
-        assertThat(result.createMeetingCount()).isEqualTo(1L);
+        assertThat(result.userWritingCount()).isEqualTo(1L);
         assertThat(result.likeStatus()).isEqualTo("Y");
         assertThat(result.userParticipantResponseList())
                 .extracting(UserParticipantResponse::userId)
@@ -277,7 +277,7 @@ public class MeetingQueryFacadeImplTest extends IntegrationTestSupport {
         assertThat(result.limitParticipant()).isEqualTo(meetingEntity.getLimitParticipant());
         assertThat(result.state()).isEqualTo(meetingEntity.getState());
         assertThat(result.shareCount()).isEqualTo(0L);
-        assertThat(result.createMeetingCount()).isEqualTo(1L);
+        assertThat(result.userWritingCount()).isEqualTo(1L);
         assertThat(result.likeStatus()).isEqualTo("N");
         assertThat(result.userParticipantResponseList())
                 .extracting(UserParticipantResponse::userId)
@@ -359,7 +359,7 @@ public class MeetingQueryFacadeImplTest extends IntegrationTestSupport {
         assertThat(result.limitParticipant()).isEqualTo(meetingEntity.getLimitParticipant());
         assertThat(result.state()).isEqualTo(meetingEntity.getState());
         assertThat(result.shareCount()).isEqualTo(0L);
-        assertThat(result.createMeetingCount()).isEqualTo(1L);
+        assertThat(result.userWritingCount()).isEqualTo(1L);
         assertThat(result.likeStatus()).isEqualTo("N");
         assertThat(result.userParticipantResponseList())
                 .extracting(UserParticipantResponse::userId)

@@ -497,7 +497,7 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("shareCount")
                                                 .type(JsonFieldType.NUMBER)
                                                 .description("모임 공유 수"),
-                                        fieldWithPath("createMeetingCount")
+                                        fieldWithPath("userWritingCount")
                                                 .type(JsonFieldType.NUMBER)
                                                 .description("작성자의 모임 개설 횟수"),
                                         fieldWithPath("userParticipantResponseList")

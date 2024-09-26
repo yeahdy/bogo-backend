@@ -45,7 +45,7 @@ public class TestBoardGameInitializer {
                             .maxPeople(3 + i)
                             .maxPlaytime(100 + i)
                             .minPlaytime(10 + i)
-                            .thumbnail("thumbnail" + i)
+                            .thumbnail("boardgame/thumbnail" + i)
                             .build();
             BoardGameEntity savedBoardGame = boardGameRepository.save(entity);
             for (int j = 0; j <= i; j++) {
@@ -77,7 +77,7 @@ public class TestBoardGameInitializer {
                             .maxPeople(3 + i)
                             .maxPlaytime(100 + i)
                             .minPlaytime(10 + i)
-                            .thumbnail("thumbnail" + i)
+                            .thumbnail("boardgame/thumbnail" + i)
                             .build();
             BoardGameEntity savedBoardGame = boardGameRepository.save(entity);
             for (int j = 0; j <= i; j++) {

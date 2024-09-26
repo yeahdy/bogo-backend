@@ -32,7 +32,9 @@ public class BoardGameQueryServiceV1Test extends IntegrationTestSupport {
         // then
         System.out.println(result);
         assertThat(result.getContent().getFirst()).extracting("title").isEqualTo("boardTitle5");
-        assertThat(result.getContent().getFirst()).extracting("thumbnail").isEqualTo("thumbnail5");
+        assertThat(result.getContent().getFirst())
+                .extracting("thumbnail")
+                .isEqualTo("boardgame/thumbnail5");
     }
 
     @Test
