@@ -9,6 +9,17 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
+
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingUpdateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
@@ -26,15 +37,6 @@ import com.boardgo.integration.support.RestDocsTestSupport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
 
 public class MeetingDocsTest extends RestDocsTestSupport {
 
@@ -193,7 +195,7 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                         "35.12321312",
                         "1232.213213213",
                         "updateAddress",
-                        "updateLocation",
+                        "updateLocation", false,
                         LocalDateTime.now().plusDays(1),
                         List.of(3L, 4L));
         // when
@@ -227,6 +229,9 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("content")
                                                 .type(JsonFieldType.STRING)
                                                 .description("모임 내용"),
+                                        fieldWithPath("isDeleteThumbnail")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("모임 썸네일 지우는 여부 (true / false) 무조건 둘 중 하나 반환"),
                                         fieldWithPath("type")
                                                 .type(JsonFieldType.STRING)
                                                 .description("모임 타입 (FREE or ACCEPT)"),
@@ -300,6 +305,10 @@ public class MeetingDocsTest extends RestDocsTestSupport {
                                                 .description(
                                                         "검색 타입: TITLE, CONTENT, ALL(제목 or 내용 중 포함되면 가져옴)")
                                                 .optional(),
+                                    parameterWithName("state")
+                                        .description(
+                                            "null -> 진행 중 상태만 / COMPLETE -> 진행 중 상태 / 모집 완료된 상태 모두 가져옴")
+                                        .optional(),
                                         parameterWithName("city").description("도시 필터").optional(),
                                         parameterWithName("county")
                                                 .description("County 필터")

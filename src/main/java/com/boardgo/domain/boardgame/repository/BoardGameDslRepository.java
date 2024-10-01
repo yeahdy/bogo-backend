@@ -1,16 +1,19 @@
 package com.boardgo.domain.boardgame.repository;
 
-import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
-import com.boardgo.domain.boardgame.repository.projection.BoardGameSearchProjection;
-import com.boardgo.domain.boardgame.repository.projection.SituationBoardGameProjection;
-import com.boardgo.domain.boardgame.service.response.GenreSearchResponse;
-import com.boardgo.domain.meeting.service.response.BoardGameByMeetingIdResponse;
 import java.util.List;
 import java.util.Map;
 
+import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
+import com.boardgo.domain.boardgame.repository.projection.BoardGameByMeetingIdProjection;
+import com.boardgo.domain.boardgame.repository.projection.BoardGameSearchProjection;
+import com.boardgo.domain.boardgame.repository.projection.SituationBoardGameProjection;
+import com.boardgo.domain.boardgame.service.response.GenreSearchResponse;
+
 public interface BoardGameDslRepository {
 
-    List<BoardGameByMeetingIdResponse> findMeetingDetailByMeetingId(Long meetingId);
+    List<BoardGameByMeetingIdProjection> findMeetingDetailByMeetingId(Long meetingId);
+
+    BoardGameByMeetingIdProjection findFirstMeetingDetailByMeetingId(Long meetingId);
 
     List<SituationBoardGameProjection> findByMaxPeopleBetween(int maxPeople);
 

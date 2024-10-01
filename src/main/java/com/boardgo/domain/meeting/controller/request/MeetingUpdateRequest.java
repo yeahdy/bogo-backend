@@ -1,13 +1,15 @@
 package com.boardgo.domain.meeting.controller.request;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.boardgo.common.validator.annotation.AllowedValues;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import java.time.LocalDateTime;
-import java.util.List;
 
 public record MeetingUpdateRequest(
         @NotNull Long id,
@@ -21,5 +23,6 @@ public record MeetingUpdateRequest(
         @NotEmpty String longitude,
         @NotEmpty String detailAddress,
         @NotEmpty String locationName,
+		boolean isDeleteThumbnail,
         @Future @NotNull @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime meetingDatetime,
         List<Long> boardGameIdList) {}

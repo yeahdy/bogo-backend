@@ -1,5 +1,12 @@
 package com.boardgo.domain.boardgame.repository;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Repository;
+
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
 import com.boardgo.domain.boardgame.entity.QBoardGameEntity;
 import com.boardgo.domain.boardgame.entity.QBoardGameGenreEntity;
@@ -16,22 +23,16 @@ import com.boardgo.domain.boardgame.service.response.GenreSearchResponse;
 import com.boardgo.domain.mapper.BoardGameGenreMapper;
 import com.boardgo.domain.mapper.BoardGameMapper;
 import com.boardgo.domain.meeting.entity.QMeetingGameMatchEntity;
-import com.boardgo.domain.meeting.service.response.BoardGameByMeetingIdResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import jakarta.persistence.EntityManager;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import org.springframework.stereotype.Repository;
 
 @Repository
 public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
 
     private final JPAQueryFactory queryFactory;
-    private final BoardGameMapper boardGameMapper;
     private final BoardGameGenreMapper boardGameGenreMapper;
     private final QBoardGameEntity b = QBoardGameEntity.boardGameEntity;
     private final QBoardGameGenreEntity bgg = QBoardGameGenreEntity.boardGameGenreEntity;
@@ -43,14 +44,12 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
             BoardGameMapper boardGameMapper,
             BoardGameGenreMapper boardGameGenreMapper) {
         this.queryFactory = new JPAQueryFactory(entityManager);
-        this.boardGameMapper = boardGameMapper;
         this.boardGameGenreMapper = boardGameGenreMapper;
     }
 
     @Override
-    public List<BoardGameByMeetingIdResponse> findMeetingDetailByMeetingId(Long meetingId) {
-        List<BoardGameByMeetingIdProjection> queryResults =
-                queryFactory
+    public List<BoardGameByMeetingIdProjection> findMeetingDetailByMeetingId(Long meetingId) {
+     return queryFactory
                         .select(
                                 new QBoardGameByMeetingIdProjection(
                                         b.id,
@@ -68,7 +67,28 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
                         .where(mgm.meetingId.eq(meetingId))
                         .groupBy(b.id)
                         .fetch();
-        return queryResults.stream().map(boardGameMapper::toBoardGameByMeetingIdResponse).toList();
+    }
+
+    @Override
+    public BoardGameByMeetingIdProjection findFirstMeetingDetailByMeetingId(Long meetingId) {
+        return queryFactory
+            .select(
+                new QBoardGameByMeetingIdProjection(
+                    b.id,
+                    b.title,
+                    b.thumbnail,
+                    Expressions.stringTemplate("GROUP_CONCAT({0})", bgg.genre)
+                        .as("genres")))
+            .from(mgm)
+            .innerJoin(b)
+            .on(mgm.boardGameId.eq(b.id))
+            .innerJoin(ggm)
+            .on(b.id.eq(ggm.boardGameId))
+            .innerJoin(bgg)
+            .on(bgg.id.eq(ggm.boardGameGenreId))
+            .where(mgm.meetingId.eq(meetingId))
+            .groupBy(b.id)
+            .fetchFirst();
     }
 
     @Override
