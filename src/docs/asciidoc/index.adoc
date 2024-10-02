@@ -396,6 +396,21 @@ include::{snippets}/meeting-list/query-parameters.adoc[]
 ==== *응답*
 
 include::{snippets}/meeting-list/http-response.adoc[]
+include::{snippets}/meeting-list/response-fields.adoc[]
+
+
+- HTTP 상태 코드
+
+|===
+| code | messages
+
+| 200
+| 데이터 존재 시
+
+| 204
+| 데이터 존재하지 않을 시
+|===
+
 
 '''
 
@@ -939,4 +954,45 @@ include::{snippets}/get-review-meeting/response-fields.adoc[]
 
 | 4040
 |작성한 모임의 리뷰 (이)가 존재하지 않습니다.
+|===
+
+'''
+
+=== *채팅방 목록 조회*
+
+==== *요청*
+
+include::{snippets}/chatroom-list/http-request.adoc[]
+
+==== *응답*
+
+include::{snippets}/chatroom-list/http-response.adoc[]
+include::{snippets}/chatroom-list/response-fields.adoc[]
+
+- HTTP 상태 코드
+
+|===
+| code | messages
+
+| 200
+| 데이터 존재 시
+
+| 204
+| 데이터 존재하지 않을 시
+|===
+
+
+|===
+| errorCode | messages
+
+| 4004
+|모임이 존재하지 않습니다 +
+회원이 존재하지 않습니다
+
+| 400
+|종료된 모임이 아닙니다 +
+모임을 함께 참여하지 않았습니다
+
+| 4002
+|이미 작성된 리뷰 입니다
 |===

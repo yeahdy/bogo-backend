@@ -9,7 +9,6 @@ env:
   AWS_CODE_DEPLOY_APPLICATION: backend-dev-cd
   AWS_CODE_DEPLOY_GROUP: backend-dev-cd-group
 
-
 jobs:
   build-with-gradle:
     runs-on: ubuntu-22.04
@@ -31,6 +30,11 @@ jobs:
         with:
           java-version: '21'
           distribution: 'corretto'
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.11.0
+        with:
+          mongodb-version: 7.0
 
       - name: gradlew에 실행 권한 부여
         run: chmod +x ./gradlew

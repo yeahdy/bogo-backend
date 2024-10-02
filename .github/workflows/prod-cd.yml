@@ -21,6 +21,11 @@ jobs:
           java-version: '21'
           distribution: 'corretto'
 
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.11.0
+        with:
+          mongodb-version: 7.0
+
       - name: Gradle 캐시 설정
         uses: actions/cache@v3
         with:

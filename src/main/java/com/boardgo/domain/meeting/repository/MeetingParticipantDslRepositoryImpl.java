@@ -1,16 +1,18 @@
 package com.boardgo.domain.meeting.repository;
 
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
+
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
 
 import com.boardgo.domain.meeting.entity.QMeetingParticipantEntity;
 import com.boardgo.domain.meeting.repository.projection.ReviewMeetingParticipantsProjection;
 import com.boardgo.domain.user.entity.QUserInfoEntity;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import jakarta.persistence.EntityManager;
-import java.util.List;
-import org.springframework.stereotype.Repository;
 
 @Repository
 public class MeetingParticipantDslRepositoryImpl implements MeetingParticipantDslRepository {
@@ -42,5 +44,13 @@ public class MeetingParticipantDslRepositoryImpl implements MeetingParticipantDs
                                                 .in(LEADER, PARTICIPANT)
                                                 .and(mp.userInfoId.notIn(revieweeIds))))
                 .fetch();
+    }
+
+    @Override
+    public List<Long> getMeetingIdByNotEqualsOut(Long userId) {
+        return queryFactory.select(mp.meetingId)
+            .from(mp)
+            .where(mp.userInfoId.eq(userId).and(mp.type.ne(OUT)))
+            .fetch();
     }
 }
