@@ -1,23 +1,23 @@
 package com.boardgo.integration.meeting.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
-import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
-import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
-import static com.boardgo.integration.data.UserInfoData.userInfoEntityData;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.getLeaderMeetingParticipantEntity;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.getOutMeetingParticipantEntity;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
-import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
-import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
-import static io.restassured.RestAssured.given;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static com.boardgo.common.constant.HeaderConstant.*;
+import static com.boardgo.integration.data.MeetingData.*;
+import static com.boardgo.integration.data.UserInfoData.*;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
+import static com.boardgo.integration.fixture.UserInfoFixture.*;
+import static io.restassured.RestAssured.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.restdocs.payload.RequestFieldsSnippet;
 
 import com.boardgo.domain.meeting.controller.request.MeetingOutRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingParticipateRequest;
@@ -29,13 +29,6 @@ import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.support.RestDocsTestSupport;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.restdocs.payload.RequestFieldsSnippet;
 
 public class MeetingParticipantDocsTest extends RestDocsTestSupport {
     @Autowired private UserRepository userRepository;
@@ -114,6 +107,55 @@ public class MeetingParticipantDocsTest extends RestDocsTestSupport {
                 .get("/meeting-participant/out/{meetingId}")
                 .then()
                 .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("사용자는 모임에 참석한 유저 리스트를 볼 수 있다")
+    void 사용자는_모임에_참석한_유저_리스트를_볼_수_있다() {
+        //given
+        UserInfoEntity leader =
+            userRepository.save(userInfoEntityData("leader@test.com", "Leader").build());
+        UserInfoEntity participant =
+            userRepository.save(userInfoEntityData("bear@test.com", "bear").build());
+        MeetingEntity meetingEntity =
+            getMeetingEntityData(leader.getId()).limitParticipant(10).build();
+        MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
+        meetingParticipantRepository.save(
+            getLeaderMeetingParticipantEntity(savedMeeting.getId(), leader.getId()));
+        meetingParticipantRepository.save(
+            getParticipantMeetingParticipantEntity(savedMeeting.getId(), participant.getId()));
+        //when
+        //then
+        given(this.spec)
+            .log()
+            .all()
+            .port(port)
+            .header(API_VERSION_HEADER, "1")
+            .header(AUTHORIZATION, testAccessToken)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .pathParams("meetingId", meetingEntity.getId())
+            .filter(
+                document(
+                    "participant-list",
+                    pathParameters(parameterWithName("meetingId").description("모임 id")),
+                    responseFields(
+                        fieldWithPath("[].userId")
+                            .type(JsonFieldType.NUMBER)
+                            .description("유저 id"),
+                        fieldWithPath("[].profileImage")
+                            .type(JsonFieldType.STRING)
+                            .description("유저 프로필 이미지"),
+                        fieldWithPath("[].nickname")
+                            .type(JsonFieldType.STRING)
+                            .description("유저 닉네임"),
+                        fieldWithPath("[].type")
+                            .type(JsonFieldType.STRING)
+                            .description("유저 타입 (LEADER / PARTICIPANT)")
+                    )))
+            .when()
+            .get("/meeting-participant/{meetingId}")
+            .then()
+            .statusCode(HttpStatus.OK.value());
     }
 
     @Test

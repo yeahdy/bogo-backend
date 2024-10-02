@@ -1,21 +1,21 @@
 package com.boardgo.domain.user.service;
 
-import static com.boardgo.common.exception.advice.dto.ErrorCode.DUPLICATE_DATA;
+import static com.boardgo.common.exception.advice.dto.ErrorCode.*;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.mapper.UserInfoMapper;
-import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
 import com.boardgo.domain.user.controller.request.EmailRequest;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.repository.projection.PersonalInfoProjection;
 import com.boardgo.domain.user.service.response.UserInfoResponse;
-import java.util.List;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
@@ -50,11 +50,6 @@ public class UserQueryServiceV1 implements UserQueryUseCase {
     public UserInfoResponse getPersonalInfo(Long userId) {
         PersonalInfoProjection personalInfoProjection = userRepository.findByUserInfoId(userId);
         return userInfoMapper.toUserInfoResponse(personalInfoProjection);
-    }
-
-    @Override
-    public List<UserParticipantResponse> findByMeetingId(Long meetingId) {
-        return userRepository.findByMeetingId(meetingId);
     }
 
     @Override

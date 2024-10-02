@@ -7,8 +7,11 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.boardgo.domain.meeting.entity.QMeetingParticipantEntity;
+import com.boardgo.domain.meeting.entity.enums.ParticipantType;
 import com.boardgo.domain.meeting.repository.projection.ReviewMeetingParticipantsProjection;
 import com.boardgo.domain.user.entity.QUserInfoEntity;
+import com.boardgo.domain.user.repository.projection.QUserParticipantProjection;
+import com.boardgo.domain.user.repository.projection.UserParticipantProjection;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -22,6 +25,19 @@ public class MeetingParticipantDslRepositoryImpl implements MeetingParticipantDs
 
     public MeetingParticipantDslRepositoryImpl(EntityManager entityManager) {
         this.queryFactory = new JPAQueryFactory(entityManager);
+    }
+
+    @Override
+    public List<UserParticipantProjection> findParticipantListByMeetingId(Long meetingId) {
+        return    queryFactory
+                .select(
+                    new QUserParticipantProjection(
+                        u.id, u.profileImage, u.nickName, mp.type))
+                .from(u)
+                .innerJoin(mp)
+                .on(mp.userInfoId.eq(u.id))
+                .where(mp.type.ne(ParticipantType.OUT).and(mp.meetingId.eq(meetingId)))
+                .fetch();
     }
 
     @Override

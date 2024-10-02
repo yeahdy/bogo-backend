@@ -912,6 +912,20 @@ include::{snippets}/get-my-review/response-fields.adoc[]
 
 '''
 
+=== *채팅방 참여자 목록 조회*
+
+==== *요청*
+
+include::{snippets}/participant-list/http-request.adoc[]
+include::{snippets}/participant-list/path-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/participant-list/http-response.adoc[]
+include::{snippets}/participant-list/response-fields.adoc[]
+
+'''
+
 === *작성할 리뷰 참여자 목록 조회*
 
 ==== *요청*

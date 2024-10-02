@@ -9,10 +9,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.boardgo.common.utils.SecurityUtils;
+import com.boardgo.domain.mapper.MeetingParticipantMapper;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.service.response.ParticipantOutResponse;
+import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
+import com.boardgo.domain.user.repository.projection.UserParticipantProjection;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class MeetingParticipantQueryServiceV1 implements MeetingParticipantQueryUseCase {
 
     private final MeetingParticipantRepository meetingParticipantRepository;
+    private final MeetingParticipantMapper meetingParticipantMapper;
 
     @Override
     public ParticipantOutResponse getOutState(Long meetingId) {
@@ -42,6 +47,11 @@ public class MeetingParticipantQueryServiceV1 implements MeetingParticipantQuery
     }
 
     @Override
+    public List<UserParticipantResponse> findByMeetingId(Long meetingId) {
+        List<UserParticipantProjection> projectionList = meetingParticipantRepository.findParticipantListByMeetingId(
+            meetingId);
+        return projectionList.stream().map(meetingParticipantMapper::toUserParticipantResponse).toList();
+      
     public List<Long> getMeetingIdByNotEqualsOut(Long userId) {
         return meetingParticipantRepository.getMeetingIdByNotEqualsOut(userId);
     }
