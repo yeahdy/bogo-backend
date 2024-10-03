@@ -14,17 +14,16 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatRoomEntity {
-	@Id
-	@Column(name = "chat_room_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @Column(name = "chat_room_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column
-	private Long meetingId;
+    @Column private Long meetingId;
 
-	@Builder
-	private ChatRoomEntity(Long id, Long meetingId) {
-		this.id = id;
-		this.meetingId = meetingId;
-	}
+    @Builder
+    private ChatRoomEntity(Long id, Long meetingId) {
+        this.id = id;
+        this.meetingId = meetingId;
+    }
 }

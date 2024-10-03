@@ -6,18 +6,6 @@ import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
 import static com.boardgo.integration.fixture.UserInfoFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
@@ -30,6 +18,16 @@ import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.response.CustomUserDetails;
 import com.boardgo.integration.support.IntegrationTestSupport;
+import java.util.ArrayList;
+import java.util.List;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class MeetingParticipantQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private UserRepository userRepository;
@@ -37,7 +35,6 @@ public class MeetingParticipantQueryServiceV1Test extends IntegrationTestSupport
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;
 
     @Autowired private MeetingParticipantQueryUseCase meetingParticipantQueryUseCase;
-
 
     @Test
     @DisplayName("모임에 참여한 회원 목록을 조회한다")
@@ -47,7 +44,7 @@ public class MeetingParticipantQueryServiceV1Test extends IntegrationTestSupport
         int userNumber = 7;
         for (int i = 0; i < userNumber; i++) {
             UserInfoEntity userInfo =
-                userInfoEntityData("participate" + i + "@naver.com", "participate" + i).build();
+                    userInfoEntityData("participate" + i + "@naver.com", "participate" + i).build();
             userInfoEntities.add(userInfo);
         }
         userRepository.saveAll(userInfoEntities);
@@ -55,25 +52,25 @@ public class MeetingParticipantQueryServiceV1Test extends IntegrationTestSupport
         Long meetingId = 1L;
         for (int i = 0; i < userNumber / 2; i++) {
             meetingParticipantRepository.save(
-                getLeaderMeetingParticipantEntity(meetingId, userInfoEntities.get(i).getId()));
+                    getLeaderMeetingParticipantEntity(meetingId, userInfoEntities.get(i).getId()));
         }
         for (int i = 3; i < userNumber - 1; i++) {
             meetingParticipantRepository.save(
-                getParticipantMeetingParticipantEntity(
-                    meetingId, userInfoEntities.get(i).getId()));
+                    getParticipantMeetingParticipantEntity(
+                            meetingId, userInfoEntities.get(i).getId()));
         }
         meetingParticipantRepository.save(
-            getOutMeetingParticipantEntity(meetingId, (long) (userNumber)));
+                getOutMeetingParticipantEntity(meetingId, (long) (userNumber)));
 
         // when
         List<UserParticipantResponse> userParticipantResponse =
-            meetingParticipantQueryUseCase.findByMeetingId(meetingId);
+                meetingParticipantQueryUseCase.findByMeetingId(meetingId);
 
         // then
         userParticipantResponse.forEach(
-            userParticipant -> {
-                assertThat(userParticipant.type()).isNotEqualTo(ParticipantType.OUT);
-            });
+                userParticipant -> {
+                    assertThat(userParticipant.type()).isNotEqualTo(ParticipantType.OUT);
+                });
     }
 
     @Test

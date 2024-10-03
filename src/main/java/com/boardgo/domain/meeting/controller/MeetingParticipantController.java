@@ -3,9 +3,16 @@ package com.boardgo.domain.meeting.controller;
 import static com.boardgo.common.constant.HeaderConstant.*;
 import static com.boardgo.common.utils.SecurityUtils.*;
 
+import com.boardgo.domain.meeting.controller.request.MeetingOutRequest;
+import com.boardgo.domain.meeting.controller.request.MeetingParticipateRequest;
+import com.boardgo.domain.meeting.service.MeetingParticipantCommandUseCase;
+import com.boardgo.domain.meeting.service.MeetingParticipantQueryUseCase;
+import com.boardgo.domain.meeting.service.response.ParticipantOutResponse;
+import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Objects;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,16 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.boardgo.domain.meeting.controller.request.MeetingOutRequest;
-import com.boardgo.domain.meeting.controller.request.MeetingParticipateRequest;
-import com.boardgo.domain.meeting.service.MeetingParticipantCommandUseCase;
-import com.boardgo.domain.meeting.service.MeetingParticipantQueryUseCase;
-import com.boardgo.domain.meeting.service.response.ParticipantOutResponse;
-import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
-
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/meeting-participant")
@@ -41,7 +38,8 @@ public class MeetingParticipantController {
     }
 
     @GetMapping(value = "/{meetingId}", headers = API_VERSION_HEADER1)
-    public ResponseEntity<List<UserParticipantResponse>> getParticipants(@PathVariable("meetingId") Long meetingId) {
+    public ResponseEntity<List<UserParticipantResponse>> getParticipants(
+            @PathVariable("meetingId") Long meetingId) {
         return ResponseEntity.ok(meetingParticipantQueryUseCase.findByMeetingId(meetingId));
     }
 

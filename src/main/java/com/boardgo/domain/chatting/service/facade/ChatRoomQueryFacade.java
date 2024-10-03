@@ -1,9 +1,8 @@
 package com.boardgo.domain.chatting.service.facade;
 
+import com.boardgo.domain.chatting.service.response.ChattingListResponse;
 import java.util.List;
 
-import com.boardgo.domain.chatting.service.response.ChattingListResponse;
-
 public interface ChatRoomQueryFacade {
-	List<ChattingListResponse> getList(Long userId);
+    List<ChattingListResponse> getList(Long userId);
 }

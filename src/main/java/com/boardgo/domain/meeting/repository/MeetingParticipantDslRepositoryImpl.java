@@ -2,10 +2,6 @@ package com.boardgo.domain.meeting.repository;
 
 import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
 
-import java.util.List;
-
-import org.springframework.stereotype.Repository;
-
 import com.boardgo.domain.meeting.entity.QMeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
 import com.boardgo.domain.meeting.repository.projection.ReviewMeetingParticipantsProjection;
@@ -14,8 +10,9 @@ import com.boardgo.domain.user.repository.projection.QUserParticipantProjection;
 import com.boardgo.domain.user.repository.projection.UserParticipantProjection;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import jakarta.persistence.EntityManager;
+import java.util.List;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class MeetingParticipantDslRepositoryImpl implements MeetingParticipantDslRepository {
@@ -29,10 +26,8 @@ public class MeetingParticipantDslRepositoryImpl implements MeetingParticipantDs
 
     @Override
     public List<UserParticipantProjection> findParticipantListByMeetingId(Long meetingId) {
-        return    queryFactory
-                .select(
-                    new QUserParticipantProjection(
-                        u.id, u.profileImage, u.nickName, mp.type))
+        return queryFactory
+                .select(new QUserParticipantProjection(u.id, u.profileImage, u.nickName, mp.type))
                 .from(u)
                 .innerJoin(mp)
                 .on(mp.userInfoId.eq(u.id))
@@ -64,9 +59,10 @@ public class MeetingParticipantDslRepositoryImpl implements MeetingParticipantDs
 
     @Override
     public List<Long> getMeetingIdByNotEqualsOut(Long userId) {
-        return queryFactory.select(mp.meetingId)
-            .from(mp)
-            .where(mp.userInfoId.eq(userId).and(mp.type.ne(OUT)))
-            .fetch();
+        return queryFactory
+                .select(mp.meetingId)
+                .from(mp)
+                .where(mp.userInfoId.eq(userId).and(mp.type.ne(OUT)))
+                .fetch();
     }
 }

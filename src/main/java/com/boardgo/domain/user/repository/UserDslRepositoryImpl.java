@@ -2,10 +2,6 @@ package com.boardgo.domain.user.repository;
 
 import static com.querydsl.core.group.GroupBy.*;
 
-import java.util.Map;
-
-import org.springframework.stereotype.Repository;
-
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.user.entity.QUserInfoEntity;
 import com.boardgo.domain.user.entity.QUserPrTagEntity;
@@ -13,8 +9,9 @@ import com.boardgo.domain.user.repository.projection.PersonalInfoProjection;
 import com.boardgo.domain.user.repository.projection.QPersonalInfoProjection;
 import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import jakarta.persistence.EntityManager;
+import java.util.Map;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserDslRepositoryImpl implements UserDslRepository {
@@ -25,8 +22,6 @@ public class UserDslRepositoryImpl implements UserDslRepository {
     public UserDslRepositoryImpl(EntityManager entityManager) {
         this.queryFactory = new JPAQueryFactory(JPQLTemplates.DEFAULT, entityManager);
     }
-
-
 
     @Override
     public PersonalInfoProjection findByUserInfoId(Long userId) {

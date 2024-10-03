@@ -1,12 +1,5 @@
 package com.boardgo.domain.boardgame.repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Repository;
-
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
 import com.boardgo.domain.boardgame.entity.QBoardGameEntity;
 import com.boardgo.domain.boardgame.entity.QBoardGameGenreEntity;
@@ -26,8 +19,12 @@ import com.boardgo.domain.meeting.entity.QMeetingGameMatchEntity;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import jakarta.persistence.EntityManager;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
@@ -49,46 +46,46 @@ public class BoardGameDslRepositoryImpl implements BoardGameDslRepository {
 
     @Override
     public List<BoardGameByMeetingIdProjection> findMeetingDetailByMeetingId(Long meetingId) {
-     return queryFactory
-                        .select(
-                                new QBoardGameByMeetingIdProjection(
-                                        b.id,
-                                        b.title,
-                                        b.thumbnail,
-                                        Expressions.stringTemplate("GROUP_CONCAT({0})", bgg.genre)
-                                                .as("genres")))
-                        .from(mgm)
-                        .innerJoin(b)
-                        .on(mgm.boardGameId.eq(b.id))
-                        .innerJoin(ggm)
-                        .on(b.id.eq(ggm.boardGameId))
-                        .innerJoin(bgg)
-                        .on(bgg.id.eq(ggm.boardGameGenreId))
-                        .where(mgm.meetingId.eq(meetingId))
-                        .groupBy(b.id)
-                        .fetch();
+        return queryFactory
+                .select(
+                        new QBoardGameByMeetingIdProjection(
+                                b.id,
+                                b.title,
+                                b.thumbnail,
+                                Expressions.stringTemplate("GROUP_CONCAT({0})", bgg.genre)
+                                        .as("genres")))
+                .from(mgm)
+                .innerJoin(b)
+                .on(mgm.boardGameId.eq(b.id))
+                .innerJoin(ggm)
+                .on(b.id.eq(ggm.boardGameId))
+                .innerJoin(bgg)
+                .on(bgg.id.eq(ggm.boardGameGenreId))
+                .where(mgm.meetingId.eq(meetingId))
+                .groupBy(b.id)
+                .fetch();
     }
 
     @Override
     public BoardGameByMeetingIdProjection findFirstMeetingDetailByMeetingId(Long meetingId) {
         return queryFactory
-            .select(
-                new QBoardGameByMeetingIdProjection(
-                    b.id,
-                    b.title,
-                    b.thumbnail,
-                    Expressions.stringTemplate("GROUP_CONCAT({0})", bgg.genre)
-                        .as("genres")))
-            .from(mgm)
-            .innerJoin(b)
-            .on(mgm.boardGameId.eq(b.id))
-            .innerJoin(ggm)
-            .on(b.id.eq(ggm.boardGameId))
-            .innerJoin(bgg)
-            .on(bgg.id.eq(ggm.boardGameGenreId))
-            .where(mgm.meetingId.eq(meetingId))
-            .groupBy(b.id)
-            .fetchFirst();
+                .select(
+                        new QBoardGameByMeetingIdProjection(
+                                b.id,
+                                b.title,
+                                b.thumbnail,
+                                Expressions.stringTemplate("GROUP_CONCAT({0})", bgg.genre)
+                                        .as("genres")))
+                .from(mgm)
+                .innerJoin(b)
+                .on(mgm.boardGameId.eq(b.id))
+                .innerJoin(ggm)
+                .on(b.id.eq(ggm.boardGameId))
+                .innerJoin(bgg)
+                .on(bgg.id.eq(ggm.boardGameGenreId))
+                .where(mgm.meetingId.eq(meetingId))
+                .groupBy(b.id)
+                .fetchFirst();
     }
 
     @Override

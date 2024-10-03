@@ -7,17 +7,6 @@ import static com.boardgo.integration.fixture.UserInfoFixture.*;
 import static com.boardgo.integration.fixture.UserPrTagFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.List;
-import java.util.stream.Stream;
-
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
@@ -34,6 +23,15 @@ import com.boardgo.domain.user.service.response.OtherPersonalInfoResponse;
 import com.boardgo.domain.user.service.response.UserInfoResponse;
 import com.boardgo.domain.user.service.response.UserPersonalInfoResponse;
 import com.boardgo.integration.support.IntegrationTestSupport;
+import java.util.List;
+import java.util.stream.Stream;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserQueryServiceV1Test extends IntegrationTestSupport {
     @Autowired private UserRepository userRepository;
@@ -164,8 +162,6 @@ public class UserQueryServiceV1Test extends IntegrationTestSupport {
         // then
         assertThat(otherPersonalInfo.meetingCount()).isEqualTo(participationCount);
     }
-
-
 
     private Long getUserId(UserInfoEntity userInfo) {
         UserInfoEntity userInfoEntity = userRepository.save(userInfo);

@@ -2,12 +2,6 @@ package com.boardgo.domain.meeting.service;
 
 import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.boardgo.common.utils.SecurityUtils;
 import com.boardgo.domain.mapper.MeetingParticipantMapper;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
@@ -16,8 +10,11 @@ import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.service.response.ParticipantOutResponse;
 import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
 import com.boardgo.domain.user.repository.projection.UserParticipantProjection;
-
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
@@ -47,9 +44,11 @@ public class MeetingParticipantQueryServiceV1 implements MeetingParticipantQuery
 
     @Override
     public List<UserParticipantResponse> findByMeetingId(Long meetingId) {
-        List<UserParticipantProjection> projectionList = meetingParticipantRepository.findParticipantListByMeetingId(
-            meetingId);
-        return projectionList.stream().map(meetingParticipantMapper::toUserParticipantResponse).toList();
+        List<UserParticipantProjection> projectionList =
+                meetingParticipantRepository.findParticipantListByMeetingId(meetingId);
+        return projectionList.stream()
+                .map(meetingParticipantMapper::toUserParticipantResponse)
+                .toList();
     }
 
     @Override
