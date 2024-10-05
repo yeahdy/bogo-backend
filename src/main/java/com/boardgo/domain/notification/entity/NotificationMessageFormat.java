@@ -1,4 +1,4 @@
-package com.boardgo.notification.entity;
+package com.boardgo.domain.notification.entity;
 
 import com.boardgo.common.domain.BaseEntity;
 import jakarta.persistence.Column;

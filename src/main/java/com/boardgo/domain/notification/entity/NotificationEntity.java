@@ -1,4 +1,4 @@
-package com.boardgo.notification.entity;
+package com.boardgo.domain.notification.entity;
 
 import com.boardgo.common.converter.BooleanConverter;
 import com.boardgo.common.domain.BaseEntity;
@@ -29,7 +29,7 @@ import org.hibernate.annotations.Comment;
             @Index(name = "idx_send_date_time_is_sent", columnList = "send_date_time,is_sent")
         })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notification extends BaseEntity {
+public class NotificationEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,7 +65,7 @@ public class Notification extends BaseEntity {
     private Boolean isSent;
 
     @Builder
-    private Notification(
+    private NotificationEntity(
             Boolean isRead,
             Long userInfoId,
             String pathUrl,

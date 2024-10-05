@@ -1,4 +1,4 @@
-package com.boardgo.notification.entity;
+package com.boardgo.domain.notification.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
