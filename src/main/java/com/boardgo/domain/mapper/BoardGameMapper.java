@@ -1,19 +1,23 @@
 package com.boardgo.domain.mapper;
 
-import com.boardgo.domain.boardgame.controller.request.BoardGameCreateRequest;
-import com.boardgo.domain.boardgame.entity.BoardGameEntity;
-import com.boardgo.domain.boardgame.repository.projection.BoardGameByMeetingIdProjection;
-import com.boardgo.domain.boardgame.repository.projection.BoardGameSearchProjection;
-import com.boardgo.domain.boardgame.service.response.BoardGameListResponse;
-import com.boardgo.domain.boardgame.service.response.BoardGameSearchResponse;
-import com.boardgo.domain.boardgame.service.response.GenreSearchResponse;
-import com.boardgo.domain.meeting.service.response.BoardGameByMeetingIdResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+
+import com.boardgo.domain.boardgame.controller.request.BoardGameCreateRequest;
+import com.boardgo.domain.boardgame.entity.BoardGameEntity;
+import com.boardgo.domain.boardgame.repository.projection.BoardGameByMeetingIdProjection;
+import com.boardgo.domain.boardgame.repository.projection.BoardGameProjection;
+import com.boardgo.domain.boardgame.repository.projection.BoardGameSearchProjection;
+import com.boardgo.domain.boardgame.service.response.BoardGameByMeetingIdResponse;
+import com.boardgo.domain.boardgame.service.response.BoardGameListResponse;
+import com.boardgo.domain.boardgame.service.response.BoardGameResponse;
+import com.boardgo.domain.boardgame.service.response.BoardGameSearchResponse;
+import com.boardgo.domain.boardgame.service.response.GenreSearchResponse;
 
 @Mapper
 public interface BoardGameMapper {
@@ -48,6 +52,8 @@ public interface BoardGameMapper {
                 boardGameByMeetingIdProjection.thumbnail(),
                 Set.of(boardGameByMeetingIdProjection.genres().split(",")));
     }
+
+    BoardGameResponse toBoardGameResponse(BoardGameProjection boardGameProjection);
 
     default List<BoardGameSearchResponse> toBoardGameSearchResponseList(
             List<BoardGameSearchProjection> boardGameSearchProjectionList,

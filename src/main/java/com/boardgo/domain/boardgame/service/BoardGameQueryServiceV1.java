@@ -1,22 +1,26 @@
 package com.boardgo.domain.boardgame.service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
 import com.boardgo.domain.boardgame.entity.BoardGameEntity;
 import com.boardgo.domain.boardgame.repository.BoardGameRepository;
 import com.boardgo.domain.boardgame.repository.projection.BoardGameSearchProjection;
+import com.boardgo.domain.boardgame.service.response.BoardGameByMeetingIdResponse;
+import com.boardgo.domain.boardgame.service.response.BoardGameResponse;
 import com.boardgo.domain.boardgame.service.response.BoardGameSearchResponse;
 import com.boardgo.domain.boardgame.service.response.GenreSearchResponse;
 import com.boardgo.domain.mapper.BoardGameMapper;
-import com.boardgo.domain.meeting.service.response.BoardGameByMeetingIdResponse;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -52,9 +56,9 @@ public class BoardGameQueryServiceV1 implements BoardGameQueryUseCase {
     }
 
     @Override
-    public BoardGameByMeetingIdResponse findFirstMeetingDetailByMeetingId(Long meetingId) {
-        return boardGameMapper.toBoardGameByMeetingIdResponse(
-                boardGameRepository.findFirstMeetingDetailByMeetingId(meetingId));
+    public BoardGameResponse findFirstByMeetingId(Long meetingId) {
+        return boardGameMapper.toBoardGameResponse(
+                boardGameRepository.findFirstByMeetingId(meetingId));
     }
 
     @Override

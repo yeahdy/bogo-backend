@@ -1,4 +1,4 @@
-package com.boardgo.domain.meeting.service.response;
+package com.boardgo.domain.boardgame.service.response;
 
 import java.util.Set;
 
