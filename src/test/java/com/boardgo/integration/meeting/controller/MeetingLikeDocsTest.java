@@ -47,7 +47,6 @@ public class MeetingLikeDocsTest extends RestDocsTestSupport {
                 .port(port)
                 .header(API_VERSION_HEADER, "1")
                 .header(AUTHORIZATION, testAccessToken)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .queryParam("meetingIdList", "1,2,3")
                 .filter(
                         document(

@@ -3,14 +3,6 @@ package com.boardgo.domain.meeting.service.facade;
 import static com.boardgo.common.constant.S3BucketConstant.*;
 import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.common.utils.FileUtils;
@@ -33,9 +25,14 @@ import com.boardgo.domain.meeting.service.MeetingParticipantCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantSubQueryUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantWaitingCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
-
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -156,10 +153,9 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
                 || (meeting.getThumbnail().startsWith(BOARDGAME)
                         && Objects.nonNull(updateRequest.boardGameIdList()))) {
             s3Service.deleteFile(meeting.getThumbnail());
-            if (Objects.isNull(imageFile) && (Objects.isNull(boardGameIdList) || boardGameIdList.isEmpty())) {
-                return boardGameQueryUseCase
-                        .findFirstByMeetingId(meeting.getId())
-                        .thumbnail();
+            if (Objects.isNull(imageFile)
+                    && (Objects.isNull(boardGameIdList) || boardGameIdList.isEmpty())) {
+                return boardGameQueryUseCase.findFirstByMeetingId(meeting.getId()).thumbnail();
             }
             return registerImage(boardGameIdList.getFirst(), imageFile);
         } else {

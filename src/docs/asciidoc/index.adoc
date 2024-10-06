@@ -1033,3 +1033,26 @@ include::{snippets}/get-notifications/response-fields.adoc[]
 | 204
 | 데이터 존재하지 않을 시
 |===
+
+'''
+
+=== *알림 메세지 읽기*
+
+==== *요청*
+
+include::{snippets}/patch-read-notification/http-request.adoc[]
+include::{snippets}/patch-read-notification/query-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/patch-read-notification/http-response.adoc[]
+
+- HTTP 에러 상태 코드
+
+|===
+| errorCode | messages
+
+| 4040
+|알림 (이)가 존재하지 않습니다.
+
+|===

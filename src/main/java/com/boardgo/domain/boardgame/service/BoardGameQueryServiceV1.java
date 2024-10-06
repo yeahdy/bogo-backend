@@ -1,14 +1,5 @@
 package com.boardgo.domain.boardgame.service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.domain.boardgame.controller.request.BoardGameSearchRequest;
 import com.boardgo.domain.boardgame.entity.BoardGameEntity;
@@ -19,8 +10,14 @@ import com.boardgo.domain.boardgame.service.response.BoardGameResponse;
 import com.boardgo.domain.boardgame.service.response.BoardGameSearchResponse;
 import com.boardgo.domain.boardgame.service.response.GenreSearchResponse;
 import com.boardgo.domain.mapper.BoardGameMapper;
-
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

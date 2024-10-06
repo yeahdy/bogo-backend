@@ -1,13 +1,5 @@
 package com.boardgo.domain.mapper;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
-
 import com.boardgo.domain.boardgame.controller.request.BoardGameCreateRequest;
 import com.boardgo.domain.boardgame.entity.BoardGameEntity;
 import com.boardgo.domain.boardgame.repository.projection.BoardGameByMeetingIdProjection;
@@ -18,6 +10,12 @@ import com.boardgo.domain.boardgame.service.response.BoardGameListResponse;
 import com.boardgo.domain.boardgame.service.response.BoardGameResponse;
 import com.boardgo.domain.boardgame.service.response.BoardGameSearchResponse;
 import com.boardgo.domain.boardgame.service.response.GenreSearchResponse;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface BoardGameMapper {
