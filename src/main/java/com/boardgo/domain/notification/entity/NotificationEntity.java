@@ -19,7 +19,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
-import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Getter
@@ -29,7 +28,6 @@ import org.hibernate.annotations.DynamicUpdate;
             @Index(name = "idx_user_info_id", columnList = "user_info_id"),
             @Index(name = "idx_send_date_time_is_sent", columnList = "send_date_time,is_sent")
         })
-@DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationEntity extends BaseEntity {
 
@@ -82,9 +80,5 @@ public class NotificationEntity extends BaseEntity {
         this.sendDateTime = sendDateTime;
         this.message = message;
         this.isSent = isSent;
-    }
-
-    public void read() {
-        this.isRead = true;
     }
 }
