@@ -12,7 +12,7 @@ public enum ErrorCode {
     COOKIE_NOT_FOUND(4005, "쿠키가 존재하지 않습니다"),
     OAUTH2_ERROR(4006, "OAuth2 인증 및 인가가 유효하지 않습니다"),
     S3_ERROR(4007, "Amazon S3 요청 중 예외가 발생했습니다"),
-    NOTIFICATION_ERROR(4008, "알림 메세지 전송 중 오류가 발생했습니다"),
+    FCM_ERROR(4008, "FCM 요청 중 오류가 발생했습니다"),
     BAD_REQUEST(400, "유효하지 않는 데이터 입니다."),
     UNAUTHORIZED(401, "권한이 존재하지 않습니다"),
     EXPIRED_TOKEN(4010, "토큰이 만료되었습니다"),
