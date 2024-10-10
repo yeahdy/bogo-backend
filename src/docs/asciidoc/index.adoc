@@ -97,6 +97,36 @@ include::{snippets}/reissue/request-cookies.adoc[]
 
 '''
 
+=== *회원 push 토큰 갱신*
+
+==== *요청*
+
+include::{snippets}/patch-push-token/http-request.adoc[]
+- cookie
+include::{snippets}/patch-push-token/request-fields.adoc[]
+
+==== *응답*
+
+- HTTP 상태 코드
+
+|===
+| code | messages
+
+| 200
+| FCM push 토큰 정상 갱신
+|===
+
+- 에러 HTTP 상태 코드
+
+|===
+| errorCode | messages
+
+| 4004
+| 회원이 존재하지 않습니다
+|===
+
+'''
+
 === *소셜 회원가입*
 
 ==== *요청*

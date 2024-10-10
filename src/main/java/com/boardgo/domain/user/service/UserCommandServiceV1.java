@@ -42,10 +42,7 @@ public class UserCommandServiceV1 implements UserCommandUseCase {
 
     @Override
     public void updateProfileImage(Long userId, MultipartFile profileImage) {
-        UserInfoEntity userInfoEntity =
-                userRepository
-                        .findById(userId)
-                        .orElseThrow(() -> new CustomNullPointException("회원이 존재하지 않습니다"));
+        UserInfoEntity userInfoEntity = getUserInfoEntity(userId);
         String originalImage = userInfoEntity.getProfileImage();
         String newImage = "";
         if (!Objects.isNull(profileImage)) {
@@ -60,10 +57,7 @@ public class UserCommandServiceV1 implements UserCommandUseCase {
 
     @Override
     public void updatePersonalInfo(Long userId, UserPersonalInfoUpdateRequest updateRequest) {
-        UserInfoEntity userInfoEntity =
-                userRepository
-                        .findById(userId)
-                        .orElseThrow(() -> new CustomNullPointException("회원이 존재하지 않습니다"));
+        UserInfoEntity userInfoEntity = getUserInfoEntity(userId);
         if (userRepository.existsByNickName(updateRequest.nickName())) {
             throw new DuplicateException("중복된 닉네임입니다.");
         }
@@ -74,5 +68,17 @@ public class UserCommandServiceV1 implements UserCommandUseCase {
         if (existString(updateRequest.password()) && validatePassword(updateRequest.password())) {
             userInfoEntity.updatePassword(updateRequest.password(), passwordEncoder);
         }
+    }
+
+    @Override
+    public void updatePushToken(String pushToken, Long userId) {
+        UserInfoEntity userInfoEntity = getUserInfoEntity(userId);
+        userInfoEntity.getUserInfoStatus().updatePushToken(pushToken);
+    }
+
+    private UserInfoEntity getUserInfoEntity(Long userId) {
+        return userRepository
+                .findById(userId)
+                .orElseThrow(() -> new CustomNullPointException("회원이 존재하지 않습니다"));
     }
 }

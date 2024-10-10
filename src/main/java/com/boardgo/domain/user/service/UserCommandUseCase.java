@@ -10,4 +10,6 @@ public interface UserCommandUseCase {
     void updatePersonalInfo(Long userId, UserPersonalInfoUpdateRequest updateRequest);
 
     void updateProfileImage(Long userId, MultipartFile profileImage);
+
+    void updatePushToken(String pushToken, Long userId);
 }

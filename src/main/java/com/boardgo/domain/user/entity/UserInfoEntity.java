@@ -58,7 +58,8 @@ public class UserInfoEntity extends BaseEntity {
             String nickName,
             String profileImage,
             ProviderType providerType,
-            LocalDateTime deleteAt) {
+            LocalDateTime deleteAt,
+            UserInfoStatus userInfoStatus) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -66,6 +67,7 @@ public class UserInfoEntity extends BaseEntity {
         this.profileImage = profileImage;
         this.providerType = providerType;
         this.deleteAt = deleteAt;
+        this.userInfoStatus = userInfoStatus;
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {

@@ -1,5 +1,6 @@
 package com.boardgo.integration.user.service;
 
+import static com.boardgo.integration.data.UserInfoData.userInfoEntityData;
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,10 +9,13 @@ import com.boardgo.common.exception.DuplicateException;
 import com.boardgo.domain.user.controller.request.SignupRequest;
 import com.boardgo.domain.user.controller.request.UserPersonalInfoUpdateRequest;
 import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.entity.UserInfoStatus;
+import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.UserCommandUseCase;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,5 +77,32 @@ public class UserCommandServiceV1Test extends IntegrationTestSupport {
 
         // then
         assertThat(userInfo.getProfileImage()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("로그인한 회원인 경우 푸시 토큰이 반드시 있어야 한다")
+    void 로그인한_회원인_경우_푸시_토큰이_반드시_있어야_한다() {
+        // given
+        String email = "3465227754";
+        UserInfoEntity userInfo =
+                userRepository.save(
+                        userInfoEntityData(email, "FCM 입니다만")
+                                .password(null)
+                                .providerType(ProviderType.KAKAO)
+                                .userInfoStatus(new UserInfoStatus())
+                                .build());
+        String pushToken = "ghdskjapushtokengskla";
+
+        Optional<UserInfoEntity> loginUser =
+                userRepository.findByEmailAndProviderType(email, ProviderType.KAKAO);
+        assertThat(loginUser.isPresent()).isTrue();
+
+        // when
+        userCommandUseCase.updatePushToken(pushToken, userInfo.getId());
+
+        // then
+        UserInfoStatus userInfoStatus = userInfo.getUserInfoStatus();
+        assertThat(userInfoStatus.getPushToken()).isNotBlank();
+        assertThat(userInfoStatus.getPushToken()).isEqualTo(pushToken);
     }
 }

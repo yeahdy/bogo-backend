@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.boardgo.domain.mapper.UserInfoMapper;
 import com.boardgo.domain.user.controller.request.SignupRequest;
 import com.boardgo.domain.user.entity.UserInfoEntity;
+import com.boardgo.domain.user.entity.UserInfoStatus;
 import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.unittest.user.fake.FakePasswordEncoder;
 import org.junit.jupiter.api.DisplayName;
@@ -91,9 +92,8 @@ public class UserInfoEntityTest {
                 UserInfoEntity.builder()
                         .id(1L)
                         .email("fhsdhasl@naver.com")
-                        .password("fhdslg342!@#")
                         .nickName("크롱")
-                        .providerType(ProviderType.LOCAL)
+                        .providerType(ProviderType.KAKAO)
                         .build();
         String newPassword = "12345678";
         FakePasswordEncoder fakePasswordEncoder = new FakePasswordEncoder();
@@ -103,5 +103,27 @@ public class UserInfoEntityTest {
 
         // then
         assertThat(userInfoEntity.getPassword()).isEqualTo(newPassword);
+    }
+
+    @Test
+    @DisplayName("회원이면 푸시토큰을 갱신한다")
+    void 회원이면_푸시토큰을_갱신한다() {
+        // given
+        UserInfoEntity userInfoEntity =
+                UserInfoEntity.builder()
+                        .id(1L)
+                        .email("fhsdhasl@naver.com")
+                        .password("fhdslg342!@#")
+                        .providerType(ProviderType.KAKAO)
+                        .userInfoStatus(new UserInfoStatus())
+                        .build();
+        String pushToken = "ghsldkghapushjdskglstoken";
+        assertThat(userInfoEntity.getUserInfoStatus().getPushToken()).isNull();
+
+        // when
+        userInfoEntity.getUserInfoStatus().updatePushToken(pushToken);
+
+        // then
+        assertThat(userInfoEntity.getUserInfoStatus().getPushToken()).isEqualTo(pushToken);
     }
 }
