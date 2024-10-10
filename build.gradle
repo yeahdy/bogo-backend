@@ -164,7 +164,7 @@ processResources.dependsOn('copySubmodule')
 tasks.register('copySubmodule', Copy) {
 
     from('./board-submodule/backend') {
-        include('*.yml')
+        include('*.yml', '*.json')
     }
     into('src/main/resources')
 }
