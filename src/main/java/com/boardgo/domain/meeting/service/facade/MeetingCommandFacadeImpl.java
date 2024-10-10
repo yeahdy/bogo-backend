@@ -3,6 +3,14 @@ package com.boardgo.domain.meeting.service.facade;
 import static com.boardgo.common.constant.S3BucketConstant.*;
 import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.common.utils.FileUtils;
@@ -10,6 +18,7 @@ import com.boardgo.common.utils.S3Service;
 import com.boardgo.domain.boardgame.entity.BoardGameEntity;
 import com.boardgo.domain.boardgame.service.BoardGameQueryUseCase;
 import com.boardgo.domain.boardgame.service.GameGenreMatchQueryUseCase;
+import com.boardgo.domain.chatting.service.ChatRoomCommandUseCase;
 import com.boardgo.domain.mapper.MeetingMapper;
 import com.boardgo.domain.mapper.MeetingParticipantMapper;
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
@@ -25,14 +34,9 @@ import com.boardgo.domain.meeting.service.MeetingParticipantCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantSubQueryUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantWaitingCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -53,6 +57,7 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
     private final MeetingGenreMatchCommandUseCase meetingGenreMatchCommandUseCase;
     private final MeetingGameMatchCommandUseCase meetingGameMatchCommandUseCase;
     private final MeetingParticipantCommandUseCase meetingParticipantCommandUseCase;
+    private final ChatRoomCommandUseCase chatRoomCommandUseCase;
 
     @Override
     public Long create(
@@ -70,6 +75,7 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
         meetingParticipantCommandUseCase.create(
                 meetingParticipantMapper.toMeetingParticipantEntity(
                         meetingId, userId, ParticipantType.LEADER));
+        chatRoomCommandUseCase.create(meetingId);
         return meetingId;
     }
 
@@ -100,9 +106,11 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
         meetingGameMatchCommandUseCase.deleteByMeetingId(meetingId);
         meetingGenreMatchCommandUseCase.deleteByMeetingId(meetingId);
         meetingParticipantCommandUseCase.deleteByMeetingId(meetingId);
+
         if (meeting.getType() == MeetingType.ACCEPT) {
             meetingParticipantWaitingCommandUseCase.deleteByMeetingId(meetingId);
         }
+        chatRoomCommandUseCase.deleteByMeetingId(meetingId);
         meetingCommandUseCase.deleteById(meetingId);
     }
 

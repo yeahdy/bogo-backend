@@ -6,10 +6,23 @@ import static com.boardgo.integration.data.UserInfoData.*;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.boardgame.entity.BoardGameEntity;
 import com.boardgo.domain.boardgame.repository.BoardGameRepository;
+import com.boardgo.domain.chatting.entity.ChatRoomEntity;
+import com.boardgo.domain.chatting.repository.ChatRoomRepository;
 import com.boardgo.domain.mapper.MeetingMapper;
 import com.boardgo.domain.meeting.controller.request.MeetingCreateRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingUpdateRequest;
@@ -31,16 +44,8 @@ import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.support.IntegrationTestSupport;
+
 import jakarta.persistence.EntityManager;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 
 public class MeetingCommandFacadeImplTest extends IntegrationTestSupport {
     @Autowired private MeetingRepository meetingRepository;
@@ -51,6 +56,7 @@ public class MeetingCommandFacadeImplTest extends IntegrationTestSupport {
     @Autowired private MeetingLikeRepository meetingLikeRepository;
     @Autowired private MeetingGenreMatchRepository meetingGenreMatchRepository;
     @Autowired private MeetingGameMatchRepository meetingGameMatchRepository;
+    @Autowired private ChatRoomRepository chatRoomRepository;
     @Autowired private EntityManager entityManager;
     @Autowired private TestBoardGameInitializer testBoardGameInitializer;
 
@@ -117,10 +123,13 @@ public class MeetingCommandFacadeImplTest extends IntegrationTestSupport {
                 meetingGenreMatchRepository.findByMeetingId(meetingId);
         MeetingParticipantEntity participantEntity =
                 meetingParticipantRepository.findByMeetingId(meeting.getId()).getFirst();
+        ChatRoomEntity chatRoomEntity = chatRoomRepository.findByMeetingId(meetingId);
 
         assertThat(participantEntity.getUserInfoId()).isEqualTo(savedUser.getId());
         assertThat(gameMatchEntityList).extracting("boardGameId").contains(1L, 2L);
         assertThat(genreMatchEntityList).extracting("boardGameGenreId").contains(1L, 2L);
+        assertThat(chatRoomEntity).isNotNull();
+        assertThat(chatRoomEntity.getMeetingId()).isEqualTo(meetingId);
     }
 
     @Test
@@ -1047,6 +1056,9 @@ public class MeetingCommandFacadeImplTest extends IntegrationTestSupport {
                         .meetingId(meetingId)
                         .type(ParticipantType.LEADER)
                         .build());
+        ChatRoomEntity chatRoom = chatRoomRepository.save(ChatRoomEntity.builder()
+            .meetingId(meetingId)
+            .build());
         // when
         meetingCommandFacade.deleteMeeting(meetingId, userId);
         // then
@@ -1059,12 +1071,14 @@ public class MeetingCommandFacadeImplTest extends IntegrationTestSupport {
                 meetingGenreMatchRepository.findByMeetingId(meetingId);
         List<MeetingGameMatchEntity> gameMatchEntityList =
                 meetingGameMatchRepository.findByMeetingId(meetingId);
+        Optional<ChatRoomEntity> chatRoomOpt = chatRoomRepository.findById(chatRoom.getId());
 
         assertThat(meetingOptional).isEmpty();
         assertThat(meetingParticipantList.isEmpty()).isTrue();
         assertThat(meetingLikeEntityList.isEmpty()).isTrue();
         assertThat(genreMatchList.isEmpty()).isTrue();
         assertThat(gameMatchEntityList.isEmpty()).isTrue();
+        assertThat(chatRoomOpt).isEmpty();
     }
 
     @Test
