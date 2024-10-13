@@ -1,11 +1,15 @@
 package com.boardgo.integration.meeting.service;
 
-import static com.boardgo.integration.data.MeetingData.*;
-import static com.boardgo.integration.data.UserInfoData.*;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
-import static com.boardgo.integration.fixture.UserInfoFixture.*;
-import static org.assertj.core.api.Assertions.*;
+import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
+import static com.boardgo.integration.data.UserInfoData.userInfoEntityData;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getLeaderMeetingParticipantEntity;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getOutMeetingParticipantEntity;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
+import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
@@ -107,5 +111,35 @@ public class MeetingParticipantQueryServiceV1Test extends IntegrationTestSupport
                         customUserDetails, password, customUserDetails.getAuthorities());
         context.setAuthentication(auth);
         SecurityContextHolder.setContext(context);
+    }
+
+    @Test
+    @DisplayName("한명이라도 모임에 함께 참여하지 않은 사람이 있을 경우 예외를 반환한다")
+    void 한명이라도_모임에_함께_참여하지_않은_사람이_있을_경우_예외를_반환한다() {
+        // given
+        Long leader = 1L;
+        MeetingEntity meeting = meetingRepository.save(getMeetingEntityData(leader).build());
+        MeetingParticipantEntity participant1 =
+                getParticipantMeetingParticipantEntity(meeting.getId(), 2L);
+        meetingParticipantRepository.save(participant1);
+        MeetingParticipantEntity participant2 =
+                getParticipantMeetingParticipantEntity(meeting.getId(), 3L);
+        meetingParticipantRepository.save(participant2);
+        MeetingParticipantEntity outParticipant =
+                getOutMeetingParticipantEntity(meeting.getId(), 4L);
+        meetingParticipantRepository.save(outParticipant);
+
+        // when
+        // then
+        assertThatThrownBy(
+                        () ->
+                                meetingParticipantQueryUseCase.checkMeetingTogether(
+                                        meeting.getId(),
+                                        List.of(
+                                                participant1.getUserInfoId(),
+                                                participant2.getUserInfoId(),
+                                                outParticipant.getUserInfoId())))
+                .isInstanceOf(CustomIllegalArgumentException.class)
+                .hasMessageContaining("모임을 함께 참여하지 않았습니다");
     }
 }

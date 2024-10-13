@@ -12,15 +12,11 @@ import static com.boardgo.integration.fixture.ReviewFixture.getReview;
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
 import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import com.boardgo.common.exception.CustomIllegalArgumentException;
-import com.boardgo.common.exception.DuplicateException;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
-import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.entity.ReviewEntity;
 import com.boardgo.domain.review.repository.EvaluationTagRepository;
 import com.boardgo.domain.review.repository.ReviewRepository;
@@ -219,84 +215,6 @@ public class ReviewQueryServiceV1Test extends IntegrationTestSupport {
         meetingParticipantRepository.save(
                 getLeaderMeetingParticipantEntity(meeting.getId(), leader.getId()));
         return meeting.getId();
-    }
-
-    @Test
-    @DisplayName("리뷰 작성 시 종료된 모임이 아니면 예외가 발생한다")
-    void 리뷰_작성_시_종료된_모임이_아니면_예외가_발생한다() {
-        // given
-        Long reviewerId = 1L;
-        Long revieweeId = 2L;
-        // 진행 중인 모임
-        MeetingEntity meeting = meetingRepository.save(getMeetingEntityData(reviewerId).build());
-        Long meetingId = meeting.getId();
-        meetingParticipantRepository.save(getLeaderMeetingParticipantEntity(meetingId, reviewerId));
-        int rating = 5;
-        ReviewCreateRequest request =
-                new ReviewCreateRequest(revieweeId, meetingId, rating, List.of(3L, 4L, 5L, 6L));
-
-        // when
-        // then
-        assertThatThrownBy(() -> reviewQueryUseCase.create(request, reviewerId))
-                .isInstanceOf(CustomIllegalArgumentException.class)
-                .hasMessageContaining("종료된 모임이 아닙니다");
-    }
-
-    @Test
-    @DisplayName("리뷰 작성 시 이미 작성된 리뷰일 경우 예외갸 발생한다")
-    void 리뷰_작성_시_이미_작성된_리뷰일_경우_예외갸_발생한다() {
-        UserInfoEntity me = userRepository.save(localUserInfoEntity()); // 1L
-        Long meetingId = participateMeetingData();
-
-        // 모임 참여자(총 3명)
-        UserInfoEntity participant1 =
-                userRepository.save(
-                        userInfoEntityData("participant1@email.com", "participant1").build());
-        meetingParticipantRepository.save(
-                getParticipantMeetingParticipantEntity(meetingId, me.getId()));
-        meetingParticipantRepository.save(
-                getParticipantMeetingParticipantEntity(meetingId, participant1.getId()));
-        // 리뷰
-        reviewRepository.save(getReview(me.getId(), participant1.getId(), meetingId));
-
-        ReviewCreateRequest request =
-                new ReviewCreateRequest(
-                        participant1.getId(), meetingId, 5, List.of(3L, 4L, 5L, 6L));
-        // when
-        // then
-        assertThatThrownBy(() -> reviewQueryUseCase.create(request, me.getId()))
-                .isInstanceOf(DuplicateException.class)
-                .hasMessageContaining("이미 작성된 리뷰 입니다");
-    }
-
-    @Test
-    @DisplayName("리뷰 작성 시 모임에 함께 참여한 참여자가 아닌 경우 예외가 발생한다.")
-    void 리뷰_작성_시_모임에_함께_참여한_참여자가_아닌_경우_예외가_발생한다() {
-        // given
-        UserInfoEntity me = userRepository.save(localUserInfoEntity()); // 1L
-        Long meetingId = participateMeetingData();
-
-        // 모임 참여자(총 3명)
-        UserInfoEntity participant1 =
-                userRepository.save(
-                        userInfoEntityData("participant1@email.com", "participant1").build());
-        meetingParticipantRepository.save(
-                getParticipantMeetingParticipantEntity(meetingId, me.getId()));
-        meetingParticipantRepository.save(
-                getParticipantMeetingParticipantEntity(meetingId, participant1.getId()));
-        // 모임 미참여자
-        UserInfoEntity participant2 =
-                userRepository.save(
-                        userInfoEntityData("participant2@email.com", "participant2").build());
-        ReviewCreateRequest request =
-                new ReviewCreateRequest(
-                        participant2.getId(), meetingId, 5, List.of(3L, 4L, 5L, 6L));
-
-        // when
-        // then
-        assertThatThrownBy(() -> reviewQueryUseCase.create(request, me.getId()))
-                .isInstanceOf(CustomIllegalArgumentException.class)
-                .hasMessageContaining("모임을 함께 참여하지 않았습니다");
     }
 
     @Test

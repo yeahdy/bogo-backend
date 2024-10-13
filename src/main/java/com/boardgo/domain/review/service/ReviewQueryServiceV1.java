@@ -4,10 +4,7 @@ import static com.boardgo.common.utils.CustomStringUtils.stringToLongList;
 import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
 import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
 
-import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNoSuchElementException;
-import com.boardgo.common.exception.CustomNullPointException;
-import com.boardgo.common.exception.DuplicateException;
 import com.boardgo.domain.mapper.ReviewMapper;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
@@ -15,10 +12,8 @@ import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.repository.projection.MeetingReviewProjection;
 import com.boardgo.domain.meeting.repository.projection.ParticipationCountProjection;
 import com.boardgo.domain.meeting.repository.projection.ReviewMeetingParticipantsProjection;
-import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.entity.EvaluationTagEntity;
 import com.boardgo.domain.review.entity.EvaluationType;
-import com.boardgo.domain.review.entity.ReviewEntity;
 import com.boardgo.domain.review.entity.enums.ReviewType;
 import com.boardgo.domain.review.repository.EvaluationTagRepository;
 import com.boardgo.domain.review.repository.ReviewRepository;
@@ -31,7 +26,6 @@ import com.boardgo.domain.review.service.response.MyReviewsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingReviewsResponse;
-import com.boardgo.domain.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +40,6 @@ public class ReviewQueryServiceV1 implements ReviewQueryUseCase {
     private final ReviewRepository reviewRepository;
     private final MeetingRepository meetingRepository;
     private final MeetingParticipantRepository meetingParticipantRepository;
-    private final UserRepository userRepository;
     private final ReviewMapper reviewMapper;
     private final EvaluationTagRepository evaluationTagRepository;
 
@@ -102,51 +95,6 @@ public class ReviewQueryServiceV1 implements ReviewQueryUseCase {
             }
         }
         return reviewFinished;
-    }
-
-    @Override
-    public void create(ReviewCreateRequest createRequest, Long reviewerId) {
-        // FIXME: 퍼사드패턴으로 리팩토링 필요
-        validateCreateReview(createRequest.meetingId(), createRequest.revieweeId(), reviewerId);
-        ReviewEntity reviewEntity =
-                reviewMapper.toReviewEntity(
-                        createRequest, createRequest.evaluationTagList(), reviewerId);
-        reviewRepository.save(reviewEntity);
-    }
-
-    /***
-     * 모임 참가하기 유효성 검증
-     * @param meetingId 모임 고유 id
-     * @param revieweeId 리뷰 받는 참여자 id
-     * @param reviewerId 리뷰 작성자 id
-     */
-
-    private void validateCreateReview(Long meetingId, Long revieweeId, Long reviewerId) {
-        MeetingEntity meetingEntity =
-                meetingRepository
-                        .findById(meetingId)
-                        .orElseThrow(() -> new CustomNullPointException("모임이 존재하지 않습니다"));
-        if (!meetingEntity.isFinishState()) {
-            throw new CustomIllegalArgumentException("종료된 모임이 아닙니다");
-        }
-        if (!userRepository.existsById(revieweeId)) {
-            throw new CustomNullPointException("회원이 존재하지 않습니다");
-        }
-
-        boolean written =
-                reviewRepository.existsByReviewerIdAndMeetingIdAndRevieweeId(
-                        reviewerId, meetingId, revieweeId);
-        if (written) {
-            throw new DuplicateException("이미 작성된 리뷰 입니다");
-        }
-
-        Long meetingParticipantCount =
-                meetingParticipantRepository.countMeetingParticipant(
-                        meetingId, List.of(revieweeId, reviewerId));
-        final int TOGETHER = 2;
-        if (meetingParticipantCount != TOGETHER) {
-            throw new CustomIllegalArgumentException("모임을 함께 참여하지 않았습니다");
-        }
     }
 
     // FIXME: 퍼사드패턴으로 리팩토링 필요
@@ -277,5 +225,11 @@ public class ReviewQueryServiceV1 implements ReviewQueryUseCase {
     public Double getAverageRating(Long revieweeId) {
         Double averageRating = reviewRepository.findRatingAvgByRevieweeId(revieweeId);
         return averageRating == null ? 0.0 : Math.round(averageRating * 10) / 10.0; // 소수점 한자리
+    }
+
+    @Override
+    public boolean existReview(Long reviewerId, Long meetingId, Long revieweeId) {
+        return reviewRepository.existsByReviewerIdAndMeetingIdAndRevieweeId(
+                reviewerId, meetingId, revieweeId);
     }
 }

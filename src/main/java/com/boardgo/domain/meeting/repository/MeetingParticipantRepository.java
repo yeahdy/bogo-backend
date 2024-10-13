@@ -42,7 +42,8 @@ public interface MeetingParticipantRepository
     @Query(
             "SELECT COUNT(*) "
                     + "FROM MeetingParticipantEntity mp "
-                    + "WHERE mp.meetingId = :meetingId AND mp.userInfoId IN (:userIds)")
+                    + "WHERE mp.meetingId = :meetingId AND mp.userInfoId IN (:userIds)"
+                    + "AND mp.type != 'OUT'")
     Long countMeetingParticipant(
             @Param("meetingId") Long meetingId, @Param("userIds") List<Long> userIds);
 

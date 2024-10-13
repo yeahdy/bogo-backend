@@ -6,17 +6,6 @@ import static com.boardgo.integration.data.UserInfoData.*;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
-
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.boardgame.entity.BoardGameEntity;
@@ -44,8 +33,16 @@ import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.support.IntegrationTestSupport;
-
 import jakarta.persistence.EntityManager;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 
 public class MeetingCommandFacadeImplTest extends IntegrationTestSupport {
     @Autowired private MeetingRepository meetingRepository;
@@ -1056,9 +1053,8 @@ public class MeetingCommandFacadeImplTest extends IntegrationTestSupport {
                         .meetingId(meetingId)
                         .type(ParticipantType.LEADER)
                         .build());
-        ChatRoomEntity chatRoom = chatRoomRepository.save(ChatRoomEntity.builder()
-            .meetingId(meetingId)
-            .build());
+        ChatRoomEntity chatRoom =
+                chatRoomRepository.save(ChatRoomEntity.builder().meetingId(meetingId).build());
         // when
         meetingCommandFacade.deleteMeeting(meetingId, userId);
         // then

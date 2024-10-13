@@ -1,6 +1,6 @@
 package com.boardgo.domain.meeting.service;
 
-import com.boardgo.common.exception.CustomNoSuchElementException;
+import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.mapper.MeetingMapper;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
@@ -48,7 +48,7 @@ public class MeetingQueryServiceV1 implements MeetingQueryUseCase {
     public MeetingEntity getMeeting(Long meetingId) {
         return meetingRepository
                 .findById(meetingId)
-                .orElseThrow(() -> new CustomNoSuchElementException("모임"));
+                .orElseThrow(() -> new CustomNullPointException("모임이 존재하지 않습니다"));
     }
 
     @Override

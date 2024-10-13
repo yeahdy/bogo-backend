@@ -1,7 +1,9 @@
 package com.boardgo.domain.meeting.service;
 
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
 
+import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.utils.SecurityUtils;
 import com.boardgo.domain.mapper.MeetingParticipantMapper;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
@@ -54,5 +56,15 @@ public class MeetingParticipantQueryServiceV1 implements MeetingParticipantQuery
     @Override
     public List<Long> getMeetingIdByNotEqualsOut(Long userId) {
         return meetingParticipantRepository.getMeetingIdByNotEqualsOut(userId);
+    }
+
+    @Override
+    public void checkMeetingTogether(Long meetingId, List<Long> userIds) {
+        Long participatedCount =
+                meetingParticipantRepository.countMeetingParticipant(meetingId, userIds);
+        final int TOGETHER = userIds.size();
+        if (participatedCount != TOGETHER) {
+            throw new CustomIllegalArgumentException("모임을 함께 참여하지 않았습니다");
+        }
     }
 }

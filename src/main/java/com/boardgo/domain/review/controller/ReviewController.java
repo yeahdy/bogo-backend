@@ -6,6 +6,7 @@ import static com.boardgo.common.utils.SecurityUtils.currentUserId;
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.entity.enums.ReviewType;
 import com.boardgo.domain.review.service.ReviewQueryUseCase;
+import com.boardgo.domain.review.service.facade.ReviewCommandFacade;
 import com.boardgo.domain.review.service.response.MyReviewsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReviewController {
 
     private final ReviewQueryUseCase reviewQueryUseCase;
+    private final ReviewCommandFacade reviewCommandFacade;
 
     @GetMapping(value = "/meetings", headers = API_VERSION_HEADER1)
     public ResponseEntity<List<ReviewMeetingResponse>> getReviewMeetings(
@@ -46,7 +48,7 @@ public class ReviewController {
 
     @PostMapping(value = "", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> create(@RequestBody @Valid ReviewCreateRequest createRequest) {
-        reviewQueryUseCase.create(createRequest, currentUserId());
+        reviewCommandFacade.create(createRequest, currentUserId());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

@@ -13,4 +13,6 @@ public interface MeetingParticipantQueryUseCase {
     List<UserParticipantResponse> findByMeetingId(Long meetingId);
 
     List<Long> getMeetingIdByNotEqualsOut(Long userId);
+
+    void checkMeetingTogether(Long meetingId, List<Long> userIds);
 }
