@@ -3,6 +3,14 @@ package com.boardgo.domain.meeting.service.facade;
 import static com.boardgo.common.constant.S3BucketConstant.*;
 import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.common.utils.FileUtils;
@@ -26,14 +34,9 @@ import com.boardgo.domain.meeting.service.MeetingParticipantCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantSubQueryUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantWaitingCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -62,7 +65,7 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
         validateNullCheckIdList(meetingCreateRequest.boardGameIdList(), "boardGame is Null");
 
         String imageUri =
-                registerImage(meetingCreateRequest.boardGameIdList().getFirst(), imageFile);
+                registerImage(meetingCreateRequest.boardGameIdList(), imageFile);
         MeetingEntity meetingEntity =
                 meetingMapper.toMeetingEntity(meetingCreateRequest, userId, imageUri);
         Long meetingId = meetingCommandUseCase.create(meetingEntity);
@@ -162,7 +165,7 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
                     && (Objects.isNull(boardGameIdList) || boardGameIdList.isEmpty())) {
                 return boardGameQueryUseCase.findFirstByMeetingId(meeting.getId()).thumbnail();
             }
-            return registerImage(boardGameIdList.getFirst(), imageFile);
+            return registerImage(boardGameIdList, imageFile);
         } else {
             // 1. 이미지 파일 수정 X, 보드게임 수정 X
             // 2. 이미지 파일 수정 X, 보드게임 수정 O, thumbnail 사용자 등록 이미지인 경우
@@ -170,10 +173,10 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
         }
     }
 
-    private String registerImage(Long boardGameId, MultipartFile imageFile) {
+    private String registerImage(List<Long> boardGameIdList, MultipartFile imageFile) {
         String imageUri;
         if (Objects.isNull(imageFile) || imageFile.isEmpty()) {
-            BoardGameEntity boardGameEntity = boardGameQueryUseCase.getById(boardGameId);
+            BoardGameEntity boardGameEntity = boardGameQueryUseCase.getById(boardGameIdList.getFirst());
             imageUri = boardGameEntity.getThumbnail();
         } else {
             imageUri = s3Service.upload(MEETING, FileUtils.getUniqueFileName(imageFile), imageFile);

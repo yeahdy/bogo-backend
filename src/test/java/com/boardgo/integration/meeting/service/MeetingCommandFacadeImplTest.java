@@ -6,6 +6,17 @@ import static com.boardgo.integration.data.UserInfoData.*;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.domain.boardgame.entity.BoardGameEntity;
@@ -33,16 +44,8 @@ import com.boardgo.domain.user.entity.enums.ProviderType;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.init.TestBoardGameInitializer;
 import com.boardgo.integration.support.IntegrationTestSupport;
+
 import jakarta.persistence.EntityManager;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 
 public class MeetingCommandFacadeImplTest extends IntegrationTestSupport {
     @Autowired private MeetingRepository meetingRepository;
@@ -922,6 +925,93 @@ public class MeetingCommandFacadeImplTest extends IntegrationTestSupport {
         assertThat(gameMatchEntityList)
                 .extracting(MeetingGameMatchEntity::getBoardGameId)
                 .contains(3L, 4L);
+    }
+
+    @Test
+    @DisplayName("이미지 변경 O 보드게임 변경 X 이미지 삭제 X일때 모임 수정 가능하다")
+    void 이미지_변경_O_보드게임_변경_X_이미지_삭제_X일때_모임_수정_가능하다() {
+        // given
+        testBoardGameInitializer.generateBoardGameData();
+        LocalDateTime meetingDatetime = LocalDateTime.now().plusDays(1);
+        long userId = 1L;
+        MeetingEntity meetingEntity =
+            MeetingEntity.builder()
+                .viewCount(0L)
+                .userId(userId)
+                .latitude("12312312")
+                .longitude("12321")
+                .thumbnail("boardgame/thumbnail")
+                .state(PROGRESS)
+                .meetingDatetime(meetingDatetime)
+                .type(MeetingType.FREE)
+                .content("content")
+                .city("city")
+                .county("county")
+                .title("title")
+                .locationName("location")
+                .detailAddress("detailAddress")
+                .limitParticipant(5)
+                .build();
+        List<Long> boardGameIdList = List.of(1L, 2L);
+        List<Long> boardGameGenreIdList = List.of(1L, 2L);
+        MeetingEntity savedMeeting = meetingRepository.save(meetingEntity);
+        Long meetingId = savedMeeting.getId();
+        meetingGenreMatchRepository.bulkInsert(boardGameGenreIdList, meetingId);
+        meetingGameMatchRepository.bulkInsert(boardGameIdList, meetingId);
+        meetingParticipantRepository.save(
+            MeetingParticipantEntity.builder()
+                .userInfoId(userId)
+                .meetingId(meetingId)
+                .type(ParticipantType.LEADER)
+                .build());
+        LocalDateTime updatedMeetingDatetime = meetingDatetime.plusDays(2);
+        MeetingUpdateRequest meetingUpdateRequest =
+            new MeetingUpdateRequest(
+                meetingId,
+                "updateContent",
+                "FREE",
+                4,
+                "updatedTitle",
+                "updateCity",
+                "updateCounty",
+                "35.12321312",
+                "1232.213213213",
+                "updateAddress",
+                "updateLocation",
+                false,
+                updatedMeetingDatetime,
+                null);
+        MockMultipartFile mockFile =
+            new MockMultipartFile(
+                "file", "test.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
+        // when
+        meetingCommandFacade.updateMeeting(meetingUpdateRequest, userId, mockFile);
+        // then
+        MeetingEntity updateMeeting = meetingRepository.findById(meetingId).get();
+        BoardGameEntity boardGameEntity = boardGameRepository.findById(3L).get();
+        assertThat(updateMeeting).isNotNull();
+        assertThat(updateMeeting.getMeetingDatetime()).isEqualTo(updatedMeetingDatetime);
+        assertThat(updateMeeting.getType()).isEqualTo(MeetingType.FREE);
+        assertThat(updateMeeting.getContent()).isEqualTo(meetingUpdateRequest.content());
+        assertThat(updateMeeting.getCity()).isEqualTo(meetingUpdateRequest.city());
+        assertThat(updateMeeting.getCounty()).isEqualTo(meetingUpdateRequest.county());
+        assertThat(updateMeeting.getTitle()).isEqualTo(meetingUpdateRequest.title());
+        assertThat(updateMeeting.getLocationName()).isEqualTo(meetingUpdateRequest.locationName());
+        assertThat(updateMeeting.getDetailAddress())
+            .isEqualTo(meetingUpdateRequest.detailAddress());
+        assertThat(updateMeeting.getLimitParticipant())
+            .isEqualTo(meetingUpdateRequest.limitParticipant());
+        assertThat(updateMeeting.getLongitude()).isEqualTo(meetingUpdateRequest.longitude());
+        assertThat(updateMeeting.getLatitude()).isEqualTo(meetingUpdateRequest.latitude());
+        assertThat(updateMeeting.getThumbnail().startsWith("meeting/")).isTrue();
+        assertThat(updateMeeting.getState()).isEqualTo(PROGRESS);
+        List<MeetingGameMatchEntity> gameMatchEntityList =
+            meetingGameMatchRepository.findByMeetingId(meetingId);
+        assertThat(gameMatchEntityList).isNotNull();
+        assertThat(gameMatchEntityList.size()).isEqualTo(2);
+        assertThat(gameMatchEntityList)
+            .extracting(MeetingGameMatchEntity::getBoardGameId)
+            .contains(1L, 2L);
     }
 
     @Test
