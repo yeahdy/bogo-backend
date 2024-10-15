@@ -1,11 +1,10 @@
 package com.boardgo.schedule.service;
 
-import static com.boardgo.common.constant.TimeConstant.MINUTE;
-import static com.boardgo.common.constant.TimeConstant.MINUTES_30;
-import static com.boardgo.schedule.service.enums.ScheduleJobs.FINISHED_MEETING;
+import static com.boardgo.common.constant.TimeConstant.SECOND;
+import static com.boardgo.common.constant.TimeConstant.SECOND_10;
 
 import com.boardgo.schedule.JobRunner;
-import com.boardgo.schedule.job.FinishedMeetingStateJob;
+import com.boardgo.schedule.job.SendPushJob;
 import com.boardgo.schedule.service.enums.ScheduleJobs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class FinishedMeetingStateService extends JobRunner {
+public class SendPushService extends JobRunner {
 
     private final Scheduler scheduler;
     private final TriggerService triggerService;
@@ -27,23 +26,22 @@ public class FinishedMeetingStateService extends JobRunner {
 
     @Override
     protected void doRun() {
-        updateFinishMeetingState();
+        sendPush();
     }
 
-    public void updateFinishMeetingState() {
-        ScheduleJobs job = FINISHED_MEETING;
+    public void sendPush() {
+        ScheduleJobs job = ScheduleJobs.INSTANT_SEND;
         JobKey jobKey = JobKey.jobKey(job.name(), job.getJobGroup());
 
-        JobDetail jobDetail =
-                jobDetailService.jobDetailBuilder(jobKey, FinishedMeetingStateJob.class);
-        Trigger simpleTrigger = triggerService.simpleTrigger(jobKey, MINUTES_30, MINUTE);
+        JobDetail jobDetail = jobDetailService.jobDetailBuilder(jobKey, SendPushJob.class);
+        Trigger simpleTrigger = triggerService.simpleTrigger(jobKey, SECOND_10, SECOND);
         schedule(jobDetail, simpleTrigger);
     }
 
-    private void schedule(JobDetail jobDetail, Trigger lastTrigger) {
+    private void schedule(JobDetail jobDetail, Trigger trigger) {
         try {
             scheduler.start();
-            scheduler.scheduleJob(jobDetail, lastTrigger);
+            scheduler.scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {
             log.warn(
                     "Fail scheduler job :: {} , Error :: {}",

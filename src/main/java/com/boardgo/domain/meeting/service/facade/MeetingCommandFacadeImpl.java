@@ -3,14 +3,6 @@ package com.boardgo.domain.meeting.service.facade;
 import static com.boardgo.common.constant.S3BucketConstant.*;
 import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.common.utils.FileUtils;
@@ -34,9 +26,14 @@ import com.boardgo.domain.meeting.service.MeetingParticipantCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantSubQueryUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantWaitingCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
-
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -64,8 +61,7 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
             MeetingCreateRequest meetingCreateRequest, MultipartFile imageFile, Long userId) {
         validateNullCheckIdList(meetingCreateRequest.boardGameIdList(), "boardGame is Null");
 
-        String imageUri =
-                registerImage(meetingCreateRequest.boardGameIdList(), imageFile);
+        String imageUri = registerImage(meetingCreateRequest.boardGameIdList(), imageFile);
         MeetingEntity meetingEntity =
                 meetingMapper.toMeetingEntity(meetingCreateRequest, userId, imageUri);
         Long meetingId = meetingCommandUseCase.create(meetingEntity);
@@ -176,7 +172,8 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
     private String registerImage(List<Long> boardGameIdList, MultipartFile imageFile) {
         String imageUri;
         if (Objects.isNull(imageFile) || imageFile.isEmpty()) {
-            BoardGameEntity boardGameEntity = boardGameQueryUseCase.getById(boardGameIdList.getFirst());
+            BoardGameEntity boardGameEntity =
+                    boardGameQueryUseCase.getById(boardGameIdList.getFirst());
             imageUri = boardGameEntity.getThumbnail();
         } else {
             imageUri = s3Service.upload(MEETING, FileUtils.getUniqueFileName(imageFile), imageFile);
