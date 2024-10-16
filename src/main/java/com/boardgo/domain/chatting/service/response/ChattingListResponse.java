@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record ChattingListResponse(
         Long chatRoomId,
-		Long meetingId,
+        Long meetingId,
         String thumbnail,
         String meetingTitle,
         String lastMessage,

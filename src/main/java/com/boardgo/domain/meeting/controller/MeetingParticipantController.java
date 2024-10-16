@@ -1,12 +1,13 @@
 package com.boardgo.domain.meeting.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
-import static com.boardgo.common.utils.SecurityUtils.*;
+import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER1;
+import static com.boardgo.common.utils.SecurityUtils.currentUserId;
 
 import com.boardgo.domain.meeting.controller.request.MeetingOutRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingParticipateRequest;
 import com.boardgo.domain.meeting.service.MeetingParticipantCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantQueryUseCase;
+import com.boardgo.domain.meeting.service.facade.MeetingParticipantCommandFacade;
 import com.boardgo.domain.meeting.service.response.ParticipantOutResponse;
 import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
 import jakarta.validation.Valid;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MeetingParticipantController {
     private final MeetingParticipantQueryUseCase meetingParticipantQueryUseCase;
     private final MeetingParticipantCommandUseCase meetingParticipantCommandUseCase;
+    private final MeetingParticipantCommandFacade meetingParticipantCommandFacade;
 
     @PostMapping(value = "/participation", headers = API_VERSION_HEADER1)
     public ResponseEntity<Void> participateMeeting(
@@ -56,7 +58,8 @@ public class MeetingParticipantController {
             @PathVariable(value = "userId", required = false) Long userId,
             @RequestBody @Valid MeetingOutRequest meetingOutRequest) {
         Long id = Objects.isNull(userId) ? currentUserId() : userId;
-        meetingParticipantCommandUseCase.outMeeting(meetingOutRequest.meetingId(), id);
+        boolean isKicked = !Objects.isNull(userId);
+        meetingParticipantCommandFacade.outMeeting(meetingOutRequest.meetingId(), id, isKicked);
         return ResponseEntity.ok().build();
     }
 }

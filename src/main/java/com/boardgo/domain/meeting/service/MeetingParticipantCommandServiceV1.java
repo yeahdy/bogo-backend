@@ -1,6 +1,6 @@
 package com.boardgo.domain.meeting.service;
 
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.OUT;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
@@ -65,7 +65,6 @@ public class MeetingParticipantCommandServiceV1 implements MeetingParticipantCom
         if (Objects.isNull(meetingParticipant)) {
             throw new CustomIllegalArgumentException("참여하지 않은 모임입니다");
         }
-        // TODO 쓰레드에서 나가기
         meetingParticipant.updateParticipantType(OUT);
     }
 

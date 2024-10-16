@@ -165,15 +165,15 @@ public class MeetingParticipantCommandServiceV1Test extends IntegrationTestSuppo
         // given
         UserInfoEntity leader =
                 userRepository.save(userInfoEntityData("leader@test.com", "Leader").build());
-        UserInfoEntity participant =
-                userRepository.save(userInfoEntityData("bear@test.com", "bear").build());
-        MeetingEntity meetingEntity = getMeetingEntityData(participant.getId()).build();
-        MeetingEntity meeting = meetingRepository.save(meetingEntity);
+        MeetingEntity meeting =
+                meetingRepository.save(getMeetingEntityData(leader.getId()).build());
         meetingParticipantRepository.save(
                 getLeaderMeetingParticipantEntity(meeting.getId(), leader.getId()));
+
+        UserInfoEntity participant =
+                userRepository.save(userInfoEntityData("bear@test.com", "bear").build());
         meetingParticipantRepository.save(
                 getParticipantMeetingParticipantEntity(2L, participant.getId()));
-
         // when
         // then
         assertThatThrownBy(

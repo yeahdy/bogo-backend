@@ -11,12 +11,15 @@ import com.boardgo.domain.notification.entity.NotificationEntity;
 import com.boardgo.domain.notification.entity.NotificationMessage;
 import com.boardgo.domain.notification.repository.NotificationRepository;
 import com.boardgo.domain.notification.service.NotificationCommandUseCase;
+import com.boardgo.domain.notification.service.request.NotificationCreateRequest;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class NotificationCommandServiceV1Test extends IntegrationTestSupport {
@@ -82,5 +85,39 @@ public class NotificationCommandServiceV1Test extends IntegrationTestSupport {
         assertThatThrownBy(() -> notificationCommandUseCase.readNotification(notificationIds))
                 .isInstanceOf(CustomNoSuchElementException.class)
                 .hasMessageContaining("알림 (이)가 존재하지 않습니다");
+    }
+
+    @ParameterizedTest
+    @DisplayName("알림 메세지 타입별로 페이지 이동 경로가 다르다")
+    @EnumSource(MessageType.class)
+    void 알림_메세지_타입별로_페이지_이동_경로가_다르다(MessageType messageType) {
+        // given
+        Long userId = 1L;
+        Long meetingId = null;
+        String pathUrl = "";
+        switch (messageType) {
+            case MEETING_MODIFY, MEETING_REMINDER -> {
+                meetingId = 1L;
+                pathUrl = "/gatherings/" + meetingId;
+            }
+            case REVIEW_RECEIVED -> pathUrl = "/mypage/review/receivedReviews";
+            case REQUEST_REVIEW -> pathUrl = "/mypage/review";
+            case KICKED_OUT -> pathUrl = "/gatherings";
+        }
+        NotificationCreateRequest request = new NotificationCreateRequest("알림제목", "닉네임", meetingId);
+
+        // when
+        notificationCommandUseCase.createNotification(userId, messageType, request);
+
+        // then
+        List<NotificationEntity> notificationEntities =
+                notificationRepository.findByUserInfoIdAndMessageMessageType(userId, messageType);
+        assertThat(notificationEntities).isNotEmpty();
+        String finalPathUrl = pathUrl;
+        notificationEntities.forEach(
+                notification -> {
+                    assertThat(notification.getPathUrl()).isEqualTo(finalPathUrl);
+                    assertThat(notification.getMessage().getMessageType()).isEqualTo(messageType);
+                });
     }
 }

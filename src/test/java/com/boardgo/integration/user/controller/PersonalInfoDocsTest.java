@@ -83,7 +83,6 @@ public class PersonalInfoDocsTest extends RestDocsTestSupport {
     void 내_개인정보_수정하기() {
         UserPersonalInfoUpdateRequest updateRequest =
                 new UserPersonalInfoUpdateRequest("butter", "fskdj234#!@");
-        String jsonValue = writeValueAsString(updateRequest);
         userRepository.save(localUserInfoEntity());
 
         given(this.spec)
@@ -96,7 +95,7 @@ public class PersonalInfoDocsTest extends RestDocsTestSupport {
                 .filter(
                         document(
                                 "patch-personal-info", getPersonalInfoUpdateRequestFieldsSnippet()))
-                .body(jsonValue)
+                .body(writeValueAsString(updateRequest))
                 .when()
                 .patch("/personal-info")
                 .then()

@@ -1,19 +1,17 @@
 package com.boardgo.domain.mapper;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
-
 import com.boardgo.domain.chatting.entity.ChatMessage;
 import com.boardgo.domain.chatting.repository.projection.LatestMessageProjection;
 import com.boardgo.domain.chatting.service.response.ChattingListResponse;
 import com.boardgo.domain.chatting.service.response.LatestMessageResponse;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface ChatMapper {
