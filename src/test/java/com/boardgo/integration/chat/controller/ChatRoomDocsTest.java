@@ -5,6 +5,16 @@ import static io.restassured.RestAssured.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
+
 import com.boardgo.domain.chatting.entity.ChatMessage;
 import com.boardgo.domain.chatting.entity.ChatRoomEntity;
 import com.boardgo.domain.chatting.repository.ChatRepository;
@@ -19,14 +29,6 @@ import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.integration.data.MeetingData;
 import com.boardgo.integration.data.UserInfoData;
 import com.boardgo.integration.support.RestDocsTestSupport;
-import java.time.LocalDateTime;
-import java.util.List;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
 
 public class ChatRoomDocsTest extends RestDocsTestSupport {
     @Autowired private UserRepository userRepository;
@@ -78,6 +80,9 @@ public class ChatRoomDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("[].chatRoomId")
                                                 .type(JsonFieldType.NUMBER)
                                                 .description("채팅방 id"),
+                                        fieldWithPath("[].meetingId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("모임 id"),
                                         fieldWithPath("[].thumbnail")
                                                 .type(JsonFieldType.STRING)
                                                 .description("모임 썸네일"),
