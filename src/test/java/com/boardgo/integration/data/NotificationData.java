@@ -3,7 +3,6 @@ package com.boardgo.integration.data;
 import com.boardgo.domain.notification.entity.MessageType;
 import com.boardgo.domain.notification.entity.NotificationEntity;
 import com.boardgo.domain.notification.entity.NotificationMessage;
-import com.boardgo.domain.notification.entity.NotificationType;
 import java.time.LocalDateTime;
 
 public abstract class NotificationData {
@@ -14,8 +13,7 @@ public abstract class NotificationData {
                 .isRead(false)
                 .userInfoId(userId)
                 .pathUrl("/gatherings/1")
-                .type(NotificationType.PUSH)
-                .sendDateTime(LocalDateTime.of(2024, 10, 3, 18, 30))
+                .sendDateTime(LocalDateTime.of(2024, 10, 15, 18, 30))
                 .message(message)
                 .isSent(true);
     }

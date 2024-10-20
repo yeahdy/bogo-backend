@@ -8,15 +8,23 @@ import com.google.firebase.messaging.Notification;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushFcmOptions;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
 @Profile("!test")
+@Slf4j
 @RequiredArgsConstructor
 public class FcmService {
+    @Value("${domain.url}")
+    private String domainUrl;
+
     private final FirebaseMessagingUseCase firebaseMessagingUseCase;
 
+    @Async
     public String sendFcmMessage(FcmMessageSendRequest request) {
         Message message =
                 Message.builder()
@@ -24,6 +32,7 @@ public class FcmService {
                         .setNotification(setNotification(request.title(), request.content()))
                         .setWebpushConfig(setWebpushConfig(request.pathUrl()))
                         .build();
+        log.info("Send FCM Message :: " + request);
         return firebaseMessagingUseCase.send(message);
     }
 
@@ -34,7 +43,7 @@ public class FcmService {
     private WebpushConfig setWebpushConfig(String pathUrl) {
         return WebpushConfig.builder()
                 .putHeader("TTL", WEB_TTL)
-                .setFcmOptions(WebpushFcmOptions.builder().setLink(pathUrl).build())
+                .setFcmOptions(WebpushFcmOptions.builder().setLink(domainUrl + pathUrl).build())
                 .build();
     }
 }

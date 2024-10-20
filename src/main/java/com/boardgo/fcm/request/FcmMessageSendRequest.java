@@ -1,3 +1,6 @@
 package com.boardgo.fcm.request;
 
-public record FcmMessageSendRequest(String token, String title, String content, String pathUrl) {}
+import jakarta.validation.constraints.NotBlank;
+
+public record FcmMessageSendRequest(
+        @NotBlank String token, @NotBlank String title, @NotBlank String content, String pathUrl) {}

@@ -20,12 +20,10 @@ public class FirebaseMessagingService implements FirebaseMessagingUseCase {
     @Override
     public String send(Message message) {
         try {
-            log.info("Send FCM Message :: " + message.toString());
             String response = firebaseMessaging.send(message);
             log.info("Sent FCM response :: " + response);
-            return response; // TODO FCM 발송 성공 결과 저장
+            return response;
         } catch (FirebaseMessagingException e) {
-            // TODO FCM 발송 실패 예외처리
             throw new FcmException(e.getMessage());
         }
     }

@@ -6,8 +6,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -50,11 +48,6 @@ public class NotificationEntity extends BaseEntity {
     @Comment("이동 경로")
     private String pathUrl;
 
-    @Comment("알림 유형")
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private NotificationType type;
-
     @Comment("발송 시간")
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime sendDateTime;
@@ -66,25 +59,42 @@ public class NotificationEntity extends BaseEntity {
     @Column(columnDefinition = "varchar(1)")
     private Boolean isSent;
 
+    @Comment("결과 원본데이터")
+    @Column(columnDefinition = "TEXT")
+    private String rawResult;
+
+    @Comment("푸시 에러코드")
+    private String errorCode;
+
     @Builder
     private NotificationEntity(
             Boolean isRead,
             Long userInfoId,
             String pathUrl,
-            NotificationType type,
             LocalDateTime sendDateTime,
             NotificationMessage message,
-            Boolean isSent) {
+            Boolean isSent,
+            String rawResult,
+            String errorCode) {
         this.isRead = isRead;
         this.userInfoId = userInfoId;
         this.pathUrl = pathUrl;
-        this.type = type;
         this.sendDateTime = sendDateTime;
         this.message = message;
         this.isSent = isSent;
+        this.rawResult = rawResult;
+        this.errorCode = errorCode;
     }
 
     public void read() {
         this.isRead = true;
+    }
+
+    public void sent() {
+        this.isSent = true;
+    }
+
+    public void saveRawResult(String rawResult) {
+        this.rawResult = rawResult;
     }
 }

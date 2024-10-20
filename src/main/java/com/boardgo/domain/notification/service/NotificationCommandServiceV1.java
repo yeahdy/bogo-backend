@@ -1,7 +1,5 @@
 package com.boardgo.domain.notification.service;
 
-import static com.boardgo.domain.notification.entity.NotificationType.PUSH;
-
 import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.domain.notification.entity.MessageType;
 import com.boardgo.domain.notification.entity.NotificationEntity;
@@ -11,6 +9,7 @@ import com.boardgo.domain.notification.service.request.NotificationCreateRequest
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +57,6 @@ public class NotificationCommandServiceV1 implements NotificationCommandUseCase 
                 NotificationEntity.builder()
                         .userInfoId(userId)
                         .pathUrl(pathUrl)
-                        .type(PUSH)
                         .message(setNotificationMessage(messageType, title, content))
                         .sendDateTime(LocalDateTime.now())
                         .build());
@@ -71,5 +69,16 @@ public class NotificationCommandServiceV1 implements NotificationCommandUseCase 
                 .title(title)
                 .content(content)
                 .build();
+    }
+
+    @Override
+    public void saveNotificationResult(Long notificationId, String result) {
+        Optional<NotificationEntity> notificationOptional =
+                notificationRepository.findById(notificationId);
+        if (notificationOptional.isPresent()) {
+            NotificationEntity notification = notificationOptional.get();
+            notification.sent();
+            notification.saveRawResult(result);
+        }
     }
 }

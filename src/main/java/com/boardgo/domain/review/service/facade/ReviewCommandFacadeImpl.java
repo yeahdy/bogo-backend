@@ -28,7 +28,6 @@ public class ReviewCommandFacadeImpl implements ReviewCommandFacade {
     public void create(ReviewCreateRequest createRequest, Long reviewerId) {
         validateCreateReview(createRequest.meetingId(), createRequest.revieweeId(), reviewerId);
         reviewCommandUseCase.create(createRequest, reviewerId);
-        // TODO 알림 메세지 데이터 추가
     }
 
     /***
