@@ -1,11 +1,14 @@
 package com.boardgo.domain.review.service.facade;
 
+import static com.boardgo.domain.notification.entity.MessageType.REVIEW_RECEIVED;
+
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
 import com.boardgo.common.exception.DuplicateException;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.service.MeetingParticipantQueryUseCase;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
+import com.boardgo.domain.notification.service.facade.NotificationCommandFacade;
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.service.ReviewCommandUseCase;
 import com.boardgo.domain.review.service.ReviewQueryUseCase;
@@ -23,11 +26,14 @@ public class ReviewCommandFacadeImpl implements ReviewCommandFacade {
     private final MeetingQueryUseCase meetingQueryUseCase;
     private final UserQueryUseCase userQueryUseCase;
     private final MeetingParticipantQueryUseCase meetingParticipantQueryUseCase;
+    private final NotificationCommandFacade notificationCommandFacade;
 
     @Override
-    public void create(ReviewCreateRequest createRequest, Long reviewerId) {
-        validateCreateReview(createRequest.meetingId(), createRequest.revieweeId(), reviewerId);
-        reviewCommandUseCase.create(createRequest, reviewerId);
+    public void create(ReviewCreateRequest request, Long reviewerId) {
+        validateCreateReview(request.meetingId(), request.revieweeId(), reviewerId);
+        reviewCommandUseCase.create(request, reviewerId);
+        notificationCommandFacade.create(
+                request.meetingId(), request.revieweeId(), REVIEW_RECEIVED);
     }
 
     /***

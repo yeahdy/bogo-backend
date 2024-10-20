@@ -1,7 +1,10 @@
 package com.boardgo.domain.meeting.service.facade;
 
-import static com.boardgo.common.constant.S3BucketConstant.*;
-import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
+import static com.boardgo.common.constant.S3BucketConstant.BOARDGAME;
+import static com.boardgo.common.constant.S3BucketConstant.MEETING;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.COMPLETE;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.PROGRESS;
+import static com.boardgo.domain.notification.entity.MessageType.MEETING_MODIFY;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.CustomNullPointException;
@@ -23,9 +26,12 @@ import com.boardgo.domain.meeting.service.MeetingCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingGameMatchCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingGenreMatchCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantCommandUseCase;
+import com.boardgo.domain.meeting.service.MeetingParticipantQueryUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantSubQueryUseCase;
 import com.boardgo.domain.meeting.service.MeetingParticipantWaitingCommandUseCase;
 import com.boardgo.domain.meeting.service.MeetingQueryUseCase;
+import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
+import com.boardgo.domain.notification.service.facade.NotificationCommandFacade;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -50,11 +56,14 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
     private final MeetingParticipantSubQueryUseCase meetingParticipantSubQueryUseCase;
     private final MeetingQueryUseCase meetingQueryUseCase;
     private final GameGenreMatchQueryUseCase gameGenreMatchQueryUseCase;
+    // TODO MeetingParticipantWaiting 도메인 삭제
     private final MeetingParticipantWaitingCommandUseCase meetingParticipantWaitingCommandUseCase;
+    private final MeetingParticipantQueryUseCase meetingParticipantQueryUseCase;
     private final MeetingGenreMatchCommandUseCase meetingGenreMatchCommandUseCase;
     private final MeetingGameMatchCommandUseCase meetingGameMatchCommandUseCase;
     private final MeetingParticipantCommandUseCase meetingParticipantCommandUseCase;
     private final ChatRoomCommandUseCase chatRoomCommandUseCase;
+    private final NotificationCommandFacade notificationCommandFacade;
 
     @Override
     public Long create(
@@ -132,6 +141,13 @@ public class MeetingCommandFacadeImpl implements MeetingCommandFacade {
                     gameGenreMatchQueryUseCase.getGenreIdListByBoardGameIdList(boardGameIdList),
                     meetingId);
         }
+
+        List<UserParticipantResponse> participantResponses =
+                meetingParticipantQueryUseCase.findByMeetingId(meetingId);
+        participantResponses.forEach(
+                participant ->
+                        notificationCommandFacade.create(
+                                meeting.getId(), participant.userId(), MEETING_MODIFY));
     }
 
     private void validateLimitParticipantCount(MeetingUpdateRequest updateRequest, Long meetingId) {

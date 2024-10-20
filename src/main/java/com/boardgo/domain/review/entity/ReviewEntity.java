@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comment;
 
 @Entity
 @Getter
@@ -33,15 +34,18 @@ public class ReviewEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Comment("리뷰 받는 사람 id")
     @Column(name = "reviewee_id", nullable = false)
     private Long revieweeId;
 
+    @Comment("리뷰 작성자 id")
     @Column(name = "reviewer_id", nullable = false)
     private Long reviewerId;
 
     @Column(name = "meeting_id", nullable = false)
     private Long meetingId;
 
+    @Comment("평점")
     @Column(columnDefinition = "integer default 0", nullable = false)
     private Integer rating;
 

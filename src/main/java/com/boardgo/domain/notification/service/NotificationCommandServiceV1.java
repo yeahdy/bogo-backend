@@ -35,8 +35,7 @@ public class NotificationCommandServiceV1 implements NotificationCommandUseCase 
     }
 
     @Override
-    public void createNotification(
-            Long userId, MessageType messageType, NotificationCreateRequest request) {
+    public void createNotification(MessageType messageType, NotificationCreateRequest request) {
         String pathUrl = "";
         String title = NotificationMessageFactory.get(messageType).getTitle();
         String content = messageType.createMessage(request);
@@ -55,7 +54,7 @@ public class NotificationCommandServiceV1 implements NotificationCommandUseCase 
 
         notificationRepository.save(
                 NotificationEntity.builder()
-                        .userInfoId(userId)
+                        .userInfoId(request.userId())
                         .pathUrl(pathUrl)
                         .message(setNotificationMessage(messageType, title, content))
                         .sendDateTime(LocalDateTime.now())

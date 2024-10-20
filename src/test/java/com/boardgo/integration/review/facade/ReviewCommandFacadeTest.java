@@ -1,5 +1,6 @@
 package com.boardgo.integration.review.facade;
 
+import static com.boardgo.domain.notification.entity.MessageType.REVIEW_RECEIVED;
 import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
 import static com.boardgo.integration.data.UserInfoData.userInfoEntityData;
 import static com.boardgo.integration.fixture.MeetingParticipantFixture.getLeaderMeetingParticipantEntity;
@@ -7,6 +8,7 @@ import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParti
 import static com.boardgo.integration.fixture.ReviewFixture.getReview;
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
 import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
@@ -15,6 +17,9 @@ import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
+import com.boardgo.domain.notification.entity.NotificationEntity;
+import com.boardgo.domain.notification.entity.NotificationMessage;
+import com.boardgo.domain.notification.repository.NotificationRepository;
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.repository.ReviewRepository;
 import com.boardgo.domain.review.service.facade.ReviewCommandFacade;
@@ -35,6 +40,7 @@ public class ReviewCommandFacadeTest extends IntegrationTestSupport {
     @Autowired private MeetingRepository meetingRepository;
     @Autowired private ReviewRepository reviewRepository;
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;
+    @Autowired private NotificationRepository notificationRepository;
 
     @Test
     @DisplayName("리뷰 작성 시 종료된 모임이 아니면 예외가 발생한다")
@@ -112,6 +118,37 @@ public class ReviewCommandFacadeTest extends IntegrationTestSupport {
         assertThatThrownBy(() -> reviewCommandFacade.create(request, me.getId()))
                 .isInstanceOf(CustomIllegalArgumentException.class)
                 .hasMessageContaining("모임을 함께 참여하지 않았습니다");
+    }
+
+    @Test
+    @DisplayName("리뷰를_작성하면_리뷰를_받는_사람에게_알림메세지가_발송된다")
+    void 리뷰를_작성하면_리뷰를_받는_사람에게_알림메세지가_발송된다() {
+        // given
+        Long meetingId = participateMeetingData();
+        UserInfoEntity reviewee =
+                userRepository.save(userInfoEntityData("reviewee@naver.com", "리뷰받아용").build());
+        meetingParticipantRepository.save(
+                getParticipantMeetingParticipantEntity(meetingId, reviewee.getId()));
+        ReviewCreateRequest request =
+                new ReviewCreateRequest(reviewee.getId(), meetingId, 5, List.of(1L, 3L, 4L, 5L));
+
+        // when
+        Long user1 = 1L;
+        reviewCommandFacade.create(request, user1);
+
+        // then
+        List<NotificationEntity> notificationList =
+                notificationRepository.findByUserInfoIdAndMessageMessageType(
+                        reviewee.getId(), REVIEW_RECEIVED);
+        assertThat(notificationList).isNotEmpty();
+
+        notificationList.forEach(
+                notificationEntity -> {
+                    assertThat(notificationEntity.getUserInfoId()).isEqualTo(reviewee.getId());
+                    NotificationMessage message = notificationEntity.getMessage();
+                    System.out.printf(
+                            "title: %s, content: %s", message.getTitle(), message.getContent());
+                });
     }
 
     private Long participateMeetingData() {

@@ -28,7 +28,8 @@ public class MessageTypeTest {
         String content = "{#nickName} 님의 알림메세지 내용";
         String meetingTitle = "보드게임 같이 하실분!";
         String nickname = "행복전도사";
-        NotificationCreateRequest param = new NotificationCreateRequest(meetingTitle, nickname, 1L);
+        NotificationCreateRequest param =
+                new NotificationCreateRequest(meetingTitle, nickname, 1L, 1L);
 
         try (MockedStatic<NotificationMessageFactory> notificationMessageFactory =
                 mockStatic(NotificationMessageFactory.class)) {

@@ -104,10 +104,11 @@ public class NotificationCommandServiceV1Test extends IntegrationTestSupport {
             case REQUEST_REVIEW -> pathUrl = "/mypage/review";
             case KICKED_OUT -> pathUrl = "/gatherings";
         }
-        NotificationCreateRequest request = new NotificationCreateRequest("알림제목", "닉네임", meetingId);
+        NotificationCreateRequest request =
+                new NotificationCreateRequest("알림제목", "닉네임", meetingId, userId);
 
         // when
-        notificationCommandUseCase.createNotification(userId, messageType, request);
+        notificationCommandUseCase.createNotification(messageType, request);
 
         // then
         List<NotificationEntity> notificationEntities =

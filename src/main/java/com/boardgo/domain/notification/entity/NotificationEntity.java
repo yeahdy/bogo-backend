@@ -38,7 +38,7 @@ public class NotificationEntity extends BaseEntity {
 
     @Comment("읽음 유무")
     @Convert(converter = BooleanConverter.class)
-    @Column(columnDefinition = "varchar(1)")
+    @Column(columnDefinition = "varchar(1) DEFAULT 'N'", nullable = false)
     private Boolean isRead;
 
     @Comment("받는 사람")
@@ -56,7 +56,7 @@ public class NotificationEntity extends BaseEntity {
 
     @Comment("발송 유무")
     @Convert(converter = BooleanConverter.class)
-    @Column(columnDefinition = "varchar(1)")
+    @Column(columnDefinition = "varchar(1) DEFAULT 'N'", nullable = false)
     private Boolean isSent;
 
     @Comment("결과 원본데이터")
