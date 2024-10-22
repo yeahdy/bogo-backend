@@ -43,7 +43,7 @@ public class TermsConditionsEntity {
     private String title;
 
     @Comment("이용약관 내용")
-    @Column(name = "content", nullable = false, columnDefinition = "MEDIUMTEXT")
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String content;
 
     @Comment("필수 여부(Y/N)")

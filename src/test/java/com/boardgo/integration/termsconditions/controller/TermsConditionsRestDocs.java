@@ -67,6 +67,7 @@ public class TermsConditionsRestDocs extends RestDocsTestSupport {
                         fieldWithPath("[].title").type(JsonFieldType.STRING).description("약관동의 제목"),
                         fieldWithPath("[].content")
                                 .type(JsonFieldType.STRING)
+                                .optional()
                                 .description("약관동의 내용"),
                         fieldWithPath("[].required")
                                 .type(JsonFieldType.BOOLEAN)

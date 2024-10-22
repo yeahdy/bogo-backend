@@ -11,6 +11,7 @@ import com.boardgo.domain.termsconditions.entity.UserTermsConditionsEntity;
 import com.boardgo.domain.termsconditions.entity.enums.TermsConditionsType;
 import com.boardgo.domain.termsconditions.repository.TermsConditionsRepository;
 import com.boardgo.domain.termsconditions.repository.UserTermsConditionsRepository;
+import com.boardgo.domain.termsconditions.service.TermsConditionsFactory;
 import com.boardgo.domain.termsconditions.service.facade.UserTermsConditionsCommandFacade;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class UserTermsConditionsCommandFacadeTest extends IntegrationTestSupport
     @Autowired private UserTermsConditionsCommandFacade userTermsConditionsCommandFacade;
     @Autowired private UserTermsConditionsRepository userTermsConditionsRepository;
     @Autowired private TermsConditionsRepository termsConditionsRepository;
+    @Autowired private TermsConditionsFactory termsConditionsFactory;
 
     @BeforeEach
     void init() {
@@ -33,8 +35,9 @@ public class UserTermsConditionsCommandFacadeTest extends IntegrationTestSupport
 
     @Test
     @DisplayName("사용자의 약관동의가 모두 저장된다")
-    void 사용자의_약관동의가_모두_저장된다() {
+    void 사용자의_약관동의가_모두_저장된다() throws Exception {
         // given
+        termsConditionsFactory.run(null);
         List<TermsConditionsCreateRequest> request = new ArrayList<>();
         for (TermsConditionsType type : TermsConditionsType.values()) {
             request.add(new TermsConditionsCreateRequest(type.name(), true));
@@ -82,8 +85,9 @@ public class UserTermsConditionsCommandFacadeTest extends IntegrationTestSupport
 
     @Test
     @DisplayName("필수 약관을 하나라도 동의하지 않을 경우 예외가 발생한다")
-    void 필수_약관을_하나라도_동의하지_않을_경우_예외가_발생한다() {
+    void 필수_약관을_하나라도_동의하지_않을_경우_예외가_발생한다() throws Exception {
         // given
+        termsConditionsFactory.run(null);
         List<TermsConditionsCreateRequest> request = new ArrayList<>();
         request.add(new TermsConditionsCreateRequest("TERMS", true));
         request.add(new TermsConditionsCreateRequest("PRIVACY", false));
