@@ -6,7 +6,9 @@ import com.boardgo.domain.chatting.entity.ChatMessage;
 import com.boardgo.domain.chatting.entity.ChatRoomEntity;
 import com.boardgo.domain.chatting.repository.ChatRepository;
 import com.boardgo.domain.chatting.repository.ChatRoomRepository;
+import com.boardgo.domain.chatting.service.ChatMessageQueryUseCase;
 import com.boardgo.domain.chatting.service.facade.ChatRoomQueryFacade;
+import com.boardgo.domain.chatting.service.response.ChatMessageResponse;
 import com.boardgo.domain.chatting.service.response.ChattingListResponse;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
@@ -21,14 +23,17 @@ import com.boardgo.integration.support.IntegrationTestSupport;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 
 public class ChatRoomQueryFacadeTest extends IntegrationTestSupport {
     @Autowired private UserRepository userRepository;
     @Autowired private ChatRoomRepository chatRoomRepository;
     @Autowired private ChatRepository chatRepository;
+    @Autowired private ChatMessageQueryUseCase chatMessageQueryUseCase;
     @Autowired private MeetingRepository meetingRepository;
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;
     @Autowired private ChatRoomQueryFacade chatRoomQueryFacade;
@@ -72,6 +77,27 @@ public class ChatRoomQueryFacadeTest extends IntegrationTestSupport {
         assertThat(result.getFirst().lastSendDatetime().truncatedTo(ChronoUnit.SECONDS))
                 .isEqualTo(now.truncatedTo(ChronoUnit.SECONDS));
         assertThat(result.getFirst().chatRoomId()).isEqualTo(savedChatRoom.getId());
+    }
+
+    @Test
+    @DisplayName("채팅방 이전 목록을 볼 수 있다")
+    void 채팅방_이전_목록을_볼_수_있다() {
+        // given
+        chatRepository.deleteByRoomId(1L);
+        for (int i = 0; i < 30; i++) {
+            chatRepository.save(
+                    ChatMessage.builder()
+                            .roomId(1L)
+                            .content("content" + i)
+                            .sendDatetime(LocalDateTime.now())
+                            .build());
+        }
+        // when
+        Page<ChatMessageResponse> chatHistory = chatMessageQueryUseCase.getChatHistory(1L, 0);
+        // then
+        Assertions.assertThat(chatHistory.getTotalElements()).isEqualTo(30);
+        Assertions.assertThat(chatHistory.getTotalPages()).isEqualTo(2);
+        Assertions.assertThat(chatHistory.getContent().getFirst().content()).isEqualTo("content29");
     }
 
     private ChatRoomEntity getChatRoomEntity(UserInfoEntity savedUser) {

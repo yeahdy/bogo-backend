@@ -2,6 +2,7 @@ package com.boardgo.domain.mapper;
 
 import com.boardgo.domain.chatting.entity.ChatMessage;
 import com.boardgo.domain.chatting.repository.projection.LatestMessageProjection;
+import com.boardgo.domain.chatting.service.response.ChatMessageResponse;
 import com.boardgo.domain.chatting.service.response.ChattingListResponse;
 import com.boardgo.domain.chatting.service.response.LatestMessageResponse;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
@@ -15,7 +16,9 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface ChatMapper {
-    BoardGameMapper INSTANCE = Mappers.getMapper(BoardGameMapper.class);
+    ChatMapper INSTANCE = Mappers.getMapper(ChatMapper.class);
+
+    List<ChatMessageResponse> toChatMessageResponseList(List<ChatMessage> chatMessageList);
 
     List<LatestMessageResponse> toLatestMessageResponse(
             List<LatestMessageProjection> latestMessageProjection);

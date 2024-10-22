@@ -1066,3 +1066,35 @@ include::{snippets}/patch-read-notification/http-response.adoc[]
 |알림 (이)가 존재하지 않습니다.
 
 |===
+
+'''
+
+=== *이전 채팅 조회*
+
+==== *요청*
+
+include::{snippets}/chatroom-history/http-request.adoc[]
+
+- QueryString
+
+include::{snippets}/chatroom-history/query-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/chatroom-history/http-response.adoc[]
+include::{snippets}/chatroom-history/response-fields.adoc[]
+
+
+- HTTP 상태 코드
+
+|===
+| code | messages
+
+| 200
+| 데이터 존재 시
+
+| 204
+| 데이터 존재하지 않을 시
+|===
+
+'''
