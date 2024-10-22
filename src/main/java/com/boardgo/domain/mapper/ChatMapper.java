@@ -32,7 +32,8 @@ public interface ChatMapper {
                         item ->
                                 toChattingListResponse(
                                         item,
-                                        chatMessageMap.getOrDefault(item.getId(), null),
+                                        chatMessageMap.getOrDefault(
+                                                chatRoomMap.get(item.getId()), null),
                                         chatRoomMap.get(item.getId())))
                 .sorted(
                         Comparator.comparing(

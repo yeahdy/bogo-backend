@@ -35,9 +35,6 @@ public class ChatRoomQueryFacadeImpl implements ChatRoomQueryFacade {
         List<MeetingEntity> meetingList = meetingQueryUseCase.findByIdIn(meetingIdList);
         List<ChatRoomEntity> chatRoomList = chatRoomQueryUseCase.findByMeetingIdIn(meetingIdList);
 
-        log.info("meetingIdList : {}", meetingList);
-        log.info("chatRoomList : {}", chatRoomList);
-
         Map<Long, Long> chatRoomMap =
                 chatRoomList.stream()
                         .collect(
@@ -45,11 +42,6 @@ public class ChatRoomQueryFacadeImpl implements ChatRoomQueryFacade {
                                         ChatRoomEntity::getMeetingId, ChatRoomEntity::getId));
 
         Map<Long, ChatMessage> chatMessageMap = getChatMessageMap(chatRoomList);
-        for (Long key : chatMessageMap.keySet()) {
-            log.info("key = {}", key);
-            log.info("chatRoomMap.getRoomId(key) = {}", chatMessageMap.get(key).getRoomId());
-            log.info("chatRoomMap.getContent(key) = {}", chatMessageMap.get(key).getContent());
-        }
 
         return chatMapper.toChattingListResponseList(meetingList, chatMessageMap, chatRoomMap);
     }

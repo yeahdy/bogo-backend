@@ -28,12 +28,6 @@ public class ChatMessageQueryServiceV1 implements ChatMessageQueryUseCase {
     public List<LatestMessageResponse> getLast(List<Long> roomIdList) {
         List<LatestMessageProjection> result =
                 chatRepository.findLatestMessagesByRoomIds(roomIdList);
-        for (LatestMessageProjection latestMessageProjection : result) {
-            log.info("latestMessageProjection.roomId = {}", latestMessageProjection.roomId());
-            log.info(
-                    "latestMessageProjection.latestMessage.Content = {}",
-                    latestMessageProjection.latestMessage().getContent());
-        }
         return chatMapper.toLatestMessageResponse(result);
     }
 
