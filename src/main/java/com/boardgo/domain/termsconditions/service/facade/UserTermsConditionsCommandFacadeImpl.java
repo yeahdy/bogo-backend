@@ -1,7 +1,10 @@
 package com.boardgo.domain.termsconditions.service.facade;
 
+import static com.boardgo.domain.termsconditions.entity.enums.TermsConditionsType.PUSH;
+
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.domain.mapper.TermsConditionsMapper;
+import com.boardgo.domain.notification.service.UserNotificationSettingCommandUseCase;
 import com.boardgo.domain.termsconditions.controller.request.TermsConditionsCreateRequest;
 import com.boardgo.domain.termsconditions.entity.TermsConditionsEntity;
 import com.boardgo.domain.termsconditions.entity.UserTermsConditionsEntity;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Component;
 public class UserTermsConditionsCommandFacadeImpl implements UserTermsConditionsCommandFacade {
     private final UserTermsConditionsCommandUseCase userTermsConditionsCommandUseCase;
     private final UserTermsConditionsQueryUseCase userTermsConditionsQueryUseCase;
+    private final UserNotificationSettingCommandUseCase userNotificationSettingCommandUseCase;
     private final TermsConditionsMapper termsConditionsMapper;
 
     @Override
@@ -36,8 +40,11 @@ public class UserTermsConditionsCommandFacadeImpl implements UserTermsConditions
                     if (!termsConditionsEntity.isRequired(termsConditions.agreement())) {
                         throw new CustomIllegalArgumentException("필수 약관은 모두 동의되어야 합니다");
                     }
-
-                    // TODO termsConditionsEntity 이 PUSH일 경우 알림설정에 추가
+                    // 푸시 알림설정 저장
+                    if (PUSH.equals(termsConditionsEntity.getType())) {
+                        userNotificationSettingCommandUseCase.create(
+                                userId, termsConditions.agreement());
+                    }
 
                     userTermsConditionsEntities.add(
                             termsConditionsMapper.toUserTermsConditionsEntity(

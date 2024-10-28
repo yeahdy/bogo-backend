@@ -17,14 +17,14 @@ public class NotificationCommandFacadeTestConfig {
     @Bean
     @Primary
     public NotificationCommandFacade NotificationCommandFacade() {
-        return new TestUserTermsConditionsQueryUseCaseImpl();
+        return new TestNotificationCommandFacadeImpl();
     }
 
     @Autowired private UserQueryUseCase userQueryUseCase;
     @Autowired private MeetingQueryUseCase meetingQueryUseCase;
     @Autowired private NotificationCommandUseCase notificationCommandUseCase;
 
-    class TestUserTermsConditionsQueryUseCaseImpl implements NotificationCommandFacade {
+    class TestNotificationCommandFacadeImpl implements NotificationCommandFacade {
 
         @Override
         public void create(Long meetingId, Long userId, MessageType messageType) {

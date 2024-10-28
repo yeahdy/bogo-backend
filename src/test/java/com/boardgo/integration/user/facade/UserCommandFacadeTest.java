@@ -6,9 +6,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.boardgo.common.exception.CustomNullPointException;
+import com.boardgo.config.UserNotificationSettingCommandUseCaseTestConfig;
 import com.boardgo.domain.termsconditions.controller.request.TermsConditionsCreateRequest;
 import com.boardgo.domain.termsconditions.entity.enums.TermsConditionsType;
 import com.boardgo.domain.termsconditions.repository.TermsConditionsRepository;
+import com.boardgo.domain.termsconditions.service.TermsConditionsFactory;
 import com.boardgo.domain.user.controller.request.SignupRequest;
 import com.boardgo.domain.user.controller.request.SocialSignupRequest;
 import com.boardgo.domain.user.entity.UserInfoEntity;
@@ -28,17 +30,21 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
+@Import({UserNotificationSettingCommandUseCaseTestConfig.class})
 public class UserCommandFacadeTest extends IntegrationTestSupport {
 
+    @Autowired private TermsConditionsFactory termsConditionsFactory;
     @Autowired private UserCommandFacade userCommandFacade;
     @Autowired private UserRepository userRepository;
     @Autowired private UserPrTagRepository userPrTagRepository;
     @Autowired private TermsConditionsRepository termsConditionsRepository;
 
     @BeforeEach
-    void init() {
+    void init() throws Exception {
         termsConditionsRepository.saveAll(getTermsConditionsList());
+        termsConditionsFactory.run(null);
     }
 
     @ParameterizedTest

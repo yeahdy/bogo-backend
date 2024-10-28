@@ -1,11 +1,17 @@
 package com.boardgo.integration.termsconditions.facade;
 
+import static com.boardgo.domain.termsconditions.entity.enums.TermsConditionsType.PUSH;
+import static com.boardgo.integration.fixture.NotificationSettingFixture.getNotificationSettings;
 import static com.boardgo.integration.fixture.TermsConditionsFixture.getTermsConditionsList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.domain.notification.entity.MessageType;
+import com.boardgo.domain.notification.entity.UserNotificationSettingEntity;
+import com.boardgo.domain.notification.repository.NotificationSettingRepository;
+import com.boardgo.domain.notification.repository.UserNotificationSettingRepository;
 import com.boardgo.domain.termsconditions.controller.request.TermsConditionsCreateRequest;
 import com.boardgo.domain.termsconditions.entity.UserTermsConditionsEntity;
 import com.boardgo.domain.termsconditions.entity.enums.TermsConditionsType;
@@ -20,6 +26,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserTermsConditionsCommandFacadeTest extends IntegrationTestSupport {
@@ -27,10 +35,13 @@ public class UserTermsConditionsCommandFacadeTest extends IntegrationTestSupport
     @Autowired private UserTermsConditionsRepository userTermsConditionsRepository;
     @Autowired private TermsConditionsRepository termsConditionsRepository;
     @Autowired private TermsConditionsFactory termsConditionsFactory;
+    @Autowired private NotificationSettingRepository notificationSettingRepository;
+    @Autowired private UserNotificationSettingRepository userNotificationSettingRepository;
 
     @BeforeEach
     void init() {
         termsConditionsRepository.saveAll(getTermsConditionsList());
+        notificationSettingRepository.saveAll(getNotificationSettings());
     }
 
     @Test
@@ -60,6 +71,44 @@ public class UserTermsConditionsCommandFacadeTest extends IntegrationTestSupport
                 entity -> {
                     assertTrue(
                             termsConditionsTypes.contains(entity.getTermsConditions().getType()));
+                });
+    }
+
+    @ParameterizedTest
+    @DisplayName("회원의 약관동의를 저장할 때 푸시 약관 동의에 따라 푸시 알림설정의 허용_비허용이 저장된다")
+    @ValueSource(booleans = {true, false})
+    void 회원의_약관동의를_저장할_때_푸시_약관_동의에_따라_푸시_알림설정의_허용_비허용이_저장된다(boolean isAgreed) throws Exception {
+        // given
+        termsConditionsFactory.run(null);
+        List<TermsConditionsCreateRequest> request = new ArrayList<>();
+        for (TermsConditionsType type : TermsConditionsType.values()) {
+            if (PUSH.equals(type)) {
+                request.add(new TermsConditionsCreateRequest(type.name(), isAgreed));
+                continue;
+            }
+            request.add(new TermsConditionsCreateRequest(type.name(), true));
+        }
+        Long userId = 1L;
+
+        // when
+        userTermsConditionsCommandFacade.createUserTermsConditions(request, userId);
+
+        // then
+        assertTrue(userTermsConditionsRepository.existsByUserInfoId(userId));
+
+        List<UserNotificationSettingEntity> userNotificationSettingEntities =
+                userNotificationSettingRepository.findByUserInfoId(userId);
+        assertThat(userNotificationSettingEntities).isNotEmpty();
+
+        List<MessageType> messageTypeList = Arrays.stream(MessageType.values()).toList();
+        assertThat(messageTypeList.size()).isEqualTo(userNotificationSettingEntities.size());
+        userNotificationSettingEntities.forEach(
+                userNotificationSettingEntity -> {
+                    if (isAgreed) {
+                        assertThat(userNotificationSettingEntity.getIsAgreed()).isTrue();
+                    } else {
+                        assertThat(userNotificationSettingEntity.getIsAgreed()).isFalse();
+                    }
                 });
     }
 

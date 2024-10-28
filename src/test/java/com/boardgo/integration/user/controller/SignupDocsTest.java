@@ -11,9 +11,11 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
+import com.boardgo.config.UserNotificationSettingCommandUseCaseTestConfig;
 import com.boardgo.domain.termsconditions.controller.request.TermsConditionsCreateRequest;
 import com.boardgo.domain.termsconditions.entity.enums.TermsConditionsType;
 import com.boardgo.domain.termsconditions.repository.TermsConditionsRepository;
+import com.boardgo.domain.termsconditions.service.TermsConditionsFactory;
 import com.boardgo.domain.user.controller.request.SignupRequest;
 import com.boardgo.domain.user.controller.request.SocialSignupRequest;
 import com.boardgo.domain.user.entity.enums.ProviderType;
@@ -25,19 +27,23 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 
+@Import({UserNotificationSettingCommandUseCaseTestConfig.class})
 public class SignupDocsTest extends RestDocsTestSupport {
 
+    @Autowired private TermsConditionsFactory termsConditionsFactory;
     @Autowired private TermsConditionsRepository termsConditionsRepository;
     @Autowired private UserRepository userRepository;
 
     @BeforeEach
-    void init() {
+    void init() throws Exception {
         termsConditionsRepository.saveAll(getTermsConditionsList());
+        termsConditionsFactory.run(null);
     }
 
     @Test
