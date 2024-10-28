@@ -47,10 +47,7 @@ public class UserNotificationSettingEntity extends BaseEntity {
 
     @Builder
     public UserNotificationSettingEntity(
-            Long userInfoId,
-            NotificationSettingEntity notificationSetting,
-            String additionalContent,
-            Boolean isAgreed) {
+            Long userInfoId, NotificationSettingEntity notificationSetting, Boolean isAgreed) {
         this.userInfoId = userInfoId;
         this.notificationSetting = notificationSetting;
         this.isAgreed = isAgreed;

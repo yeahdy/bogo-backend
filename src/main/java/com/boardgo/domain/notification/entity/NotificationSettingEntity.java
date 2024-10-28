@@ -2,6 +2,8 @@ package com.boardgo.domain.notification.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,6 +26,7 @@ public class NotificationSettingEntity {
 
     @Comment("알림설정 타입")
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private MessageType messageType;
 
     @Comment("알림 설정 내용")

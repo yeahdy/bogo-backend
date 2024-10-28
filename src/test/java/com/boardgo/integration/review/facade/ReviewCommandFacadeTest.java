@@ -13,6 +13,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.common.exception.DuplicateException;
+import com.boardgo.config.NotificationCommandFacadeTestConfig;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
@@ -32,7 +33,9 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
+@Import({NotificationCommandFacadeTestConfig.class})
 public class ReviewCommandFacadeTest extends IntegrationTestSupport {
 
     @Autowired private ReviewCommandFacade reviewCommandFacade;

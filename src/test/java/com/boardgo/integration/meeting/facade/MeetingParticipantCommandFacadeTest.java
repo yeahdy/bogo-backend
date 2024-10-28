@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.config.NotificationCommandFacadeTestConfig;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
@@ -22,7 +23,9 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
+@Import({NotificationCommandFacadeTestConfig.class})
 public class MeetingParticipantCommandFacadeTest extends IntegrationTestSupport {
     @Autowired private MeetingParticipantCommandFacade meetingParticipantCommandFacade;
     @Autowired private MeetingParticipantRepository meetingParticipantRepository;

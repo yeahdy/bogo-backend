@@ -37,7 +37,7 @@ public class UserTermsConditionsCommandFacadeImpl implements UserTermsConditions
                         throw new CustomIllegalArgumentException("필수 약관은 모두 동의되어야 합니다");
                     }
 
-                    // TODO termsConditionsEntity 이 PUSH인데, 허용일 경우 알림설정에 추가
+                    // TODO termsConditionsEntity 이 PUSH일 경우 알림설정에 추가
 
                     userTermsConditionsEntities.add(
                             termsConditionsMapper.toUserTermsConditionsEntity(

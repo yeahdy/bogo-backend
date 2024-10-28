@@ -1,16 +1,25 @@
 package com.boardgo.integration.meeting.controller;
 
-import static com.boardgo.common.constant.HeaderConstant.*;
-import static com.boardgo.integration.data.MeetingData.*;
-import static com.boardgo.integration.data.UserInfoData.*;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.*;
-import static com.boardgo.integration.fixture.UserInfoFixture.*;
-import static io.restassured.RestAssured.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.*;
+import static com.boardgo.common.constant.HeaderConstant.API_VERSION_HEADER;
+import static com.boardgo.common.constant.HeaderConstant.AUTHORIZATION;
+import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
+import static com.boardgo.integration.data.UserInfoData.userInfoEntityData;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getLeaderMeetingParticipantEntity;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getOutMeetingParticipantEntity;
+import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
+import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
+import static com.boardgo.integration.fixture.UserInfoFixture.socialUserInfoEntity;
+import static io.restassured.RestAssured.given;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
+import com.boardgo.config.NotificationCommandFacadeTestConfig;
 import com.boardgo.domain.meeting.controller.request.MeetingOutRequest;
 import com.boardgo.domain.meeting.controller.request.MeetingParticipateRequest;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
@@ -24,11 +33,13 @@ import com.boardgo.integration.support.RestDocsTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 
+@Import({NotificationCommandFacadeTestConfig.class})
 public class MeetingParticipantDocsTest extends RestDocsTestSupport {
     @Autowired private UserRepository userRepository;
     @Autowired private MeetingRepository meetingRepository;
