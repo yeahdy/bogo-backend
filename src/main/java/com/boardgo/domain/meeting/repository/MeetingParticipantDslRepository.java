@@ -5,7 +5,7 @@ import com.boardgo.domain.user.repository.projection.UserParticipantProjection;
 import java.util.List;
 
 public interface MeetingParticipantDslRepository {
-    List<ReviewMeetingParticipantsProjection> findReviewMeetingParticipants(
+    List<ReviewMeetingParticipantsProjection> findMeetingParticipantsToReview(
             List<Long> revieweeIds, Long meetingId);
 
     List<UserParticipantProjection> findParticipantListByMeetingId(Long meetingId);

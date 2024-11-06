@@ -1,6 +1,8 @@
 package com.boardgo.domain.meeting.repository;
 
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.OUT;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
 
 import com.boardgo.domain.meeting.entity.QMeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
@@ -36,7 +38,7 @@ public class MeetingParticipantDslRepositoryImpl implements MeetingParticipantDs
     }
 
     @Override
-    public List<ReviewMeetingParticipantsProjection> findReviewMeetingParticipants(
+    public List<ReviewMeetingParticipantsProjection> findMeetingParticipantsToReview(
             List<Long> revieweeIds, Long meetingId) {
         return queryFactory
                 .select(

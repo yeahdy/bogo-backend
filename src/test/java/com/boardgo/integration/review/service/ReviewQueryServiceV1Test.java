@@ -261,4 +261,24 @@ public class ReviewQueryServiceV1Test extends IntegrationTestSupport {
         assertThat(averageRatingString).isNotEmpty();
         assertThat(averageRatingString.length()).isEqualTo(3); // 소수점 1자리는 0.0 == 문자열 길이 3자리
     }
+
+    @Test
+    @DisplayName("참여한 모임에서 본인이 작성한 전체 리뷰를 조회한다")
+    void 참여한_모임에서_본인이_작성한_전체_리뷰를_조회한다() {
+        // given
+        Long meetingId = 1L;
+        Long reviewerId = 1L;
+        reviewRepository.save(getReview(reviewerId, 2L, meetingId));
+        reviewRepository.save(getReview(reviewerId, 3L, meetingId));
+        reviewRepository.save(getReview(reviewerId, 4L, meetingId));
+        reviewRepository.save(getReview(reviewerId, 5L, meetingId));
+
+        // when
+        List<Long> reviewIds =
+                reviewQueryUseCase.getReviewMeetingParticipants(meetingId, reviewerId);
+
+        // then
+        assertThat(reviewIds).isNotEmpty();
+        assertThat(reviewIds.containsAll(List.of(2L, 3L, 4L, 5L))).isTrue();
+    }
 }

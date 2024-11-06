@@ -8,6 +8,7 @@ import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParti
 import static com.boardgo.integration.fixture.UserInfoFixture.localUserInfoEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
@@ -18,6 +19,7 @@ import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.service.MeetingParticipantQueryUseCase;
 import com.boardgo.domain.meeting.service.response.ParticipantOutResponse;
 import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
+import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.user.entity.UserInfoEntity;
 import com.boardgo.domain.user.repository.UserRepository;
 import com.boardgo.domain.user.service.response.CustomUserDetails;
@@ -141,5 +143,62 @@ public class MeetingParticipantQueryServiceV1Test extends IntegrationTestSupport
                                                 outParticipant.getUserInfoId())))
                 .isInstanceOf(CustomIllegalArgumentException.class)
                 .hasMessageContaining("모임을 함께 참여하지 않았습니다");
+    }
+
+    @Test
+    @DisplayName("모임에 함께 참여한 참여자들 중 리뷰를 작성하지 않는 참여자 조회하기")
+    void 모임에_함께_참여한_참여자들_중_리뷰를_작성하지_않는_참여자_조회하기() {
+        // given
+        // 회원
+        List<UserInfoEntity> userInfoEntities = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            UserInfoEntity userInfo =
+                    userInfoEntityData("participate" + i + "@naver.com", "participate" + i).build();
+            userInfoEntities.add(userInfo);
+        }
+        userRepository.saveAll(userInfoEntities);
+        // 이미 작성된 리뷰의 회원 id
+        List<Long> createdReviewIds = new ArrayList<>();
+        createdReviewIds.add(userInfoEntities.get(0).getId());
+        createdReviewIds.add(userInfoEntities.get(1).getId());
+        createdReviewIds.add(userInfoEntities.get(2).getId());
+        // 모임 참여
+        Long meetingId = 1L;
+        userInfoEntities.forEach(
+                userInfoEntity ->
+                        meetingParticipantRepository.save(
+                                getParticipantMeetingParticipantEntity(
+                                        meetingId, userInfoEntity.getId())));
+
+        // when
+        List<ReviewMeetingParticipantsResponse> participantsToReview =
+                meetingParticipantQueryUseCase.findMeetingParticipantsToReview(
+                        createdReviewIds, meetingId);
+
+        // then
+        assertThat(participantsToReview).isNotEmpty();
+        assertThat(participantsToReview)
+                .hasSize(2)
+                .extracting("revieweeId", "revieweeName")
+                .containsExactly(
+                        tuple(
+                                userInfoEntities.get(3).getId(),
+                                userInfoEntities.get(3).getNickName()),
+                        tuple(
+                                userInfoEntities.get(4).getId(),
+                                userInfoEntities.get(4).getNickName()));
+        // 이미 작성된 리뷰의 회원
+        assertThat(participantsToReview)
+                .extracting("revieweeId", "revieweeName")
+                .doesNotContain(
+                        tuple(
+                                userInfoEntities.get(0).getId(),
+                                userInfoEntities.get(0).getNickName()),
+                        tuple(
+                                userInfoEntities.get(1).getId(),
+                                userInfoEntities.get(1).getNickName()),
+                        tuple(
+                                userInfoEntities.get(2).getId(),
+                                userInfoEntities.get(2).getNickName()));
     }
 }

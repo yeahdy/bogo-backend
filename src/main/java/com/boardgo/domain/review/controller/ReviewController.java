@@ -7,6 +7,7 @@ import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.entity.enums.ReviewType;
 import com.boardgo.domain.review.service.ReviewQueryUseCase;
 import com.boardgo.domain.review.service.facade.ReviewCommandFacade;
+import com.boardgo.domain.review.service.facade.ReviewQueryFacade;
 import com.boardgo.domain.review.service.response.MyReviewsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
@@ -34,6 +35,7 @@ public class ReviewController {
 
     private final ReviewQueryUseCase reviewQueryUseCase;
     private final ReviewCommandFacade reviewCommandFacade;
+    private final ReviewQueryFacade reviewQueryFacade;
 
     @GetMapping(value = "/meetings", headers = API_VERSION_HEADER1)
     public ResponseEntity<List<ReviewMeetingResponse>> getReviewMeetings(
@@ -64,10 +66,10 @@ public class ReviewController {
     }
 
     @GetMapping(value = "/meetings/{meetingId}/participants", headers = API_VERSION_HEADER1)
-    public ResponseEntity<List<ReviewMeetingParticipantsResponse>> getReviewMeetingParticipants(
+    public ResponseEntity<List<ReviewMeetingParticipantsResponse>> getMeetingParticipantsToReview(
             @PathVariable("meetingId") @Positive Long meetingId) {
         List<ReviewMeetingParticipantsResponse> reviewMeetingParticipants =
-                reviewQueryUseCase.getReviewMeetingParticipants(meetingId, currentUserId());
+                reviewQueryFacade.getMeetingParticipantsToReview(meetingId, currentUserId());
         return ResponseEntity.ok(reviewMeetingParticipants);
     }
 

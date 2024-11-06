@@ -11,7 +11,6 @@ import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.repository.projection.MeetingReviewProjection;
 import com.boardgo.domain.meeting.repository.projection.ParticipationCountProjection;
-import com.boardgo.domain.meeting.repository.projection.ReviewMeetingParticipantsProjection;
 import com.boardgo.domain.review.entity.EvaluationTagEntity;
 import com.boardgo.domain.review.entity.EvaluationType;
 import com.boardgo.domain.review.entity.enums.ReviewType;
@@ -23,7 +22,6 @@ import com.boardgo.domain.review.repository.projection.ReviewMeetingReviewsProje
 import com.boardgo.domain.review.service.response.MyEvaluationTagResponse;
 import com.boardgo.domain.review.service.response.MyEvaluationTagsResponse;
 import com.boardgo.domain.review.service.response.MyReviewsResponse;
-import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
 import com.boardgo.domain.review.service.response.ReviewMeetingReviewsResponse;
 import java.util.ArrayList;
@@ -97,22 +95,9 @@ public class ReviewQueryServiceV1 implements ReviewQueryUseCase {
         return reviewFinished;
     }
 
-    // FIXME: 퍼사드패턴으로 리팩토링 필요
     @Override
-    public List<ReviewMeetingParticipantsResponse> getReviewMeetingParticipants(
-            Long meetingId, Long reviewerId) {
-        List<Long> revieweeIds = reviewRepository.findAllRevieweeId(reviewerId, meetingId);
-        revieweeIds.add(reviewerId); // 본인 리뷰 작성자 목록 표출 제외
-
-        List<ReviewMeetingParticipantsProjection> reviewMeetingParticipants =
-                meetingParticipantRepository.findReviewMeetingParticipants(revieweeIds, meetingId);
-        if (reviewMeetingParticipants.isEmpty()) {
-            throw new CustomNoSuchElementException("리뷰를 작성할 참여자");
-        }
-
-        List<ReviewMeetingParticipantsResponse> reviewMeetingParticipantsResponseList =
-                reviewMapper.toReviewMeetingParticipantsList(reviewMeetingParticipants);
-        return reviewMeetingParticipantsResponseList;
+    public List<Long> getReviewMeetingParticipants(Long meetingId, Long reviewerId) {
+        return reviewRepository.findAllRevieweeId(reviewerId, meetingId);
     }
 
     @Override

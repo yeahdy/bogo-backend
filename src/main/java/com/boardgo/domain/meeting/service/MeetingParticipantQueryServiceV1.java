@@ -4,13 +4,16 @@ import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
 import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.common.exception.CustomNoSuchElementException;
 import com.boardgo.common.utils.SecurityUtils;
 import com.boardgo.domain.mapper.MeetingParticipantMapper;
 import com.boardgo.domain.meeting.entity.MeetingParticipantEntity;
 import com.boardgo.domain.meeting.entity.enums.ParticipantType;
 import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
+import com.boardgo.domain.meeting.repository.projection.ReviewMeetingParticipantsProjection;
 import com.boardgo.domain.meeting.service.response.ParticipantOutResponse;
 import com.boardgo.domain.meeting.service.response.UserParticipantResponse;
+import com.boardgo.domain.review.service.response.ReviewMeetingParticipantsResponse;
 import com.boardgo.domain.user.repository.projection.UserParticipantProjection;
 import java.util.List;
 import java.util.Optional;
@@ -66,5 +69,17 @@ public class MeetingParticipantQueryServiceV1 implements MeetingParticipantQuery
         if (participatedCount != TOGETHER) {
             throw new CustomIllegalArgumentException("모임을 함께 참여하지 않았습니다");
         }
+    }
+
+    @Override
+    public List<ReviewMeetingParticipantsResponse> findMeetingParticipantsToReview(
+            List<Long> revieweeIds, Long meetingId) {
+        List<ReviewMeetingParticipantsProjection> reviewMeetingParticipants =
+                meetingParticipantRepository.findMeetingParticipantsToReview(
+                        revieweeIds, meetingId);
+        if (reviewMeetingParticipants.isEmpty()) {
+            throw new CustomNoSuchElementException("리뷰를 작성할 참여자");
+        }
+        return meetingParticipantMapper.toReviewMeetingParticipantsList(reviewMeetingParticipants);
     }
 }
