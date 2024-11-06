@@ -24,6 +24,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns(corsOrigins)
                 .allowedHeaders(corsHeaders)
                 .allowedMethods(corsMethods)
+                .exposedHeaders("Set-Cookie", "JSESSIONID")
                 .allowCredentials(true);
     }
 }

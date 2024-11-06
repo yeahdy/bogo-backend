@@ -39,7 +39,7 @@ public class AuthFacadeImpl implements AuthFacade {
         loginService.updateTokenWithOutValidation(authEntity.getId(), newRefreshToken);
         response.addHeader(AUTHORIZATION, BEARER + accessToken);
         response.setHeader(
-                "Set-cookie",
+                "Set-Cookie",
                 createCookies(AUTHORIZATION, newRefreshToken, domain, REFRESH_TOKEN_DURATION)
                         .toString());
     }

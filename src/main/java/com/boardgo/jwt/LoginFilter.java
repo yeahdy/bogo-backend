@@ -71,7 +71,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         loginService.create(refreshToken, id);
         response.addHeader(AUTHORIZATION, BEARER + accessToken);
         response.setHeader(
-                "Set-cookie",
+                "Set-Cookie",
                 createCookies(AUTHORIZATION, refreshToken, domain, REFRESH_TOKEN_DURATION)
                         .toString());
     }
