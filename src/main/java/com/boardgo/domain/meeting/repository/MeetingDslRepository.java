@@ -27,8 +27,8 @@ public interface MeetingDslRepository {
 
     List<LikedMeetingMyPageProjection> findLikedMeeting(List<Long> meetingIdList);
 
-    List<MeetingReviewProjection> findMeetingPreProgressReview(
-            Long reviewer, List<Long> reviewFinishedMeetings);
+    List<MeetingReviewProjection> findReviewableMeeting(
+            Long reviewerId, List<Long> finishedReviewMeetingIds);
 
     long getSearchTotalCount(MeetingSearchRequest searchRequest);
 

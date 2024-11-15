@@ -14,6 +14,7 @@ import com.boardgo.domain.meeting.service.response.LikedMeetingMyPageResponse;
 import com.boardgo.domain.meeting.service.response.MeetingDetailResponse;
 import com.boardgo.domain.meeting.service.response.MeetingSearchResponse;
 import com.boardgo.domain.meeting.service.response.MyPageMeetingResponse;
+import com.boardgo.domain.review.service.response.ReviewMeetingResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -100,5 +101,17 @@ public class MeetingQueryServiceV1 implements MeetingQueryUseCase {
     public List<LikedMeetingMyPageResponse> findLikedMeeting(List<Long> meetingIdList) {
         return meetingMapper.toLikedMeetingMyPageResponseList(
                 meetingRepository.findLikedMeeting(meetingIdList));
+    }
+
+    @Override
+    public List<MeetingEntity> findAllById(List<Long> meetingIds) {
+        return meetingRepository.findAllById(meetingIds);
+    }
+
+    @Override
+    public List<ReviewMeetingResponse> findReviewableMeeting(
+            Long reviewerId, List<Long> finishedReviewMeetingIds) {
+        return meetingMapper.toReviewMeetingResponses(
+                meetingRepository.findReviewableMeeting(reviewerId, finishedReviewMeetingIds));
     }
 }

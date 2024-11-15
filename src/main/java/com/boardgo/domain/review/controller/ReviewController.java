@@ -15,6 +15,7 @@ import com.boardgo.domain.review.service.response.ReviewMeetingReviewsResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +42,8 @@ public class ReviewController {
     public ResponseEntity<List<ReviewMeetingResponse>> getReviewMeetings(
             @RequestParam("reviewType") ReviewType reviewType) {
         List<ReviewMeetingResponse> reviewMeetings =
-                reviewQueryUseCase.getReviewMeetings(reviewType, currentUserId());
-        if (reviewMeetings.isEmpty()) {
+                reviewQueryFacade.getMeetingsToReview(reviewType, currentUserId());
+        if (Objects.isNull(reviewMeetings) || reviewMeetings.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(reviewMeetings);

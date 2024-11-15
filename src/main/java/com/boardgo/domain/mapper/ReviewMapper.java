@@ -3,7 +3,6 @@ package com.boardgo.domain.mapper;
 import static com.boardgo.common.utils.CustomStringUtils.longToStringList;
 
 import com.boardgo.domain.meeting.entity.MeetingEntity;
-import com.boardgo.domain.meeting.repository.projection.MeetingReviewProjection;
 import com.boardgo.domain.review.controller.request.ReviewCreateRequest;
 import com.boardgo.domain.review.entity.ReviewEntity;
 import com.boardgo.domain.review.repository.projection.ReviewMeetingReviewsProjection;
@@ -19,11 +18,7 @@ import org.mapstruct.factory.Mappers;
 public interface ReviewMapper {
     BoardGameMapper INSTANCE = Mappers.getMapper(BoardGameMapper.class);
 
-    List<ReviewMeetingResponse> toReviewMeetingReviewMeetingFromEntity(
-            List<MeetingEntity> meetingEntities);
-
-    List<ReviewMeetingResponse> toReviewMeetingReviewMeetingFromProjection(
-            List<MeetingReviewProjection> meetingReviewProjection);
+    List<ReviewMeetingResponse> toReviewMeetingResponses(List<MeetingEntity> meetingEntities);
 
     @Mapping(
             target = "evaluationTags",

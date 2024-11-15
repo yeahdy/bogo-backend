@@ -859,6 +859,7 @@ include::{snippets}/get-evaluation-tags/response-fields.adoc[]
 ==== *요청*
 
 include::{snippets}/get-review-meetings/http-request.adoc[]
+include::{snippets}/get-review-meetings/request-parts.adoc[]
 
 ==== *응답*
 

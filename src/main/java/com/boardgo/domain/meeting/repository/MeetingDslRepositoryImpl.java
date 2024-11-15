@@ -1,9 +1,11 @@
 package com.boardgo.domain.meeting.repository;
 
-import static com.boardgo.common.constant.TimeConstant.*;
-import static com.boardgo.domain.meeting.entity.enums.MeetingSortType.*;
-import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
-import static com.boardgo.domain.meeting.entity.enums.ParticipantType.*;
+import static com.boardgo.common.constant.TimeConstant.REVIEWABLE_HOURS;
+import static com.boardgo.domain.meeting.entity.enums.MeetingSortType.PARTICIPANT_COUNT;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.FINISH;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.PROGRESS;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.LEADER;
+import static com.boardgo.domain.meeting.entity.enums.ParticipantType.PARTICIPANT;
 
 import com.boardgo.domain.boardgame.entity.QBoardGameEntity;
 import com.boardgo.domain.boardgame.entity.QBoardGameGenreEntity;
@@ -367,8 +369,8 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
     }
 
     @Override
-    public List<MeetingReviewProjection> findMeetingPreProgressReview(
-            Long reviewerId, List<Long> reviewFinishedMeetings) {
+    public List<MeetingReviewProjection> findReviewableMeeting(
+            Long reviewerId, List<Long> finishedReviewMeetingIds) {
         return queryFactory
                 .select(
                         new QMeetingReviewProjection(
@@ -384,7 +386,7 @@ public class MeetingDslRepositoryImpl implements MeetingDslRepository {
                                 .and(
                                         m.meetingDatetime.loe(
                                                 LocalDateTime.now().minusHours(REVIEWABLE_HOURS)))
-                                .and(m.id.notIn(reviewFinishedMeetings)))
+                                .and(m.id.notIn(finishedReviewMeetingIds)))
                 .fetch();
     }
 

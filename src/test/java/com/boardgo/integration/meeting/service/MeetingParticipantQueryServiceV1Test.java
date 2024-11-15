@@ -26,6 +26,7 @@ import com.boardgo.domain.user.service.response.CustomUserDetails;
 import com.boardgo.integration.support.IntegrationTestSupport;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -200,5 +201,49 @@ public class MeetingParticipantQueryServiceV1Test extends IntegrationTestSupport
                         tuple(
                                 userInfoEntities.get(2).getId(),
                                 userInfoEntities.get(2).getNickName()));
+    }
+
+    @Test
+    @DisplayName("내가 참여한 모임의 참여자 수 조회하기")
+    void 내가_참여한_모임의_참여자_수_조회하기() {
+        // given
+        Long user1 = 1L;
+        for (long i = 1; i <= 5; i++) {
+            meetingParticipantRepository.save(getParticipantMeetingParticipantEntity(i, user1));
+        }
+        Long user2 = 2L;
+        meetingParticipantRepository.save(getParticipantMeetingParticipantEntity(1L, user2));
+        Long user3 = 3L;
+        meetingParticipantRepository.save(getParticipantMeetingParticipantEntity(1L, user3));
+        meetingParticipantRepository.save(getParticipantMeetingParticipantEntity(2L, user3));
+
+        // when
+        Map<Long, Long> count =
+                meetingParticipantQueryUseCase.countMeetingParticipants(user1, null);
+
+        // then
+        assertThat(count.keySet()).containsExactlyInAnyOrder(1L, 2L, 3L, 4L, 5L);
+        assertThat(count.values()).containsExactlyInAnyOrder(3L, 2L, 1L, 1L, 1L);
+    }
+
+    @Test
+    @DisplayName("내가 참여한 모임 중 특정 참여자 수인 모임만 조회하기")
+    void 내가_참여한_모임_중_특정_참여자_수인_모임만_조회하기() {
+        // given
+        Long user1 = 1L;
+        for (long i = 1; i <= 5; i++) {
+            meetingParticipantRepository.save(getParticipantMeetingParticipantEntity(i, user1));
+        }
+        Long user2 = 2L;
+        meetingParticipantRepository.save(getParticipantMeetingParticipantEntity(1L, user2));
+        meetingParticipantRepository.save(getParticipantMeetingParticipantEntity(2L, user2));
+        // when
+        long targetNum = 1L;
+        Map<Long, Long> count =
+                meetingParticipantQueryUseCase.countMeetingParticipants(user1, targetNum);
+
+        // then
+        assertThat(count.keySet()).doesNotContain(1L, 2L).containsExactlyInAnyOrder(3L, 4L, 5L);
+        assertThat(count.values()).containsExactly(targetNum, targetNum, targetNum);
     }
 }
