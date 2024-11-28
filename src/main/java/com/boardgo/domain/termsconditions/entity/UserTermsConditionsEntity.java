@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -24,6 +25,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Table(name = "user_terms_conditions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 public class UserTermsConditionsEntity extends BaseEntity {
 
     @Id
@@ -51,6 +53,10 @@ public class UserTermsConditionsEntity extends BaseEntity {
             Long userInfoId, TermsConditionsEntity termsConditionsEntity, boolean agreement) {
         this.userInfoId = userInfoId;
         this.termsConditions = termsConditionsEntity;
+        this.agreement = agreement;
+    }
+
+    public void updateAgreement(Boolean agreement) {
         this.agreement = agreement;
     }
 }

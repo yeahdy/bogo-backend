@@ -6,4 +6,6 @@ import java.util.List;
 public interface UserTermsConditionsCommandFacade {
     void createUserTermsConditions(
             List<TermsConditionsCreateRequest> termsConditionsCreateRequest, Long userId);
+
+    void updatePushTermsConditions(Long userId, Boolean isAgreed);
 }

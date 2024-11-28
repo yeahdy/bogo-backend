@@ -1,5 +1,6 @@
 package com.boardgo.config;
 
+import com.boardgo.domain.notification.entity.MessageType;
 import com.boardgo.domain.notification.service.UserNotificationSettingCommandUseCase;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -18,5 +19,8 @@ public class UserNotificationSettingCommandUseCaseTestConfig {
             implements UserNotificationSettingCommandUseCase {
         @Override
         public void create(Long userId, boolean isAgreed) {}
+
+        @Override
+        public void update(Long userId, boolean isAgreed, MessageType messageType) {}
     }
 }

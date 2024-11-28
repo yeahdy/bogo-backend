@@ -1136,3 +1136,51 @@ include::{snippets}/get-user-notifications/response-fields.adoc[]
 |===
 
 '''
+
+=== *회원 알림설정 수정*
+
+==== *요청*
+
+include::{snippets}/patch-user-notification/http-request.adoc[]
+include::{snippets}/patch-user-notification/request-fields.adoc[]
+
+※ messageType 데이터는 알림설정 목록 API 의 알림설정 타입(messageType) 과 일치합니다.
+
+==== *응답*
+
+include::{snippets}/patch-user-notification/http-response.adoc[]
+
+- HTTP 에러 상태 코드
+
+|===
+| errorCode | messages
+
+| 400
+|회원의 알림설정이 존재하지 않습니다
+
+|===
+
+'''
+
+=== *PUSH 알림 약관동의 수정*
+
+==== *요청*
+
+include::{snippets}/patch-user-terms-conditions-push/http-request.adoc[]
+include::{snippets}/patch-user-terms-conditions-push/query-parameters.adoc[]
+
+==== *응답*
+
+include::{snippets}/patch-user-terms-conditions-push/http-response.adoc[]
+
+- HTTP 에러 상태 코드
+
+|===
+| errorCode | messages
+
+| 400
+|회원의 알림설정이 존재하지 않습니다
+
+|===
+
+'''

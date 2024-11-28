@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserNotificationSettingCommandServiceV1
         implements UserNotificationSettingCommandUseCase {
 
@@ -30,5 +32,13 @@ public class UserNotificationSettingCommandServiceV1
                             .build());
         }
         userNotificationSettingRepository.saveAll(notificationSettingEntities);
+    }
+
+    @Override
+    public void update(Long userId, boolean isAgreed, MessageType messageType) {
+        UserNotificationSettingEntity userNotificationSetting =
+                userNotificationSettingRepository.findByUserInfoIdAndNotificationSettingMessageType(
+                        userId, messageType);
+        userNotificationSetting.updateAgree(isAgreed);
     }
 }

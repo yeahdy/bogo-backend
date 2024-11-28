@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class UserNotificationSettingQueryServiceV1 implements UserNotificationSe
     private final UserNotificationSettingMapper userNotificationSettingMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserNotificationSettingResponse> getUserNotificationSettingsList(Long userId) {
         List<UserNotificationSettingEntity> entities =
                 userNotificationSettingRepository.findByUserInfoId(userId);

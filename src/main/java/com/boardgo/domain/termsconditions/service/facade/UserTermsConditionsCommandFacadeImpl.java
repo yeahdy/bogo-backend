@@ -5,6 +5,8 @@ import static com.boardgo.domain.termsconditions.entity.enums.TermsConditionsTyp
 import com.boardgo.common.exception.CustomIllegalArgumentException;
 import com.boardgo.domain.mapper.TermsConditionsMapper;
 import com.boardgo.domain.notification.service.UserNotificationSettingCommandUseCase;
+import com.boardgo.domain.notification.service.UserNotificationSettingQueryUseCase;
+import com.boardgo.domain.notification.service.response.UserNotificationSettingResponse;
 import com.boardgo.domain.termsconditions.controller.request.TermsConditionsCreateRequest;
 import com.boardgo.domain.termsconditions.entity.TermsConditionsEntity;
 import com.boardgo.domain.termsconditions.entity.UserTermsConditionsEntity;
@@ -24,6 +26,7 @@ public class UserTermsConditionsCommandFacadeImpl implements UserTermsConditions
     private final UserTermsConditionsCommandUseCase userTermsConditionsCommandUseCase;
     private final UserTermsConditionsQueryUseCase userTermsConditionsQueryUseCase;
     private final UserNotificationSettingCommandUseCase userNotificationSettingCommandUseCase;
+    private final UserNotificationSettingQueryUseCase userNotificationSettingQueryUseCase;
     private final TermsConditionsMapper termsConditionsMapper;
 
     @Override
@@ -60,6 +63,25 @@ public class UserTermsConditionsCommandFacadeImpl implements UserTermsConditions
         }
         if (userTermsConditionsQueryUseCase.existsUser(userId)) {
             throw new CustomIllegalArgumentException("이미 약관동의 완료된 회원입니다");
+        }
+    }
+
+    // 푸시 설정이 변경 후 회원의 푸시 약관동의가 변경
+    @Override
+    public void updatePushTermsConditions(Long userId, Boolean isAgreed) {
+        // 알림설정이 Y 이고, 회원의 기존 푸시 약관동의가 N 이라면 Y로 변경
+        if (isAgreed) {
+            userTermsConditionsCommandUseCase.updatePushTermsCondition(userId);
+        } else {
+            // 회원의 모든 알림설정이 N 이라면 푸시약관동의 N 변경
+            List<UserNotificationSettingResponse> userNotificationSettings =
+                    userNotificationSettingQueryUseCase.getUserNotificationSettingsList(userId);
+            for (UserNotificationSettingResponse setting : userNotificationSettings) {
+                if (setting.isAgreed()) { // 하나라도 true 가 존재하면 패스
+                    return;
+                }
+            }
+            userTermsConditionsCommandUseCase.updatePushTermsCondition(userId);
         }
     }
 }

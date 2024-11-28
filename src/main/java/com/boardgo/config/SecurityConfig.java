@@ -85,7 +85,8 @@ public class SecurityConfig {
         AntPathRequestMatcher.antMatcher("/terms-conditions/user"),
         AntPathRequestMatcher.antMatcher("/notification/**"),
         AntPathRequestMatcher.antMatcher("/user-notification/**"),
-        AntPathRequestMatcher.antMatcher("/push-token")
+        AntPathRequestMatcher.antMatcher("/push-token"),
+        AntPathRequestMatcher.antMatcher("/user-terms-conditions/**")
     };
 
     @Bean

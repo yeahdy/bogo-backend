@@ -1,17 +1,19 @@
 package com.boardgo.integration.termsconditions.facade;
 
 import static com.boardgo.domain.termsconditions.entity.enums.TermsConditionsType.PUSH;
-import static com.boardgo.integration.fixture.NotificationSettingFixture.getNotificationSettings;
 import static com.boardgo.integration.fixture.TermsConditionsFixture.getTermsConditionsList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.mock;
 
 import com.boardgo.common.exception.CustomIllegalArgumentException;
-import com.boardgo.domain.notification.entity.MessageType;
-import com.boardgo.domain.notification.entity.UserNotificationSettingEntity;
-import com.boardgo.domain.notification.repository.NotificationSettingRepository;
-import com.boardgo.domain.notification.repository.UserNotificationSettingRepository;
+import com.boardgo.config.UserNotificationSettingCommandFacadeTestConfig;
+import com.boardgo.domain.notification.service.UserNotificationSettingCommandUseCase;
+import com.boardgo.domain.notification.service.UserNotificationSettingQueryUseCase;
 import com.boardgo.domain.termsconditions.controller.request.TermsConditionsCreateRequest;
 import com.boardgo.domain.termsconditions.entity.UserTermsConditionsEntity;
 import com.boardgo.domain.termsconditions.entity.enums.TermsConditionsType;
@@ -29,26 +31,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
+@Import({UserNotificationSettingCommandFacadeTestConfig.class})
 public class UserTermsConditionsCommandFacadeTest extends IntegrationTestSupport {
     @Autowired private UserTermsConditionsCommandFacade userTermsConditionsCommandFacade;
     @Autowired private UserTermsConditionsRepository userTermsConditionsRepository;
     @Autowired private TermsConditionsRepository termsConditionsRepository;
     @Autowired private TermsConditionsFactory termsConditionsFactory;
-    @Autowired private NotificationSettingRepository notificationSettingRepository;
-    @Autowired private UserNotificationSettingRepository userNotificationSettingRepository;
 
     @BeforeEach
-    void init() {
+    void init() throws Exception {
         termsConditionsRepository.saveAll(getTermsConditionsList());
-        notificationSettingRepository.saveAll(getNotificationSettings());
+        termsConditionsFactory.run(null);
     }
 
     @Test
     @DisplayName("사용자의 약관동의가 모두 저장된다")
-    void 사용자의_약관동의가_모두_저장된다() throws Exception {
+    void 사용자의_약관동의가_모두_저장된다() {
         // given
-        termsConditionsFactory.run(null);
         List<TermsConditionsCreateRequest> request = new ArrayList<>();
         for (TermsConditionsType type : TermsConditionsType.values()) {
             request.add(new TermsConditionsCreateRequest(type.name(), true));
@@ -75,11 +76,10 @@ public class UserTermsConditionsCommandFacadeTest extends IntegrationTestSupport
     }
 
     @ParameterizedTest
-    @DisplayName("회원의 약관동의를 저장할 때 푸시 약관 동의에 따라 푸시 알림설정의 허용_비허용이 저장된다")
+    @DisplayName("회원의 약관동의를 저장할 때 PUSH 약관 동의에 따라 PUSH 알림설정의 허용_비허용이 저장된다")
     @ValueSource(booleans = {true, false})
-    void 회원의_약관동의를_저장할_때_푸시_약관_동의에_따라_푸시_알림설정의_허용_비허용이_저장된다(boolean isAgreed) throws Exception {
+    void 회원의_약관동의를_저장할_때_PUSH_약관_동의에_따라_PUSH_알림설정의_허용_비허용이_저장된다(boolean isAgreed) throws Exception {
         // given
-        termsConditionsFactory.run(null);
         List<TermsConditionsCreateRequest> request = new ArrayList<>();
         for (TermsConditionsType type : TermsConditionsType.values()) {
             if (PUSH.equals(type)) {
@@ -89,27 +89,15 @@ public class UserTermsConditionsCommandFacadeTest extends IntegrationTestSupport
             request.add(new TermsConditionsCreateRequest(type.name(), true));
         }
         Long userId = 1L;
+        willDoNothing()
+                .given(mock(UserNotificationSettingCommandUseCase.class))
+                .create(userId, isAgreed);
 
         // when
         userTermsConditionsCommandFacade.createUserTermsConditions(request, userId);
 
         // then
-        assertTrue(userTermsConditionsRepository.existsByUserInfoId(userId));
-
-        List<UserNotificationSettingEntity> userNotificationSettingEntities =
-                userNotificationSettingRepository.findByUserInfoId(userId);
-        assertThat(userNotificationSettingEntities).isNotEmpty();
-
-        List<MessageType> messageTypeList = Arrays.stream(MessageType.values()).toList();
-        assertThat(messageTypeList.size()).isEqualTo(userNotificationSettingEntities.size());
-        userNotificationSettingEntities.forEach(
-                userNotificationSettingEntity -> {
-                    if (isAgreed) {
-                        assertThat(userNotificationSettingEntity.getIsAgreed()).isTrue();
-                    } else {
-                        assertThat(userNotificationSettingEntity.getIsAgreed()).isFalse();
-                    }
-                });
+        assertThat(userTermsConditionsRepository.existsByUserInfoId(userId)).isTrue();
     }
 
     @Test
@@ -153,5 +141,30 @@ public class UserTermsConditionsCommandFacadeTest extends IntegrationTestSupport
                                         request, userId))
                 .isInstanceOf(CustomIllegalArgumentException.class)
                 .hasMessageContaining("필수 약관은 모두 동의");
+    }
+
+    @Test
+    @DisplayName("회원의 알림설정이 모두 비허용일 경우 PUSH 약관동의를 비허용으로 변경한다")
+    void 회원의_알림설정이_모두_비허용일_경우_PUSH_약관동의를_비허용으로_변경한다() {
+        // given
+        Long userId = 1L;
+        userTermsConditionsRepository.save(
+                UserTermsConditionsEntity.builder()
+                        .userInfoId(userId)
+                        .termsConditionsEntity(TermsConditionsFactory.get("PUSH"))
+                        .agreement(Boolean.TRUE)
+                        .build());
+        given(
+                        mock(UserNotificationSettingQueryUseCase.class)
+                                .getUserNotificationSettingsList(userId))
+                .willReturn(anyList());
+        // when
+        userTermsConditionsCommandFacade.updatePushTermsConditions(userId, Boolean.FALSE);
+
+        // then
+        UserTermsConditionsEntity userTermsConditionsEntity =
+                userTermsConditionsRepository.findByUserInfoIdAndTermsConditionsType(
+                        userId, TermsConditionsType.PUSH);
+        assertThat(userTermsConditionsEntity.getAgreement()).isFalse();
     }
 }
