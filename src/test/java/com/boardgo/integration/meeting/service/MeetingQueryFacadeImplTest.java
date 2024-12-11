@@ -1,8 +1,10 @@
 package com.boardgo.integration.meeting.service;
 
-import static com.boardgo.domain.meeting.entity.enums.MeetingState.*;
-import static com.boardgo.integration.data.MeetingData.*;
-import static org.assertj.core.api.Assertions.*;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.COMPLETE;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.FINISH;
+import static com.boardgo.domain.meeting.entity.enums.MeetingState.PROGRESS;
+import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.boardgo.domain.boardgame.service.response.BoardGameListResponse;
 import com.boardgo.domain.meeting.controller.request.MeetingSearchRequest;
@@ -255,13 +257,12 @@ public class MeetingQueryFacadeImplTest extends IntegrationTestSupport {
         meetingLikeRepository.save(
                 MeetingLikeEntity.builder().meetingId(meetingEntity.getId()).userId(3L).build());
 
-        MeetingParticipantEntity savedParticipant =
-                meetingParticipantRepository.save(
-                        MeetingParticipantEntity.builder()
-                                .meetingId(meetingId)
-                                .userInfoId(2L)
-                                .type(ParticipantType.PARTICIPANT)
-                                .build());
+        meetingParticipantRepository.save(
+                MeetingParticipantEntity.builder()
+                        .meetingId(meetingId)
+                        .userInfoId(2L)
+                        .type(ParticipantType.PARTICIPANT)
+                        .build());
 
         // when
         MeetingResponse result = meetingQueryFacade.getDetailById(meetingId, 1L);

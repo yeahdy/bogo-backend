@@ -3,14 +3,14 @@ package com.boardgo.integration.meeting.facade;
 import static com.boardgo.domain.notification.entity.MessageType.KICKED_OUT;
 import static com.boardgo.integration.data.MeetingData.getMeetingEntityData;
 import static com.boardgo.integration.data.UserInfoData.userInfoEntityData;
-import static com.boardgo.integration.fixture.MeetingParticipantFixture.getParticipantMeetingParticipantEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.boardgo.common.exception.CustomIllegalArgumentException;
+import com.boardgo.common.exception.CustomNullPointException;
+import com.boardgo.config.MeetingParticipantCommandFacadeConfig;
 import com.boardgo.config.NotificationCommandFacadeTestConfig;
 import com.boardgo.domain.meeting.entity.MeetingEntity;
-import com.boardgo.domain.meeting.repository.MeetingParticipantRepository;
+import com.boardgo.domain.meeting.entity.enums.MeetingState;
 import com.boardgo.domain.meeting.repository.MeetingRepository;
 import com.boardgo.domain.meeting.service.facade.MeetingParticipantCommandFacade;
 import com.boardgo.domain.notification.entity.NotificationEntity;
@@ -25,38 +25,27 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
-@Import({NotificationCommandFacadeTestConfig.class})
+@Import({NotificationCommandFacadeTestConfig.class, MeetingParticipantCommandFacadeConfig.class})
 public class MeetingParticipantCommandFacadeTest extends IntegrationTestSupport {
     @Autowired private MeetingParticipantCommandFacade meetingParticipantCommandFacade;
-    @Autowired private MeetingParticipantRepository meetingParticipantRepository;
     @Autowired private MeetingRepository meetingRepository;
     @Autowired private NotificationRepository notificationRepository;
     @Autowired private UserRepository userRepository;
 
     @Test
-    @DisplayName("모임 내보내기 시 모임을 나가는 도중 예외가 발생할 경우 알림메세지를 저장하지 않는다")
-    void 모임_내보내기_시_모임을_나가는_도중_예외가_발생할_경우_알림메세지를_저장하지_않는다() {
+    @DisplayName("모임 나가기 과정 도중 예외가 발생할 경우 알림메세지를 저장하지 않는다")
+    void 모임_나가기_과정_도중_예외가_발생할_경우_알림메세지를_저장하지_않는다() {
         // given
-        UserInfoEntity notpParticipant = userInfoEntityData("out@daum.net", "나는강퇴자").build();
-        userRepository.save(notpParticipant);
-
-        Long leaderId = 2L;
-        MeetingEntity meeting = getMeetingEntityData(leaderId).build();
-        meetingRepository.save(meeting);
-        meetingParticipantRepository.save(
-                getParticipantMeetingParticipantEntity(meeting.getId(), leaderId));
-
+        Long userId = 1L;
+        Long meetingId = 1L;
+        meetingRepository.save(getMeetingEntityData(userId).build());
         // when
         assertThrows(
-                CustomIllegalArgumentException.class,
-                () ->
-                        meetingParticipantCommandFacade.outMeeting(
-                                meeting.getId(), notpParticipant.getId(), true));
+                CustomNullPointException.class,
+                () -> meetingParticipantCommandFacade.outMeeting(meetingId, userId, true));
 
         // then
-        assertThat(
-                        notificationRepository.findByUserInfoIdAndMessageMessageType(
-                                notpParticipant.getId(), KICKED_OUT))
+        assertThat(notificationRepository.findByUserInfoIdAndMessageMessageType(userId, KICKED_OUT))
                 .isEmpty();
     }
 
@@ -70,11 +59,6 @@ public class MeetingParticipantCommandFacadeTest extends IntegrationTestSupport 
         Long leaderId = 2L;
         MeetingEntity meeting = getMeetingEntityData(leaderId).build();
         meetingRepository.save(meeting);
-
-        meetingParticipantRepository.save(
-                getParticipantMeetingParticipantEntity(meeting.getId(), leaderId));
-        meetingParticipantRepository.save(
-                getParticipantMeetingParticipantEntity(meeting.getId(), participant.getId()));
 
         // when
         meetingParticipantCommandFacade.outMeeting(meeting.getId(), participant.getId(), true);
@@ -93,5 +77,20 @@ public class MeetingParticipantCommandFacadeTest extends IntegrationTestSupport 
                     System.out.printf(
                             "title: %s, content: %s", message.getTitle(), message.getContent());
                 });
+    }
+
+    @Test
+    @DisplayName("모임 상태가 모집완료일 때 사용자가 나가거나 강퇴되었을 때 모집중으로 변경된다")
+    void 모임_상태가_모집완료일_때_사용자가_나가거나_강퇴되었을_때_모집중으로_변경된다() {
+        // given
+        Long userId = 1L;
+        MeetingEntity meeting = getMeetingEntityData(userId).state(MeetingState.COMPLETE).build();
+        meetingRepository.save(meeting);
+
+        // when
+        meetingParticipantCommandFacade.outMeeting(meeting.getId(), userId, false);
+
+        // then
+        assertThat(meeting.getState()).isEqualTo(MeetingState.PROGRESS);
     }
 }
